@@ -6,6 +6,18 @@ def seed_admin():
     conn = get_db_connection()
     cursor = conn.cursor()
 
+    # Check if admin already exists
+    cursor.execute(
+        "SELECT id FROM users WHERE email = ?",
+        ("admin@example.com",)
+    )
+    existing_admin = cursor.fetchone()
+
+    if existing_admin:
+        conn.close()
+        print("ℹ️ Admin user already exists")
+        return
+
     password_hash = generate_password_hash("admin123")
 
     cursor.execute(
