@@ -1,7 +1,15 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, redirect, make_response
 from werkzeug.security import check_password_hash
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import (
+    create_access_token,
+    set_access_cookies,
+    jwt_required,
+    get_jwt_identity,
+    unset_jwt_cookies
+)
 from models.db import get_db_connection
+
+
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -10,6 +18,8 @@ def login():
     data = request.get_json()
     email = data.get("email")
     password = data.get("password")
+
+
 
     if not email or not password:
         return jsonify({"error": "email and password required"}), 400
@@ -24,15 +34,15 @@ def login():
     if not user or not check_password_hash(user["password"], password):
         return jsonify({"error": "invalid credentials"}), 401
 
-    access_token = create_access_token(
-        identity=str(user["id"]),
-        additional_claims={"role": user["role"]}
-    )
+    # ✅ CREATE TOKEN
+    access_token = create_access_token(identity=str(user["id"]))
 
-    return jsonify({
-        "access_token": access_token,
-        "role": user["role"]
-    }), 200
+
+    # ✅ SET COOKIE + REDIRECT
+    resp = make_response(redirect("/dashboard"))
+    set_access_cookies(resp, access_token)
+
+    return resp
 
 
 @auth_bp.get("/me")
@@ -56,3 +66,13 @@ def get_me():
         "role": user["role"],
         "created_at": user["created_at"]
     }), 200
+
+
+#Logout Route
+from flask_jwt_extended import unset_jwt_cookies
+
+@auth_bp.post("/logout")
+def logout():
+    resp = make_response(redirect("/login"))
+    unset_jwt_cookies(resp)
+    return resp

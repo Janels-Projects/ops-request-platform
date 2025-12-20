@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ labels.title }}</title>
+  <style>
+    body { font-family: system-ui, Arial; background:#f4f6f8; margin:0; }
+    .wrap { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+    .header { display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px; }
+    .card-row { display:grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 12px 0 16px; }
+    .card { background:#fff; border-radius: 14px; padding: 14px; box-shadow: 0 1px 8px rgba(0,0,0,0.06); }
+    .kpi { font-size: 28px; font-weight: 800; margin-top: 6px; }
+    .muted { color:#6b7280; }
+    .insight { display:flex; gap: 10px; align-items:flex-start; }
+    .dot { width:10px; height:10px; border-radius:999px; background:#2563eb; margin-top: 6px; }
+    table { width:100%; border-collapse: collapse; background:#fff; border-radius: 14px; overflow:hidden; box-shadow: 0 1px 8px rgba(0,0,0,0.06); }
+    th, td { padding: 12px; border-bottom:1px solid #eef2f7; text-align:left; font-size: 14px; }
+    th { background:#fafafa; }
+    .badge { padding: 4px 10px; border-radius: 999px; font-size: 12px; display:inline-block; }
+    .pending { background:#fff7ed; color:#9a3412; }
+    .btn { padding: 8px 10px; border-radius: 10px; border:1px solid #e5e7eb; background:#fff; cursor:pointer; }
+    .btn:hover { background:#f9fafb; }
+    @media (max-width: 900px) { .card-row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="header">
+      <div>
+        <h2 style="margin:0;">{{ labels.title }}</h2>
+        <div class="muted">Welcome back, {{ user["email"] }}</div>
+      </div>
+
+      <form method="POST" action="/auth/logout">
+        <button class="btn">Logout</button>
+      </form>
+    </div>
+
+    <div class="card-row">
+      <div class="card">
+        <div class="muted">{{ labels.pending }}</div>
+        <div class="kpi">{{ pending_count }}</div>
+      </div>
+      <div class="card">
+        <div class="muted">{{ labels.avg }}</div>
+        <div class="kpi">
+          {% if avg_hours is none %}—{% else %}{{ "%.1f"|format(avg_hours) }}h{% endif %}
+        </div>
+      </div>
+      <div class="card">
+        <div class="muted">{{ labels.new_today }}</div>
+        <div class="kpi">{{ new_today }}</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="insight">
+        <div class="dot"></div>
+        <div>
+          <div style="font-weight:700;">Ops Insight</div>
+          <div class="muted">{{ insight }}</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin: 0 0 10px;">Pending Queue</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Request</th>
+          <th>Category</th>
+          <th>Status</th>
+          <th>Age</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in pending_requests %}
+        <tr>
+          <td>{{ r["employee"] }}</td>
+          <td>{{ r["request_type"] }}</td>
+          <td>{{ r["category"] }}</td>
+          <td><span class="badge pending">{{ r["status"] }}</span></td>
+          <td>{{ r["age_days"] }}d</td>
+          <td>
+            <form method="POST" action="/dashboard/requests/{{ r['id'] }}/approve" style="display:inline;">
+              <button class="btn">Approve</button>
+            </form>
+            <form method="POST" action="/dashboard/requests/{{ r['id'] }}/deny" style="display:inline;">
+              <button class="btn">Deny</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" class="muted">No pending requests 🎉</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="muted" style="margin-top:12px;">
+      Tip: Approve/Deny buttons are intentionally disabled until we hook them to your existing admin routes.
+    </div>
+
+  </div>
+</body>
+</html>
