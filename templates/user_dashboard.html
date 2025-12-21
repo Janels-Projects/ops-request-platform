@@ -60,9 +60,21 @@
   </div>
 </body>
 </html>
-<form method="POST" action="{{ url_for('requests.create') }}">
-  <input name="type" placeholder="Request type" required />
-  <textarea name="description" placeholder="Description" required></textarea>
-  <button type="submit">Submit Request</button>
+<form method="POST" action="{{ url_for('requests.create_request') }}">
+  <input
+    name="request_type"
+    placeholder="Request type (e.g. VPN Access)"
+    required
+  />
+
+  <select name="category" required>
+    <option value="">Select category</option>
+    <option value="Access">Access</option>
+    <option value="Hardware">Hardware</option>
+    <option value="Software">Software</option>
+  </select>
+
+  <button type="submit" class="btn">Submit Request</button>
 </form>
+
 

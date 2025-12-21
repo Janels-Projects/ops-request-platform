@@ -46,16 +46,15 @@ def deny_request(request_id):
 
     return redirect(url_for("dashboard.admin_dashboard"))
 
-@requests_bp.post("/requests", endpoint="create")
+@requests_bp.post("/requests")
 @jwt_required()
 def create_request():
     user_id = int(get_jwt_identity())
-    data = request.form
 
-    request_type = data.get("type")
-    description = data.get("description")
+    request_type = request.form.get("request_type")
+    category = request.form.get("category")
 
-    if not request_type or not description:
+    if not request_type or not category:
         abort(400, "Missing required fields")
 
     conn = get_db_connection()
@@ -71,17 +70,14 @@ def create_request():
     if not user or user["role"] != "user":
         abort(403)
 
-    # Insert request
-    cursor.execute(
-        """
-        INSERT INTO requests (user_id, type, description, status, created_at)
-        VALUES (?, ?, ?, 'pending', CURRENT_TIMESTAMP)
-        """,
-        (user_id, request_type, description)
-    )
+    cursor.execute("""
+        INSERT INTO requests (user_id, request_type, category, status)
+        VALUES (?, ?, ?, 'pending')
+    """, (user_id, request_type, category))
 
     conn.commit()
     conn.close()
 
-    return redirect(url_for("dashboard.user_dashboard"))
+    return redirect("/dashboard")
+
 
