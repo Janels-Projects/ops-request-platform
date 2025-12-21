@@ -4,6 +4,8 @@ import os
 from flask import Flask
 from flask_cors import CORS
 from models.seed_admin import seed_admin
+from models.seed_user import seed_user
+
 
 from routes.auth import auth_bp
 from routes.system import system_bp
@@ -32,6 +34,7 @@ jwt = JWTManager(app)
 with app.app_context():
     init_db()
     seed_admin()
+    seed_user()
 
 
 # - - - - - - - - - - - -  -
