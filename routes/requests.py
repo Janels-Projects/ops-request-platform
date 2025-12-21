@@ -46,7 +46,7 @@ def deny_request(request_id):
 
     return redirect(url_for("dashboard.admin_dashboard"))
 
-@requests_bp.post("/requests")
+@requests_bp.post("/requests", endpoint="create")
 @jwt_required()
 def create_request():
     user_id = int(get_jwt_identity())

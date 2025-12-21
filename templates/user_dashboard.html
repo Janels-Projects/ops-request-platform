@@ -60,7 +60,7 @@
   </div>
 </body>
 </html>
-<form method="POST" action="{{ url_for('requests.create_request') }}">
+<form method="POST" action="{{ url_for('requests.create') }}">
   <input name="type" placeholder="Request type" required />
   <textarea name="description" placeholder="Description" required></textarea>
   <button type="submit">Submit Request</button>
