@@ -60,8 +60,9 @@
   </div>
 </body>
 </html>
-<form method="POST" action="/dashboard/requests">
+<form method="POST" action="{{ url_for('requests.create_request') }}">
   <input name="type" placeholder="Request type" required />
   <textarea name="description" placeholder="Description" required></textarea>
   <button type="submit">Submit Request</button>
 </form>
+
