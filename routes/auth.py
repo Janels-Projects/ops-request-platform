@@ -69,10 +69,10 @@ def get_me():
 
 
 #Logout Route
-from flask_jwt_extended import unset_jwt_cookies
-
-@auth_bp.post("/logout")
+@auth_bp.route("/logout", methods=["POST"])
 def logout():
     resp = make_response(redirect("/login"))
     unset_jwt_cookies(resp)
     return resp
+
+
