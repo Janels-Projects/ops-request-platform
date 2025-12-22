@@ -3,7 +3,7 @@
 
 <div class="app-shell">
 
-  <!-- Sidebar (with placeholders) -->
+  <!-- Sidebar -->
   <aside class="sidebar">
     <div class="brand">
       <span>Ops Platform</span>
@@ -15,7 +15,11 @@
       <a href="#">Notifications</a>     <!-- placeholder -->
       <a href="#">Profile</a>           <!-- placeholder -->
       <a href="#">Settings</a>          <!-- placeholder -->
-      <a href="{{ url_for('auth.logout') }}">Logout</a>
+
+      <!-- LOGOUT (POST, not GET) -->
+      <form method="POST" action="{{ url_for('auth.logout') }}">
+        <button type="submit" class="link-btn">Logout</button>
+      </form>
     </nav>
   </aside>
 
@@ -29,7 +33,7 @@
         <div class="muted">Signed in as {{ user["email"] }}</div>
       </div>
 
-      <!-- Status summary (subtle, not KPI tiles) -->
+      <!-- Status summary -->
       <div class="card">
         <span class="badge pending">Pending</span>
         <span class="badge approved" style="margin-left:8px;">Approved</span>
@@ -60,7 +64,9 @@
           </tr>
           {% else %}
           <tr>
-            <td colspan="4" class="muted">No requests yet. Submit one to get started.</td>
+            <td colspan="4" class="muted">
+              No requests yet. Submit one to get started.
+            </td>
           </tr>
           {% endfor %}
         </tbody>
