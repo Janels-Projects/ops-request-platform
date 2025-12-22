@@ -37,7 +37,7 @@ def _admin_metrics():
 
     # Pending queue
     cur.execute("""
-        SELECT r.id, u.email AS employee, r.request_type, r.category, r.status,
+        SELECT r.id, u.email AS employee, r.request_type, r.category, r.priority, r.status,
                CAST((julianday('now') - julianday(r.created_at)) AS INT) AS age_days,
                r.created_at
         FROM requests r

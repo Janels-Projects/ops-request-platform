@@ -67,26 +67,61 @@
 
     <h3 style="margin: 0 0 10px;">Pending Queue</h3>
 
+    <div class="card" style="margin-bottom:12px;">
+       <div style="display:flex; gap:10px; flex-wrap:wrap;">
+
+    <select id="statusFilter" class="btn">
+      <option value="all">All Statuses</option>
+      <option value="pending">Pending</option>
+      <option value="approved">Approved</option>
+      <option value="denied">Denied</option>
+    </select>
+
+    <select id="categoryFilter" class="btn">
+      <option value="all">All Categories</option>
+      {% for c in categories %}
+        <option value="{{ c }}">{{ c }}</option>
+      {% endfor %}
+    </select>
+
+    <select id="priorityFilter" class="btn">
+      <option value="all">All Priorities</option>
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+    </select>
+
+  </div>
+</div>
+
+
     <table>
       <thead>
         <tr>
           <th>Employee</th>
           <th>Request</th>
           <th>Category</th>
+          <th>Priority</th>
           <th>Status</th>
           <th>Age</th>
           <th>Action</th>
         </tr>
       </thead>
       <tbody>
+        
         {% for r in pending_requests %}
-        <tr>
+        <tr class="request-row"
+            data-status="{{ r['status'] }}"
+            data-category="{{ r['category'] }}"
+            data-priority="{{ r['priority'] }}">
           <td>{{ r["employee"] }}</td>
           <td>{{ r["request_type"] }}</td>
           <td>{{ r["category"] }}</td>
+          <td>{{ r["priority"] }}</td>
           <td><span class="badge pending">{{ r["status"] }}</span></td>
           <td>{{ r["age_days"] }}d</td>
           <td>
+
             <form method="POST" action="/dashboard/requests/{{ r['id'] }}/approve" style="display:inline;">
               <button class="btn">Approve</button>
             </form>
@@ -108,5 +143,8 @@
     </div>
 
   </div>
+  
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
 </body>
 </html>
