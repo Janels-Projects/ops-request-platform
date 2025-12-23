@@ -132,12 +132,17 @@ def admin_dashboard():
         "new_today": "New Requests Today"
     }
 
+    # 👇 ADD THIS
+    categories = ["Access", "Hardware", "Software"]
+
     return render_template(
         "admin_dashboard.html",
         user=user,
         labels=labels,
+        categories=categories,   # 👈 ADD THIS
         **data
     )
+
 
 @dashboard_bp.get("/dashboard/user")
 @jwt_required()
