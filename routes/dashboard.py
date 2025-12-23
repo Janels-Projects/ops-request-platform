@@ -1,10 +1,11 @@
 # routes/dashboard.py
 from flask import Blueprint, render_template, redirect, url_for, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-
 from models.db import get_db_connection  # adjust if your import path differs
 
+
 dashboard_bp = Blueprint("dashboard", __name__)
+
 
 def _get_user_and_role(user_id: int):
     conn = get_db_connection()
@@ -160,17 +161,4 @@ def user_dashboard():
         **data
     )
 
-@dashboard_bp.get("/admin/migrate-priority")
-def migrate_priority():
-    conn = get_db_connection()
-    cur = conn.cursor()
-
-    cur.execute("""
-        ALTER TABLE requests
-        ADD COLUMN priority TEXT DEFAULT 'medium'
-    """)
-
-    conn.commit()
-    conn.close()
-    return "Migration complete"
 
