@@ -13,10 +13,14 @@ from routes.dashboard import dashboard_bp
 from routes.users import users_bp
 from routes.requests import requests_bp
 from models.schema import init_db
+from models.db import ensure_request_columns
 
 
 app = Flask(__name__)
 CORS(app)
+
+ensure_request_columns()
+
 
 # JWT config
 app.config["JWT_SECRET_KEY"] = "dev-secret-change-later"

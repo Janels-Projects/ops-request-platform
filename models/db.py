@@ -11,3 +11,25 @@ def get_db_connection():
     return conn
 
 
+def ensure_request_columns():
+    """
+    Ensures required columns exist on the requests table.
+    Safe to run multiple times.
+    """
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Get existing columns
+    cur.execute("PRAGMA table_info(requests)")
+    existing_columns = [row["name"] for row in cur.fetchall()]
+
+    # Add priority column if missing
+    if "priority" not in existing_columns:
+        cur.execute("""
+            ALTER TABLE requests
+            ADD COLUMN priority TEXT DEFAULT 'medium'
+        """)
+        print("Added priority column")
+
+    conn.commit()
+    conn.close()
