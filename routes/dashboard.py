@@ -166,4 +166,22 @@ def user_dashboard():
         **data
     )
 
+#Temporary Migration route
+@dashboard_bp.get("/admin/migrate-priority")
+def migrate_priority():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    try:
+        cur.execute("""
+            ALTER TABLE requests
+            ADD COLUMN priority TEXT DEFAULT 'medium'
+        """)
+        conn.commit()
+        result = "Migration complete"
+    except Exception as e:
+        result = f"Migration skipped: {e}"
+
+    conn.close()
+    return result
 
