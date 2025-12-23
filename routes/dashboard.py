@@ -159,3 +159,18 @@ def user_dashboard():
         labels=labels,
         **data
     )
+
+@dashboard_bp.get("/admin/migrate-priority")
+def migrate_priority():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        ALTER TABLE requests
+        ADD COLUMN priority TEXT DEFAULT 'medium'
+    """)
+
+    conn.commit()
+    conn.close()
+    return "Migration complete"
+
