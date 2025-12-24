@@ -31,5 +31,13 @@ def ensure_request_columns():
         """)
         print("Added priority column")
 
+    # Add department column if missing
+    if "department" not in existing_columns:
+        cur.execute("""
+            ALTER TABLE requests
+            ADD COLUMN department TEXT NOT NULL DEFAULT 'corporate'
+        """)
+        print("Added department column")
+
     conn.commit()
     conn.close()

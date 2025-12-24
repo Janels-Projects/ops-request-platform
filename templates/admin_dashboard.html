@@ -25,7 +25,7 @@
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <div class="wrap admin-dashboard">
 
     <div class="header">
       <div>
@@ -77,6 +77,14 @@
       <option value="denied">Denied</option>
     </select>
 
+  <select id="departmentFilter" class="btn">
+    <option value="all">All Departments</option>
+    <option value="corporate">Corporate</option>
+    <option value="healthcare">Healthcare</option>
+    <option value="legal">Legal</option>
+</select>
+
+
     <select id="categoryFilter" class="btn">
       <option value="all">All Categories</option>
       {% for c in categories %}
@@ -102,6 +110,7 @@
           <th>Request</th>
           <th>Category</th>
           <th>Priority</th>
+          <th>Department</th>
           <th>Status</th>
           <th>Age</th>
           <th>Action</th>
@@ -113,11 +122,13 @@
         <tr class="request-row"
             data-status="{{ r['status'] }}"
             data-category="{{ r['category'] }}"
-            data-priority="{{ r['priority'] }}">
+            data-priority="{{ r['priority'] }}"
+            data-department="{{ r['department'] }}">
           <td>{{ r["employee"] }}</td>
           <td>{{ r["request_type"] }}</td>
           <td>{{ r["category"] }}</td>
           <td>{{ r["priority"] }}</td>
+          <td>{{ r["department"] }}</td>
           <td><span class="badge pending">{{ r["status"] }}</span></td>
           <td>{{ r["age_days"] }}d</td>
           <td>

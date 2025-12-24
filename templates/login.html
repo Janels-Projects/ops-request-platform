@@ -4,40 +4,54 @@
 
 {% block content %}
 
-<div class="card" style="max-width: 420px; margin: 40px auto;">
-  <div class="card__pad">
+<div class="bg">
+  <main class="container">
 
-    <h2 style="margin-top:0;">Login</h2>
+    <div class="card" style="max-width: 420px; margin: 40px auto;">
+      <div class="card__pad">
 
-    <form id="login-form">
-      <div class="field">
-        <input
-          class="input"
-          type="email"
-          id="email"
-          placeholder="Email"
-          required
-        />
+        <h2 style="margin-top:0;">Login</h2>
+
+        <form id="login-form">
+          <div class="field">
+            <input
+              class="input"
+              type="email"
+              id="email"
+              placeholder="Email"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <input
+              class="input"
+              type="password"
+              id="password"
+              placeholder="Password"
+              required
+            />
+          </div>
+
+          <button class="btn btn--primary" type="submit" style="width:100%;">
+            Sign in
+          </button>
+        </form>
+
+        <p id="message" style="margin-top:12px;"></p>
+
       </div>
+    </div>
 
-      <div class="field">
-        <input
-          class="input"
-          type="password"
-          id="password"
-          placeholder="Password"
-          required
-        />
-      </div>
+    <div style="text-align:center; margin-top:16px;">
+      <img
+        src="{{ url_for('static', filename='img/logo.png') }}"
+        alt="Code Gradient"
+        style="max-width:140px; opacity:0.85;"
+      >
+    </div>
 
-      <button class="btn btn--primary" type="submit" style="width:100%;">
-        Sign in
-      </button>
-    </form>
-
-    <p id="message" style="margin-top:12px;"></p>
-
-  </div>
+  </main>
 </div>
 
 <script>
@@ -67,13 +81,5 @@
     }
   });
 </script>
-
-<div style="text-align:center; margin-top:16px;">
-  <img
-    src="{{ url_for('static', filename='img/logo.png') }}"
-    alt="Code Gradient"
-    style="max-width:140px; opacity:0.85;"
-  >
-</div>
 
 {% endblock %}
