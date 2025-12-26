@@ -199,19 +199,59 @@ th {
   }
 }
 
+
 /* =========================
    Admin Dashboard Styling
    ========================= */
 
-.admin-dashboard .card-row .card {
-  background: #eef4ff;        /* light blue */
-  border: 1px solid #dbeafe;  /* subtle border */
+html, body {
+  overflow-x: hidden;
 }
 
-.admin-dashboard .card-row .kpi {
-  color: #1e40af;             /* deep blue numbers */
+.admin-main {
+  max-width: 100%;
 }
 
-.admin-dashboard .card-row .muted {
+.admin-main .kpi-card {
+  background: #eef4ff;
+  border: 1px solid #dbeafe;
+}
+
+.admin-main .kpi-value {
+  color: #1e40af;
+}
+
+.admin-main .kpi-label {
   color: #475569;
+}
+
+.chart-card canvas {
+  max-width: 100% !important;
+  display: block;
+}
+
+/* =========================
+   Admin Dashboard Layout Fix
+   ========================= */
+
+.admin-layout {
+  min-height: 100vh;
+}
+
+/* Lock main content to viewport height */
+.admin-main {
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
+/* Chart containers MUST have a fixed height */
+.chart-card {
+  height: 320px;
+}
+
+/* Canvas fills its container — no runaway growth */
+.chart-card canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
 }
