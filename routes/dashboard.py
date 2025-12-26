@@ -1,5 +1,5 @@
 # routes/dashboard.py
-from flask import Blueprint, render_template, redirect, url_for, jsonify
+from flask import Blueprint, render_template, redirect, url_for, jsonify, abort
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.db import get_db_connection  # adjust if your import path differs
 
@@ -16,19 +16,19 @@ def _get_user_and_role(user_id: int):
     conn.close()
     return user
 
+
 def _admin_metrics():
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # Adjust table/column names if yours differ:
-    # requests table assumed: id, user_id, request_type, category, status, created_at, updated_at, reviewed_at, reviewed_by
+    # --- Metrics ---
     cur.execute("SELECT COUNT(*) AS c FROM requests WHERE status = 'pending'")
     pending_count = cur.fetchone()["c"]
 
     cur.execute("SELECT COUNT(*) AS c FROM requests WHERE DATE(created_at) = DATE('now')")
     new_today = cur.fetchone()["c"]
 
-    # Avg approval time (approved only). SQLite: compute hours between created_at and reviewed_at.
+    # Avg approval time (approved only)
     cur.execute("""
         SELECT AVG((julianday(reviewed_at) - julianday(created_at)) * 24.0) AS avg_hours
         FROM requests
@@ -36,21 +36,36 @@ def _admin_metrics():
     """)
     avg_hours = cur.fetchone()["avg_hours"]
 
-    # Pending queue
+    # --- SINGLE DATASET FOR DASHBOARD TABLE ---
     cur.execute("""
-        SELECT r.id, u.email AS employee, r.request_type, r.category, 
-                r.priority, r.department, r.status,
-                CAST((julianday('now') - julianday(r.created_at)) AS INT) AS age_days,
-                r.created_at
+        SELECT
+            r.id,
+            u.email AS employee,
+            r.request_type,
+            r.category,
+            r.priority,
+            r.department,
+            r.status,
+            CAST((julianday('now') - julianday(r.created_at)) AS INT) AS age_days,
+            r.created_at
         FROM requests r
         JOIN users u ON u.id = r.user_id
-        WHERE r.status = 'pending'
-        ORDER BY r.created_at ASC
-        LIMIT 25
+        WHERE r.status != 'cancelled'
+        ORDER BY
+            CASE r.status
+                WHEN 'pending' THEN 1
+                WHEN 'approved' THEN 2
+                WHEN 'in_progress' THEN 3
+                WHEN 'completed' THEN 4
+                WHEN 'denied' THEN 5
+                ELSE 6
+            END,
+            r.created_at DESC
+        LIMIT 50
     """)
-    pending_requests = cur.fetchall()
+    requests = cur.fetchall()
 
-    # Simple “AI-inspired” insight: find category with highest average pending age (days)
+    # --- Insight (still based on pending only) ---
     cur.execute("""
         SELECT category,
                AVG(julianday('now') - julianday(created_at)) AS avg_pending_days
@@ -64,7 +79,6 @@ def _admin_metrics():
 
     conn.close()
 
-    insight = None
     if slowest and slowest["category"] and slowest["avg_pending_days"] is not None:
         insight = f"{slowest['category']} requests are waiting the longest on average right now."
     else:
@@ -74,9 +88,12 @@ def _admin_metrics():
         "pending_count": pending_count,
         "new_today": new_today,
         "avg_hours": avg_hours,
-        "pending_requests": pending_requests,
+        "requests": requests,     # 👈 unified dataset
         "insight": insight
     }
+
+
+
 
 def _user_metrics(user_id: int):
     conn = get_db_connection()
@@ -121,7 +138,7 @@ def admin_dashboard():
     user_id = get_jwt_identity()
     user = _get_user_and_role(int(user_id))
     if not user or user["role"] != "admin":
-        return jsonify({"error": "admin only"}), 403
+        abort(403) 
 
     data = _admin_metrics()
 

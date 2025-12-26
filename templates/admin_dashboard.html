@@ -593,7 +593,9 @@
               <option value="all">All Statuses</option>
               <option value="pending">Pending</option>
               <option value="approved">Approved</option>
+              <option value="in_progress">In Progress</option>
               <option value="denied">Denied</option>
+              <option value="completed">Completed</option>
             </select>
 
             <select id="departmentFilter" class="filter-select">
@@ -635,12 +637,13 @@
               </tr>
             </thead>
             <tbody>
-              {% for r in pending_requests %}
+              {% for r in requests %}
               <tr class="request-row"
                   data-status="{{ r['status'] }}"
                   data-category="{{ r['category'] }}"
                   data-priority="{{ r['priority'] }}"
                   data-department="{{ r['department'] }}">
+
                 <td>{{ r["employee"] }}</td>
                 <td><strong>{{ r["request_type"] }}</strong></td>
                 <td>{{ r["category"] }}</td>
@@ -648,25 +651,50 @@
                 <td>{{ r["department"]|capitalize }}</td>
                 <td><span class="badge {{ r['status'] }}">{{ r["status"]|capitalize }}</span></td>
                 <td>{{ r["age_days"] }}d</td>
-                <td>
-                  <form method="POST" action="/dashboard/requests/{{ r['id'] }}/approve" style="display:inline;">
-                    <button class="action-btn approve">✓ Approve</button>
-                  </form>
-                  <form method="POST" action="/dashboard/requests/{{ r['id'] }}/deny" style="display:inline;">
-                    <button class="action-btn deny">✕ Deny</button>
-                  </form>
-                </td>
-              </tr>
-              {% else %}
-              <tr>
-                <td colspan="8">
-                  <div class="empty-state">
-                    <div class="empty-state-icon">🎉</div>
-                    <p>No pending requests</p>
-                  </div>
-                </td>
-              </tr>
-              {% endfor %}
+<!-- ACTION COLUMN -->
+<td>
+  <div class="action-group">
+
+    {% if r['status'] == 'pending' %}
+    <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review">
+      <input type="hidden" name="action" value="approve">
+      <button class="action-btn approve">✓ Approve</button>
+    </form>
+
+    <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review">
+      <input type="hidden" name="action" value="deny">
+      <button class="action-btn deny">✗ Deny</button>
+    </form>
+    {% endif %}
+
+    {% if r['status'] == 'approved' %}
+    <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review">
+      <input type="hidden" name="action" value="start">
+      <button class="action-btn start">▶ Start</button>
+    </form>
+    {% endif %}
+
+    {% if r['status'] == 'in_progress' %}
+    <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review">
+      <input type="hidden" name="action" value="complete">
+      <button class="action-btn complete">✓ Complete</button>
+    </form>
+    {% endif %}
+
+  </div>
+</td>
+</tr>
+{% else %}
+<tr>
+  <td colspan="8">
+    <div class="empty-state">
+      <div class="empty-state-icon">🎉</div>
+      <p>No requests found</p>
+    </div>
+  </td>
+</tr>
+{% endfor %}
+
             </tbody>
           </table>
         </div>

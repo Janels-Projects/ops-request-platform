@@ -57,7 +57,15 @@ def login_page():
 
 
 # - - - - - - - - - - - -  -
-# Run
+# Global Error Handlder 
+# - - - - - - - - - - - -  -
+@app.errorhandler(403)
+def forbidden(e):
+    return render_template("403.html"), 403
+
+
+# - - - - - - - - - - - -  -
+# Run / Main Guard 
 # - - - - - - - - - - - -  -
 if __name__ == "__main__":
     app.run(debug=True)
