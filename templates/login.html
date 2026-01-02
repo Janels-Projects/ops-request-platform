@@ -4,59 +4,261 @@
 
 {% block content %}
 
-<div class="bg">
-  <main class="container">
+<style>
+  .login-bg {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1a237e 0%, #4a148c 100%);
+    position: relative;
+    overflow: hidden;
+  }
 
-    <div class="card" style="max-width: 420px; margin: 40px auto;">
-      <div class="card__pad">
+  .login-bg::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridMove 20s linear infinite;
+  }
 
-        <h2 style="margin-top:0;">Login</h2>
+  @keyframes gridMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50px, 50px); }
+  }
 
-        <form id="login-form">
-          <div class="field">
-            <input
-              class="input"
-              type="email"
-              id="email"
-              placeholder="Email"
-              required
-            />
-          </div>
+  .login-container {
+    width: 100%;
+    max-width: 480px;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+  }
 
-          <div class="field">
-            <input
-              class="input"
-              type="password"
-              id="password"
-              placeholder="Password"
-              required
-            />
-          </div>
+  .login-card {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 48px 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    animation: fadeInUp 0.6s ease-out;
+  }
 
-          <button class="btn btn--primary" type="submit" style="width:100%;">
-            Sign in
-          </button>
-        </form>
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
-        <p id="message" style="margin-top:12px;"></p>
+  .login-header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
 
+  .login-greeting {
+    font-size: 16px;
+    color: #5e35b1;
+    font-weight: 600;
+    margin: 0 0 8px;
+    letter-spacing: 0.3px;
+  }
+
+  .login-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0 0 8px;
+  }
+
+  .login-subtitle {
+    color: #718096;
+    font-size: 15px;
+    margin: 0;
+  }
+
+  .login-field {
+    margin-bottom: 20px;
+  }
+
+  .login-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 8px;
+  }
+
+  .login-input {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    font-family: inherit;
+  }
+
+  .login-input:focus {
+    outline: none;
+    border-color: #5e35b1;
+    box-shadow: 0 0 0 4px rgba(94, 53, 177, 0.1);
+  }
+
+  .login-btn {
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, #1a237e 0%, #4a148c 100%);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 8px;
+  }
+
+  .login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(26, 35, 126, 0.4);
+  }
+
+  .login-btn:active {
+    transform: translateY(0);
+  }
+
+  .login-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .login-message {
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: center;
+    display: none;
+  }
+
+  .login-message.error {
+    background: #fee;
+    color: #c53030;
+    display: block;
+  }
+
+  .login-message.success {
+    background: #e6fffa;
+    color: #047857;
+    display: block;
+  }
+
+  .loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @media (max-width: 480px) {
+    .login-card {
+      padding: 36px 28px;
+    }
+
+    .login-title {
+      font-size: 28px;
+    }
+  }
+</style>
+
+<div class="login-bg">
+  <main class="login-container">
+
+    <div class="login-card">
+      <div class="login-header">
+        <p class="login-greeting" id="greeting">Good evening</p>
+        <h1 class="login-title">Login</h1>
+        <p class="login-subtitle">Sign in to continue</p>
       </div>
-    </div>
 
-    <div style="text-align:center; margin-top:16px;">
-      <img
-        src="{{ url_for('static', filename='img/logo.png') }}"
-        alt="Code Gradient"
-        style="max-width:140px; opacity:0.85;"
-      >
+      <form id="login-form">
+        <div class="login-field">
+          <label class="login-label" for="email">Email Address</label>
+          <input
+            class="login-input"
+            type="email"
+            id="email"
+            placeholder="you@company.com"
+            required
+            autocomplete="email"
+          />
+        </div>
+
+        <div class="login-field">
+          <label class="login-label" for="password">Password</label>
+          <input
+            class="login-input"
+            type="password"
+            id="password"
+            placeholder="Enter your password"
+            required
+            autocomplete="current-password"
+          />
+        </div>
+
+        <button class="login-btn" type="submit" id="submit-btn">
+          Sign in
+        </button>
+      </form>
+
+      <div id="message" class="login-message"></div>
     </div>
 
   </main>
 </div>
 
 <script>
+  // Dynamic greeting based on time of day
+  function setGreeting() {
+    const hour = new Date().getHours();
+    const greetingEl = document.getElementById('greeting');
+    
+    if (hour >= 0 && hour < 12) {
+      greetingEl.textContent = 'Good morning';
+    } else if (hour >= 12 && hour < 18) {
+      greetingEl.textContent = 'Good afternoon';
+    } else {
+      greetingEl.textContent = 'Good evening';
+    }
+  }
+
+  // Set greeting on page load
+  setGreeting();
+
+  // Login form handling
   const form = document.getElementById("login-form");
   const message = document.getElementById("message");
+  const submitBtn = document.getElementById("submit-btn");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -64,20 +266,42 @@
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
-    const response = await fetch("/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      credentials: "include",
-      body: JSON.stringify({ email, password })
-    });
+    // Show loading state
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="loading-spinner"></span>Signing in...';
+    message.className = 'login-message';
+    message.textContent = '';
 
-    if (response.redirected) {
-      window.location.href = response.url;
-    } else {
-      const data = await response.json();
-      message.textContent = data.error || "Login failed";
+    try {
+      const response = await fetch("/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify({ email, password })
+      });
+
+      if (response.redirected) {
+        message.className = 'login-message success';
+        message.textContent = 'Login successful! Redirecting...';
+        setTimeout(() => {
+          window.location.href = response.url;
+        }, 500);
+      } else {
+        const data = await response.json();
+        message.className = 'login-message error';
+        message.textContent = data.error || "Invalid credentials. Please try again.";
+        
+        // Reset button
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign in';
+      }
+    } catch (error) {
+      message.className = 'login-message error';
+      message.textContent = 'Connection error. Please try again.';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Sign in';
     }
   });
 </script>

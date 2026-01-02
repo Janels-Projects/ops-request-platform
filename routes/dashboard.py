@@ -185,3 +185,45 @@ def user_dashboard():
     )
 
 
+@dashboard_bp.get("/api/user/requests")
+@jwt_required()
+def user_requests_api():
+    user_id = get_jwt_identity()
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT
+            id,
+            request_type,
+            category,
+            department,
+            priority,
+            status,
+            created_at,
+            reviewed_at,
+            admin_review_notes
+        FROM requests
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+    """, (int(user_id),))
+
+    rows = cur.fetchall()
+    conn.close()
+
+    return jsonify([
+        {
+            "id": row["id"],
+            "request_type": row["request_type"],
+            "category": row["category"],
+            "department": row["department"],
+            "priority": row["priority"],
+            "status": row["status"],
+            "created_at": row["created_at"],
+            "reviewed_at": row["reviewed_at"],
+            "admin_review_notes": row["admin_review_notes"],
+        }
+        for row in rows
+    ])
+

@@ -1,7 +1,6 @@
 from utils.auth import admin_required
 from flask import Blueprint, jsonify
 
-system_bp = Blueprint("system", __name__)
 system_bp = Blueprint("system", __name__, url_prefix="/system")
 
 @system_bp.get("/health")

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}My Requests{% endblock %}
-{% block content %}
 
+{% block content %}
 <div class="user-shell">
 
   <!-- User Sidebar -->
@@ -46,19 +46,11 @@
           <th>Submitted</th>
         </tr>
       </thead>
-      <tbody>
-        {% for r in my_requests %}
+
+      <tbody id="my-requests-body">
         <tr>
-          <td>{{ r["request_type"] }}</td>
-          <td>{{ r["category"] }}</td>
-          <td><span class="badge {{ r['status'] }}">{{ r["status"] }}</span></td>
-          <td class="muted">{{ r["created_at"] }}</td>
+          <td colspan="4">Loading requests…</td>
         </tr>
-        {% else %}
-        <tr>
-          <td colspan="4" class="muted">No requests yet.</td>
-        </tr>
-        {% endfor %}
       </tbody>
     </table>
 
@@ -67,7 +59,12 @@
 
       <form method="POST" action="{{ url_for('requests.create_request') }}">
         <div class="field">
-          <input class="input" name="request_type" placeholder="Request type (e.g. VPN Access)" required>
+          <input
+            class="input"
+            name="request_type"
+            placeholder="Request type (e.g. VPN Access)"
+            required
+          >
         </div>
 
         <div class="field">
@@ -79,14 +76,14 @@
           </select>
         </div>
 
-      <div class="field">
-        <select class="input" name="priority" required>
-          <option value="">Select priority</option>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-      </select>
-   </div>
+        <div class="field">
+          <select class="input" name="priority" required>
+            <option value="">Select priority</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
 
         <button type="submit" class="btn">Submit Request</button>
       </form>
@@ -94,5 +91,87 @@
 
   </main>
 </div>
+
+<script>
+  console.log("User dashboard script loaded");
+
+  fetch("/api/user/requests")
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.getElementById("my-requests-body");
+      tbody.innerHTML = "";
+
+      if (!data.length) {
+        tbody.innerHTML = "<tr><td colspan='4'>No requests yet.</td></tr>";
+        return;
+      }
+
+      // Updated user dashboard table rendering with professional admin notes
+      data.forEach(r => {
+        const row = document.createElement("tr");
+        
+        // Create unique ID for each note (for accessibility)
+        const noteId = `note-${r.id}`;
+        
+        row.innerHTML = `
+          <td>
+            <strong>${r.request_type}</strong>
+            ${
+              r.admin_review_notes
+                ? `
+                <div class="admin-note-container">
+                  <button class="admin-note-toggle" data-note-id="${noteId}">
+                    <svg class="note-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <span>View Admin Note</span>
+                    <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                  <div class="admin-note-content" id="${noteId}">
+                    <div class="admin-note-text">${r.admin_review_notes}</div>
+                  </div>
+                </div>
+                `
+                : ""
+            }
+          </td>
+          <td>${r.category}</td>
+          <td>
+            <span class="badge ${r.status}">${r.status}</span>
+          </td>
+          <td class="muted">${r.created_at}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+    })  // <-- This closes the .then(data => {
+    .catch(err => console.error("Fetch failed:", err));
+
+  // Event delegation for admin note toggles (more reliable than onclick)
+  document.addEventListener('click', function(e) {
+    const button = e.target.closest('.admin-note-toggle');
+    if (!button) return;
+    
+    const noteId = button.dataset.noteId;
+    const content = document.getElementById(noteId);
+    
+    if (!content) {
+      console.error('Could not find admin note content for ID:', noteId);
+      return;
+    }
+    
+    // Toggle the visibility
+    if (content.classList.contains('show')) {
+      content.classList.remove('show');
+      button.classList.remove('active');
+    } else {
+      content.classList.add('show');
+      button.classList.add('active');
+    }
+  });
+
+</script>
 
 {% endblock %}

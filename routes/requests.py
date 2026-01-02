@@ -15,6 +15,7 @@ def review_request(request_id):
     admin_id = int(get_jwt_identity())
 
     action = request.form.get("action")
+    admin_review_notes = request.form.get("admin_review_notes")
     if action not in ("approve", "deny", "start", "complete"):
         abort(400, "Invalid action")
 
@@ -60,7 +61,20 @@ def review_request(request_id):
         abort(409, "Invalid status transition")
 
     # ✅ Perform update only if valid
-    cursor.execute(
+    if admin_review_notes:
+        cursor.execute(
+        """
+        UPDATE requests
+        SET status = ?,
+            reviewed_at = CURRENT_TIMESTAMP,
+            reviewed_by = ?,
+            admin_review_notes = ?
+        WHERE id = ?
+        """,
+        (new_status, admin_id, admin_review_notes, request_id)
+    )
+    else:
+        cursor.execute(
         """
         UPDATE requests
         SET status = ?,

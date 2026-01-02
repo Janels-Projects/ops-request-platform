@@ -767,32 +767,77 @@
                 <td><span class="badge {{ r['status'] }}">{{ r["status"]|capitalize }}</span></td>
                 <td>{{ r["age_days"] }}d</td>
                 <td>
-                  <div class="action-group">
-                    {% if r['status'] == 'pending' %}
-                    <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review">
-                      <input type="hidden" name="action" value="approve">
-                      <button class="action-btn approve">✓ Approve</button>
-                    </form>
-                    <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review">
-                      <input type="hidden" name="action" value="deny">
-                      <button class="action-btn deny">✗ Deny</button>
-                    </form>
-                    {% endif %}
+                <div class="action-group">
 
-                    {% if r['status'] == 'approved' %}
-                    <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review">
-                      <input type="hidden" name="action" value="start">
-                      <button class="action-btn start">▶ Start</button>
-                    </form>
-                    {% endif %}
+  {% if r['status'] == 'pending' %}
 
-                    {% if r['status'] == 'in_progress' %}
-                    <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review">
-                      <input type="hidden" name="action" value="complete">
-                      <button class="action-btn complete">✓ Complete</button>
-                    </form>
-                    {% endif %}
-                  </div>
+    <!-- Approve -->
+    <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review">
+      <textarea
+        name="admin_review_notes"
+        class="admin-notes"
+        rows="2"
+        placeholder="Admin notes (visible to user)"
+        style="display:none; width:100%; margin-bottom:6px;"
+      ></textarea>
+
+      <input type="hidden" name="action" value="approve">
+      <button class="action-btn approve">✓ Approve</button>
+    </form>
+
+    <!-- Deny -->
+    <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review">
+      <textarea
+        name="admin_review_notes"
+        class="admin-notes"
+        rows="2"
+        placeholder="Admin notes (visible to user)"
+        style="display:none; width:100%; margin-bottom:6px;"
+      ></textarea>
+
+      <input type="hidden" name="action" value="deny">
+      <button class="action-btn deny">✗ Deny</button>
+    </form>
+
+  {% endif %}
+
+  {% if r['status'] == 'approved' %}
+
+    <!-- Start -->
+    <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review">
+      <textarea
+        name="admin_review_notes"
+        class="admin-notes"
+        rows="2"
+        placeholder="Admin notes (visible to user)"
+        style="display:none; width:100%; margin-bottom:6px;"
+      ></textarea>
+
+      <input type="hidden" name="action" value="start">
+      <button class="action-btn start">▶ Start</button>
+    </form>
+
+  {% endif %}
+
+  {% if r['status'] == 'in_progress' %}
+
+    <!-- Complete -->
+    <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review">
+      <textarea
+        name="admin_review_notes"
+        class="admin-notes"
+        rows="2"
+        placeholder="Admin notes (visible to user)"
+        style="display:none; width:100%; margin-bottom:6px;"
+      ></textarea>
+
+      <input type="hidden" name="action" value="complete">
+      <button class="action-btn complete">✓ Complete</button>
+    </form>
+
+  {% endif %}
+
+</div>
                 </td>
               </tr>
               {% else %}
@@ -874,3 +919,4 @@
   </script>
 </body>
 </html>
+

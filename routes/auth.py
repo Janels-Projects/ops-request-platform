@@ -20,7 +20,6 @@ def login():
     password = data.get("password")
 
 
-
     if not email or not password:
         return jsonify({"error": "email and password required"}), 400
 
@@ -34,9 +33,11 @@ def login():
     if not user or not check_password_hash(user["password"], password):
         return jsonify({"error": "invalid credentials"}), 401
 
-    # ✅ CREATE TOKEN
-    access_token = create_access_token(identity=str(user["id"]))
-
+    # ✅ CREATE TOKEN (FIXED - now includes role)
+    access_token = create_access_token(
+        identity=str(user["id"]),
+        additional_claims={"role": user["role"]}
+)
 
     # ✅ SET COOKIE + REDIRECT
     resp = make_response(redirect("/dashboard"))

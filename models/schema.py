@@ -26,12 +26,14 @@ def init_db():
         user_id INTEGER NOT NULL,
         request_type TEXT NOT NULL,
         category TEXT NOT NULL,
+        priority TEXT NOT NULL DEFAULT 'medium',
+        department TEXT NOT NULL DEFAULT 'corporate',   
         status TEXT NOT NULL DEFAULT 'pending',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         reviewed_at TIMESTAMP,
         reviewed_by INTEGER,
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        FOREIGN KEY (reviewed_by) REFERENCES users(id)
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, 
+        FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL
     )
     """)
 

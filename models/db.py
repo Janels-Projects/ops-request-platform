@@ -39,5 +39,14 @@ def ensure_request_columns():
         """)
         print("Added department column")
 
+    # Add admin review notes column if missing
+    if "admin_review_notes" not in existing_columns:
+        cur.execute("""
+            ALTER TABLE requests
+            ADD COLUMN admin_review_notes TEXT
+        """)
+        print("Added admin_review_notes column")
+
+
     conn.commit()
     conn.close()

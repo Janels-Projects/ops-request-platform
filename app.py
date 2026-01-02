@@ -26,7 +26,7 @@ app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 app.config["JWT_ACCESS_COOKIE_NAME"] = "access_token"
 app.config["JWT_COOKIE_SECURE"] = False          # True in HTTPS prod
 app.config["JWT_COOKIE_CSRF_PROTECT"] = False    # Simpler for now
-app.register_blueprint(requests_bp)
+# Delete this on 1/1: app.register_blueprint(requests_bp)  
 
 jwt = JWTManager(app)
 
@@ -46,7 +46,7 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(system_bp)
 app.register_blueprint(users_bp)
 app.register_blueprint(dashboard_bp)
-
+app.register_blueprint(requests_bp) #added 1/1 to fix the above line (duplicated)
 
 # - - - - - - - - - - - -  -
 # Page Routes 

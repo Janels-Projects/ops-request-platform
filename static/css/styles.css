@@ -126,7 +126,7 @@ th {
 
 
 /* =========================
-   User Dashboard (Scoped)
+   User Dashboard – Sidebar
    ========================= */
 
 .user-shell {
@@ -134,19 +134,31 @@ th {
   min-height: 100vh;
 }
 
-/* Sidebar */
+/* Sidebar container */
 .user-sidebar {
   width: 220px;
   background: linear-gradient(180deg, #0b0f2f, #1a237e);
   color: #ffffff;
   padding: 16px;
+
+  display: flex;
+  flex-direction: column;
 }
 
+/* Brand / title */
 .user-brand {
   font-weight: 700;
   margin-bottom: 20px;
 }
 
+/* Nav container */
+.user-nav {
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* fills sidebar height */
+}
+
+/* Nav links */
 .user-nav a {
   display: block;
   padding: 10px 12px;
@@ -158,16 +170,123 @@ th {
 
 .user-nav a.active,
 .user-nav a:hover {
-  background: rgba(255,255,255,0.12);
+  background: rgba(255, 255, 255, 0.12);
   color: #ffffff;
 }
 
+/* 🔑 Push logout form to bottom */
+.user-nav form {
+  margin-top: auto;
+}
+
+/* Logout button */
 .user-logout {
-  margin-top: 16px;
+  width: 100%;
   background: #2563eb;
   color: white;
   border: none;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
 }
+
+.user-logout:hover {
+  background: #1d4ed8;
+}
+
+
+/* Professional Admin Notes Styling */
+
+.admin-note-container {
+  margin-top: 8px;
+}
+
+.admin-note-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+}
+
+.admin-note-toggle:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+.admin-note-toggle.active {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+.note-icon {
+  flex-shrink: 0;
+}
+
+.chevron {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.admin-note-toggle.active .chevron {
+  transform: rotate(180deg);
+}
+
+.admin-note-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, margin-top 0.3s ease;
+  margin-top: 0;
+}
+
+.admin-note-content.show {
+  max-height: 9999px; /* allow full expansion */
+  margin-top: 8px;
+}
+
+.admin-note-text {
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8eeff 100%);
+  border-left: 4px solid #667eea;
+  border-radius: 8px;
+  color: #1e293b;
+  font-size: 14px;
+  line-height: 1.6;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.admin-note-text::before {
+  content: "📝 Admin Note";
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #667eea;
+  margin-bottom: 6px;
+}
+
+/* Mobile friendly */
+@media (max-width: 768px) {
+  .admin-note-toggle {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+  
+  .admin-note-text {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+}
+
+
 
 /* Main content */
 .user-content {
