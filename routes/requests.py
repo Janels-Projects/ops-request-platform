@@ -16,17 +16,17 @@ def review_request(request_id):
 
     action = request.form.get("action")
     admin_review_notes = request.form.get("admin_review_notes")
-    if action not in ("approve", "deny", "start", "complete"):
+    
+    # 🔥 REMOVED "start" from valid actions since we don't need it anymore
+    if action not in ("approve", "deny", "complete"):
         abort(400, "Invalid action")
 
+    # 🔥 CHANGED: Approve now goes directly to "in_progress"
     if action == "approve":
-        new_status = "approved"
+        new_status = "in_progress"  # Skip "approved" status
 
     elif action == "deny":
         new_status = "denied"
-
-    elif action == "start":
-        new_status = "in_progress"
 
     else:  # action == "complete"
         new_status = "completed"
@@ -91,7 +91,6 @@ def review_request(request_id):
     return redirect(url_for("dashboard.admin_dashboard"))
 
 
-
 @requests_bp.post("/requests")
 @jwt_required()
 def create_request():
@@ -128,15 +127,16 @@ def create_request():
     return redirect("/dashboard")
 
 
-# Transitition Validator 
+# Transition Validator 
 ALLOWED_TRANSITIONS = {
     "user": {
         "pending": {"cancelled"},
         "approved": {"cancelled"},
+        "in_progress": {"cancelled"},  # Users can cancel in-progress requests too
     },
     "admin": {
-        "pending": {"approved", "denied"},
-        "approved": {"in_progress"},
+        "pending": {"approved", "denied", "in_progress"},  # 🔥 ADDED: in_progress
+        "approved": {"in_progress"},  # Keep this for backwards compatibility
         "in_progress": {"completed"},
     }
 }

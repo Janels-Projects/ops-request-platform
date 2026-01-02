@@ -40,51 +40,60 @@ categoryFilter.addEventListener('change', applyFilters);
 priorityFilter.addEventListener('change', applyFilters);
 departmentFilter.addEventListener('change', applyFilters);
 
-// Show admin notes textarea when an action button is clicked
+// Admin notes helper - Two-click flow
 document.addEventListener("click", function (e) {
-  const btn = e.target.closest(".action-btn");
+  const btn = e.target.closest("[data-requires-notes]");
   if (!btn) return;
 
   const form = btn.closest("form");
-  if (!form) return;
+  const row = btn.closest("tr");
+  if (!form || !row) return;
 
-  const notes = form.querySelector(".admin-notes");
-  if (!notes) return;
+  const notesWrap = row.querySelector(".admin-notes-wrap");
+  const textarea = row.querySelector(".admin-notes-shared");
+
+  if (!notesWrap || !textarea) return;
 
   // Check if textarea is already visible
-  if (notes.style.display === "none" || notes.style.display === "") {
-    // Prevent form submission on first click
+  if (notesWrap.style.display === "none" || notesWrap.style.display === "") {
+    // FIRST CLICK: Show textarea, prevent submission
     e.preventDefault();
     
-    // Show the textarea
-    notes.style.display = "block";
-    notes.focus();
+    notesWrap.style.display = "block";
+    textarea.focus();
     
-    // Change button text to indicate next click will submit
+    // Update button to show it needs another click
     const originalText = btn.textContent;
     btn.dataset.originalText = originalText;
-    btn.textContent = originalText + " (Click again to submit)";
+    btn.textContent = originalText + " (Click again)";
     
   } else {
-    // Textarea is visible, allow form to submit normally
-    // (no e.preventDefault() here)
+    // SECOND CLICK: Transfer notes to hidden field and submit
+    const hidden = form.querySelector('input[name="admin_review_notes"]');
+    if (hidden) {
+      hidden.value = textarea.value.trim();
+    }
+    
+    // Change button type to submit so form will submit
+    btn.type = "submit";
+    // Form will submit naturally after this click
   }
 });
 
-// Optional: Add a cancel button functionality
+// Optional: ESC key to cancel
 document.addEventListener("keydown", function (e) {
   if (e.key === "Escape") {
-    const activeNotes = document.querySelector(".admin-notes[style*='display: block']");
-    if (activeNotes) {
-      const form = activeNotes.closest("form");
-      const btn = form.querySelector(".action-btn");
+    const visibleNotes = document.querySelector('.admin-notes-wrap[style*="display: block"]');
+    if (visibleNotes) {
+      const row = visibleNotes.closest("tr");
+      const textarea = visibleNotes.querySelector(".admin-notes-shared");
+      const btn = row.querySelector("[data-requires-notes]");
       
-      // Hide textarea
-      activeNotes.style.display = "none";
-      activeNotes.value = "";
+      // Hide and reset
+      visibleNotes.style.display = "none";
+      textarea.value = "";
       
-      // Restore button text
-      if (btn.dataset.originalText) {
+      if (btn && btn.dataset.originalText) {
         btn.textContent = btn.dataset.originalText;
         delete btn.dataset.originalText;
       }

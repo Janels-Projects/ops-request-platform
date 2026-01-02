@@ -752,104 +752,102 @@
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody>
-              {% for r in requests %}
-              <tr class="request-row"
-                  data-status="{{ r['status'] }}"
-                  data-category="{{ r['category'] }}"
-                  data-priority="{{ r['priority'] }}"
-                  data-department="{{ r['department'] }}">
-                <td>{{ r["employee"] }}</td>
-                <td><strong>{{ r["request_type"] }}</strong></td>
-                <td>{{ r["category"] }}</td>
-                <td class="priority-{{ r['priority'] }}">{{ r["priority"]|capitalize }}</td>
-                <td>{{ r["department"]|capitalize }}</td>
-                <td><span class="badge {{ r['status'] }}">{{ r["status"]|capitalize }}</span></td>
-                <td>{{ r["age_days"] }}d</td>
-                <td>
-                <div class="action-group">
+<tbody>
+  {% for r in requests %}
+  <tr class="request-row"
+      data-status="{{ r['status'] }}"
+      data-category="{{ r['category'] }}"
+      data-priority="{{ r['priority'] }}"
+      data-department="{{ r['department'] }}">
 
-  {% if r['status'] == 'pending' %}
+    <td>{{ r["employee"] }}</td>
 
-    <!-- Approve -->
-    <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review">
-      <textarea
-        name="admin_review_notes"
-        class="admin-notes"
-        rows="2"
-        placeholder="Admin notes (visible to user)"
-        style="display:none; width:100%; margin-bottom:6px;"
-      ></textarea>
+    <td><strong>{{ r["request_type"] }}</strong></td>
 
-      <input type="hidden" name="action" value="approve">
-      <button class="action-btn approve">✓ Approve</button>
-    </form>
+    <td>{{ r["category"] }}</td>
 
-    <!-- Deny -->
-    <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review">
-      <textarea
-        name="admin_review_notes"
-        class="admin-notes"
-        rows="2"
-        placeholder="Admin notes (visible to user)"
-        style="display:none; width:100%; margin-bottom:6px;"
-      ></textarea>
+    <td class="priority-{{ r['priority'] }}">
+      {{ r["priority"]|capitalize }}
+    </td>
 
-      <input type="hidden" name="action" value="deny">
-      <button class="action-btn deny">✗ Deny</button>
-    </form>
+    <td>{{ r["department"]|capitalize }}</td>
 
-  {% endif %}
+    <td>
+      <span class="badge {{ r['status'] }}">
+        {{ r["status"]|capitalize }}
+      </span>
+    </td>
 
-  {% if r['status'] == 'approved' %}
+    <td>{{ r["age_days"] }}d</td>
+    
+<!-- ACTION COLUMN -->
+<td>
+  <div class="action-group">
 
-    <!-- Start -->
-    <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review">
-      <textarea
-        name="admin_review_notes"
-        class="admin-notes"
-        rows="2"
-        placeholder="Admin notes (visible to user)"
-        style="display:none; width:100%; margin-bottom:6px;"
-      ></textarea>
+    {% if r['status'] == 'pending' %}
 
-      <input type="hidden" name="action" value="start">
-      <button class="action-btn start">▶ Start</button>
-    </form>
+      <!-- Shared admin notes (hidden by default, OUTSIDE forms) -->
+      <div class="admin-notes-wrap" style="display:none; width:100%; margin-bottom:8px;">
+        <textarea
+          class="admin-notes-shared"
+          rows="3"
+          placeholder="Add a note for the user (optional)"
+          style="width:100%; padding:8px; border:2px solid #e2e8f0; border-radius:8px; font-size:13px; font-family:inherit;"
+        ></textarea>
+      </div>
 
-  {% endif %}
+      <!-- Approve Form (goes directly to "in_progress" status) -->
+      <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review" style="display:inline;">
+        <input type="hidden" name="admin_review_notes" value="">
+        <input type="hidden" name="action" value="approve">
+        <button
+          type="button"
+          class="action-btn approve"
+          data-requires-notes
+        >
+          ✓ Approve & Start
+        </button>
+      </form>
 
-  {% if r['status'] == 'in_progress' %}
+      <!-- Deny Form -->
+      <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review" style="display:inline;">
+        <input type="hidden" name="admin_review_notes" value="">
+        <input type="hidden" name="action" value="deny">
+        <button
+          type="button"
+          class="action-btn deny"
+          data-requires-notes
+        >
+          ✗ Deny
+        </button>
+      </form>
 
-    <!-- Complete -->
-    <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review">
-      <textarea
-        name="admin_review_notes"
-        class="admin-notes"
-        rows="2"
-        placeholder="Admin notes (visible to user)"
-        style="display:none; width:100%; margin-bottom:6px;"
-      ></textarea>
+    {% elif r['status'] == 'in_progress' %}
 
-      <input type="hidden" name="action" value="complete">
-      <button class="action-btn complete">✓ Complete</button>
-    </form>
+      <!-- Complete Form (only action needed after approval) -->
+      <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review" style="display:inline;">
+        <input type="hidden" name="action" value="complete">
+        <button type="submit" class="action-btn complete">✓ Complete</button>
+      </form>
 
-  {% endif %}
+    {% endif %}
 
-</div>
-                </td>
-              </tr>
-              {% else %}
-              <tr>
-                <td colspan="8">
-                  <div class="empty-state">
-                    <div class="empty-state-icon">🎉</div>
-                    <p>No requests found</p>
-                  </div>
-                </td>
-              </tr>
-              {% endfor %}
+  </div>
+</td>
+
+  </tr>
+  {% else %}
+  <tr>
+    <td colspan="8">
+      <div class="empty-state">
+        <div class="empty-state-icon">🎉</div>
+        <p>No requests found</p>
+      </div>
+    </td>
+  </tr>
+  {% endfor %}
+</tbody>
+
             </tbody>
           </table>
         </div>
@@ -861,7 +859,46 @@
   </div>
 
   <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-  
+  <!-- Admin notes helper (one textarea per request) -->
+<script>
+document.addEventListener("click", function (e) {
+  const btn = e.target.closest("[data-requires-notes]");
+  if (!btn) return;
+
+  const form = btn.closest("form");
+  const row = btn.closest("tr");
+  if (!form || !row) return;
+
+  const notesWrap = row.querySelector(".admin-notes-wrap");
+  const textarea = row.querySelector(".admin-notes-shared");
+
+  if (!notesWrap || !textarea) return;
+
+  // Show notes box
+  notesWrap.style.display = "block";
+  textarea.focus();
+
+  // Convert button into a real submit button AFTER notes are shown
+  btn.type = "submit";
+});
+
+document.addEventListener("submit", function (e) {
+  const form = e.target.closest("form");
+  if (!form) return;
+
+  const row = form.closest("tr");
+  if (!row) return;
+
+  const textarea = row.querySelector(".admin-notes-shared");
+  const hidden = form.querySelector('input[name="admin_review_notes"]');
+
+  if (textarea && hidden) {
+    hidden.value = textarea.value.trim();
+  }
+});
+</script>
+
+
   <script>
     // Department Chart
     const deptCtx = document.getElementById('departmentChart').getContext('2d');
@@ -919,4 +956,3 @@
   </script>
 </body>
 </html>
-
