@@ -2,6 +2,8 @@
 from flask import Blueprint, render_template, redirect, url_for, jsonify, abort
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.db import get_db_connection  # adjust if your import path differs
+from routes.auth import admin_required
+
 
 
 dashboard_bp = Blueprint("dashboard", __name__)
@@ -162,6 +164,22 @@ def admin_dashboard():
     )
 
 
+#Admin Setting's Page Route
+@dashboard_bp.get("/dashboard/admin/settings")
+@jwt_required()
+@admin_required
+def admin_settings_page():
+    user_id = get_jwt_identity()
+    user = _get_user_and_role(int(user_id))
+
+    return render_template(
+        "admin_settings.html",
+        user=user
+    )
+
+
+
+# User Dashboard 
 @dashboard_bp.get("/dashboard/user")
 @jwt_required()
 def user_dashboard():

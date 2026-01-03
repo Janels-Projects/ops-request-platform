@@ -1,0 +1,711 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Settings</title>
+  <style>
+    * { box-sizing: border-box; }
+    
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
+      background: #f8fafc;
+      margin: 0;
+      color: #1e293b;
+      overflow-x: hidden;
+    }
+
+    .admin-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Dark Sidebar */
+    .admin-sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      color: white;
+      padding: 24px;
+      box-shadow: 4px 0 12px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .brand-text {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      color: #cbd5e1;
+      text-decoration: none;
+      transition: all 0.2s;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .nav-link:hover {
+      background: rgba(255,255,255,0.08);
+      color: white;
+    }
+
+    .nav-link.active {
+      background: rgba(102, 126, 234, 0.2);
+      color: white;
+    }
+
+    .nav-icon {
+      font-size: 18px;
+      width: 20px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .sidebar-user {
+      margin-top: auto;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .user-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .user-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: white;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-role {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .logout-btn {
+      width: 100%;
+      padding: 12px;
+      background: rgba(71, 85, 105, 0.3);
+      color: #e2e8f0;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .logout-btn:hover {
+      background: rgba(100, 116, 139, 0.4);
+      color: white;
+      border-color: rgba(203, 213, 225, 0.4);
+    }
+
+    /* Main Content */
+    .admin-main {
+      flex: 1;
+      padding: 32px;
+      overflow-y: auto;
+      max-height: 100vh;
+    }
+
+    .page-header {
+      margin-bottom: 32px;
+    }
+
+    .page-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0 0 8px;
+    }
+
+    .page-subtitle {
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    /* Settings Sections */
+    .settings-grid {
+      display: grid;
+      gap: 24px;
+    }
+
+    .settings-card {
+      background: white;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      border: 1px solid #f1f5f9;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #f1f5f9;
+    }
+
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+    }
+
+    .card-description {
+      color: #64748b;
+      font-size: 14px;
+      margin: 0 0 20px;
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 14px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .btn-danger:hover {
+      background: #fecaca;
+    }
+
+    /* Lists */
+    .item-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .list-item-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #1e293b;
+    }
+
+    .list-item-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-icon {
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      border: 1px solid #e2e8f0;
+      background: white;
+      transition: all 0.2s;
+    }
+
+    .btn-icon:hover {
+      background: #f8fafc;
+    }
+
+    /* Table */
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+    }
+
+    .users-table th {
+      padding: 12px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #64748b;
+      background: #f8fafc;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .users-table td {
+      padding: 14px 12px;
+      font-size: 14px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .users-table tr:hover {
+      background: #f8fafc;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge.admin {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .badge.user {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    /* Success/Error Messages */
+    .message {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .message.success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+      display: block;
+    }
+
+    .message.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+      display: block;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .admin-layout {
+        flex-direction: row;
+      }
+
+      .admin-sidebar {
+        width: 70px;
+        padding: 16px 8px;
+      }
+
+      .sidebar-brand {
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+      }
+
+      .brand-text {
+        display: none;
+      }
+
+      .brand-icon {
+        width: 32px;
+        height: 32px;
+      }
+
+      .sidebar-nav {
+        gap: 8px;
+      }
+
+      .nav-link {
+        flex-direction: column;
+        padding: 10px 8px;
+        gap: 4px;
+        font-size: 10px;
+        text-align: center;
+      }
+
+      .nav-icon {
+        font-size: 20px;
+      }
+
+      .user-info {
+        flex-direction: column;
+        padding: 8px;
+        gap: 4px;
+      }
+
+      .user-details {
+        display: none;
+      }
+
+      .user-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+      }
+
+      .logout-btn {
+        padding: 8px;
+        font-size: 11px;
+      }
+
+      .admin-main {
+        padding: 20px 16px;
+      }
+
+      .page-title {
+        font-size: 24px;
+      }
+
+      .settings-card {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+
+    <!-- Dark Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">⚡</div>
+        <div class="brand-text">Ops Platform</div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a class="nav-link" href="/dashboard/admin">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a class="nav-link" href="#">
+          <span class="nav-icon">📋</span>
+          <span>Requests</span>
+        </a>
+        <a class="nav-link" href="#">
+          <span class="nav-icon">👥</span>
+          <span>Users</span>
+        </a>
+        <a class="nav-link" href="#">
+          <span class="nav-icon">📈</span>
+          <span>Analytics</span>
+        </a>
+        <a class="nav-link" href="{{ url_for('dashboard.admin_settings_page') }}">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-user">
+        <div class="user-info">
+          <div class="user-avatar">{{ user["email"][0]|upper }}</div>
+          <div class="user-details">
+            <div class="user-name">{{ user["email"] }}</div>
+            <div class="user-role">Administrator</div>
+          </div>
+        </div>
+        <form method="POST" action="/auth/logout">
+          <button class="logout-btn">Logout</button>
+        </form>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1 class="page-title">Settings</h1>
+        <p class="page-subtitle">Manage categories, departments, and users</p>
+      </div>
+
+      <!-- Success/Error Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="message {{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <!-- Settings Grid -->
+      <div class="settings-grid">
+
+        <!-- Request Categories -->
+        <div class="settings-card">
+          <div class="card-header">
+            <div class="card-icon">📁</div>
+            <h2 class="card-title">Request Categories</h2>
+          </div>
+          <p class="card-description">Add or remove categories for request classification</p>
+
+          <form method="POST" action="/dashboard/admin/settings/categories/add">
+            <div class="form-row">
+              <input 
+                type="text" 
+                name="category_name" 
+                class="form-input" 
+                placeholder="New category name (e.g., Software)"
+                required
+              >
+              <button type="submit" class="btn btn-primary">Add Category</button>
+            </div>
+          </form>
+
+          <div class="item-list">
+            {% for category in categories %}
+            <div class="list-item">
+              <span class="list-item-name">{{ category }}</span>
+              <div class="list-item-actions">
+                <form method="POST" action="/dashboard/admin/settings/categories/delete" style="display:inline;">
+                  <input type="hidden" name="category_name" value="{{ category }}">
+                  <button type="submit" class="btn-icon btn-danger" onclick="return confirm('Delete {{ category }}?')">
+                    🗑️ Delete
+                  </button>
+                </form>
+              </div>
+            </div>
+            {% else %}
+            <div class="list-item">
+              <span class="list-item-name" style="color:#94a3b8;">No categories yet</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Departments -->
+        <div class="settings-card">
+          <div class="card-header">
+            <div class="card-icon">🏢</div>
+            <h2 class="card-title">Departments</h2>
+          </div>
+          <p class="card-description">Manage organizational departments</p>
+
+          <form method="POST" action="/dashboard/admin/settings/departments/add">
+            <div class="form-row">
+              <input 
+                type="text" 
+                name="department_name" 
+                class="form-input" 
+                placeholder="New department name (e.g., Engineering)"
+                required
+              >
+              <button type="submit" class="btn btn-primary">Add Department</button>
+            </div>
+          </form>
+
+          <div class="item-list">
+            {% for dept in departments %}
+            <div class="list-item">
+              <span class="list-item-name">{{ dept|capitalize }}</span>
+              <div class="list-item-actions">
+                <form method="POST" action="/dashboard/admin/settings/departments/delete" style="display:inline;">
+                  <input type="hidden" name="department_name" value="{{ dept }}">
+                  <button type="submit" class="btn-icon btn-danger" onclick="return confirm('Delete {{ dept }}?')">
+                    🗑️ Delete
+                  </button>
+                </form>
+              </div>
+            </div>
+            {% else %}
+            <div class="list-item">
+              <span class="list-item-name" style="color:#94a3b8;">No departments yet</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- User Management -->
+        <div class="settings-card">
+          <div class="card-header">
+            <div class="card-icon">👥</div>
+            <h2 class="card-title">User Management</h2>
+          </div>
+          <p class="card-description">View and manage user accounts and roles</p>
+
+          <table class="users-table">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Department</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for u in users %}
+              <tr>
+                <td>{{ u.email }}</td>
+                <td><span class="badge {{ u.role }}">{{ u.role|capitalize }}</span></td>
+                <td>{{ u.department|capitalize if u.department else '—' }}</td>
+                <td>
+                  <form method="POST" action="/dashboard/admin/settings/users/toggle-role" style="display:inline;">
+                    <input type="hidden" name="user_id" value="{{ u.id }}">
+                    {% if u.role == 'user' %}
+                      <button type="submit" class="btn-icon" title="Promote to admin">
+                        ⬆️ Make Admin
+                      </button>
+                    {% else %}
+                      <button type="submit" class="btn-icon" title="Demote to user">
+                        ⬇️ Make User
+                      </button>
+                    {% endif %}
+                  </form>
+                </td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="4" style="text-align:center; color:#94a3b8;">No users found</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+</body>
+</html>

@@ -14,6 +14,8 @@ from routes.users import users_bp
 from routes.requests import requests_bp
 from models.schema import init_db
 from models.db import ensure_request_columns
+import routes.admin_settings
+
 
 
 app = Flask(__name__)

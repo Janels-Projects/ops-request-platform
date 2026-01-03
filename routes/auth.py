@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, redirect, make_response
+from flask import Blueprint, request, jsonify, redirect, make_response, abort
 from werkzeug.security import check_password_hash
 from flask_jwt_extended import (
     create_access_token,
@@ -7,6 +7,7 @@ from flask_jwt_extended import (
     get_jwt_identity,
     unset_jwt_cookies
 )
+from functools import wraps
 from models.db import get_db_connection
 
 
@@ -77,3 +78,25 @@ def logout():
     return resp
 
 
+# Admin settings route
+from functools import wraps
+from flask import abort
+from flask_jwt_extended import get_jwt_identity
+
+def admin_required(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        user_id = get_jwt_identity()
+
+        conn = get_db_connection()
+        user = conn.execute(
+            "SELECT role FROM users WHERE id = ?",
+            (int(user_id),)
+        ).fetchone()
+        conn.close()
+
+        if not user or user["role"] != "admin":
+            abort(403)
+
+        return fn(*args, **kwargs)
+    return wrapper
