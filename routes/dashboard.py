@@ -19,6 +19,8 @@ def _get_user_and_role(user_id: int):
     return user
 
 
+# - - - - - - - - - - - - - - 
+# Admin metrics
 def _admin_metrics():
     conn = get_db_connection()
     cur = conn.cursor()
@@ -95,8 +97,8 @@ def _admin_metrics():
     }
 
 
-
-
+# - - - - - - - - - - - - - - 
+# User Metrics 
 def _user_metrics(user_id: int):
     conn = get_db_connection()
     cur = conn.cursor()
@@ -134,6 +136,9 @@ def dashboard_router():
         return redirect(url_for("dashboard.admin_dashboard"))
     return redirect(url_for("dashboard.user_dashboard"))
 
+
+# - - - - - - - - - - - - - - 
+# Admin Dashboard
 @dashboard_bp.get("/dashboard/admin")
 @jwt_required()
 def admin_dashboard():
@@ -164,7 +169,8 @@ def admin_dashboard():
     )
 
 
-#Admin Setting's Page Route
+# - - - - - - - - - - - - - - 
+#Admin Setting's GET Route (POST route on admin_settings.py file)
 @dashboard_bp.get("/dashboard/admin/settings")
 @jwt_required()
 @admin_required
@@ -177,8 +183,41 @@ def admin_settings_page():
         user=user
     )
 
+# - - - - - - - - - - - - - - 
+# Admin analytics GET route 
+@dashboard_bp.get("/dashboard/admin/analytics")
+@jwt_required()
+@admin_required
+def admin_analytics():
+    user_id = get_jwt_identity()
+    user = _get_user_and_role(int(user_id))
+
+    # Stub metrics so the page loads
+    metrics = {
+        "total_requests": 0,
+        "pending_requests": 0,
+        "completed_requests": 0,
+    }
+
+    return render_template(
+        "admin_analytics.html",
+        user=user,
+        metrics=metrics
+    )
 
 
+# - - - - - - - - - - - - - - 
+# Admin anlalytics POST route
+@dashboard_bp.post("/dashboard/admin/analytics")
+@jwt_required()
+@admin_required
+def admin_analytics_post():
+    # Later: read form data (date range, category, department)
+    # For now, just reload page
+    return redirect(url_for("dashboard.admin_analytics"))
+
+
+# - - - - - - - - - - - - - - 
 # User Dashboard 
 @dashboard_bp.get("/dashboard/user")
 @jwt_required()
