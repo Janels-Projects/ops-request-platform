@@ -26,9 +26,13 @@ CORS(app)
 app.config["JWT_SECRET_KEY"] = "dev-secret-change-later"
 app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 app.config["JWT_ACCESS_COOKIE_NAME"] = "access_token"
-app.config["JWT_COOKIE_SECURE"] = False          # True in HTTPS prod
-app.config["JWT_COOKIE_CSRF_PROTECT"] = False    # Simpler for now
-# Delete this on 1/1: app.register_blueprint(requests_bp)  
+app.config["JWT_ACCESS_COOKIE_PATH"] = "/"
+
+app.config["JWT_COOKIE_SECURE"] = True          # True in HTTPS prod
+app.config["JWT_COOKIE_SAMESITE"] = "Lax"
+app.config["JWT_COOKIE_CSRF_PROTECT"] = False 
+  
+
 
 jwt = JWTManager(app)
 
