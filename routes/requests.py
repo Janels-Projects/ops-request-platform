@@ -2,6 +2,8 @@ from flask import Blueprint, redirect, url_for, request, abort
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.db import get_db_connection
 from flask import request, abort, redirect, url_for
+from rules.request_rules import VALID_CATEGORIES
+
 
 requests_bp = Blueprint(
     "requests",
@@ -91,6 +93,7 @@ def review_request(request_id):
     return redirect(url_for("dashboard.admin_dashboard"))
 
 
+# Create Request Route
 @requests_bp.post("/requests")
 @jwt_required()
 def create_request():
@@ -102,6 +105,10 @@ def create_request():
 
     if not request_type or not category:
         abort(400, "Missing required fields")
+
+    # ✅ Backend category validation
+    if category not in VALID_CATEGORIES:
+        abort(400, "Invalid category")
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -116,15 +123,25 @@ def create_request():
     if not user or user["role"] != "user":
         abort(403)
 
-    cursor.execute("""
-        INSERT INTO requests (user_id, request_type, category, priority, status)
+    cursor.execute(
+        """
+        INSERT INTO requests (
+            user_id,
+            request_type,
+            category,
+            priority,
+            status
+        )
         VALUES (?, ?, ?, ?, 'pending')
-    """, (user_id, request_type, category, priority))
+        """,
+        (user_id, request_type, category, priority)
+    )
 
     conn.commit()
     conn.close()
 
     return redirect("/dashboard")
+
 
 
 # Transition Validator 

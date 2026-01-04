@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, redirect, url_for, jsonify, abort
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.db import get_db_connection  # adjust if your import path differs
 from routes.auth import admin_required
+from rules.request_rules import VALID_CATEGORIES
 
 
 
@@ -157,14 +158,14 @@ def admin_dashboard():
         "new_today": "New Requests Today"
     }
 
-    # 👇 ADD THIS
-    categories = ["Access", "Hardware", "Software"]
+    # Updated to use centralized category list
+    categories = sorted(VALID_CATEGORIES)
 
     return render_template(
         "admin_dashboard.html",
         user=user,
         labels=labels,
-        categories=categories,   # 👈 ADD THIS
+        categories=categories,   
         **data
     )
 
