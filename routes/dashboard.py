@@ -1,4 +1,3 @@
-# routes/dashboard.py
 from flask import Blueprint, render_template, redirect, url_for, jsonify, abort
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.db import get_db_connection  # adjust if your import path differs
@@ -239,10 +238,69 @@ def user_dashboard():
         "user_dashboard.html",
         user=user,
         labels=labels,
+        active_page="dashboard",
         **data
     )
 
+# - - - - - - - - - - - - - -
+# User Profile Route
+@dashboard_bp.get("/user/profile")
+@jwt_required()
+def user_profile():
+    user_id = int(get_jwt_identity())
 
+    # Fetch user basic info
+    user = _get_user_and_role(user_id)
+    if not user:
+        return jsonify({"error": "user not found"}), 404
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Personal request stats (derived, not stored)
+    cur.execute("""
+        SELECT
+            COUNT(*) AS total_requests,
+            AVG(
+                CASE
+                    WHEN status = 'completed'
+                    THEN julianday(reviewed_at) - julianday(created_at)
+                    ELSE NULL
+                END
+            ) AS avg_completion_days
+        FROM requests
+        WHERE user_id = ?
+    """, (user_id,))
+    stats = cur.fetchone()
+
+    # Most common category
+    cur.execute("""
+        SELECT category
+        FROM requests
+        WHERE user_id = ?
+        GROUP BY category
+        ORDER BY COUNT(*) DESC
+        LIMIT 1
+    """, (user_id,))
+    most_common = cur.fetchone()
+
+    conn.close()
+
+    return render_template(
+        "user_profile.html",
+        user=user,
+        stats={
+            "total_requests": stats["total_requests"],
+            "avg_completion_days": stats["avg_completion_days"],
+            "most_common_category": most_common["category"] if most_common else None,
+        },
+        active_page="profile"
+    )
+
+
+
+
+# API Route 
 @dashboard_bp.get("/api/user/requests")
 @jwt_required()
 def user_requests_api():

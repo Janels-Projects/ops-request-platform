@@ -4,22 +4,44 @@
 {% block content %}
 <div class="user-shell">
 
-  <!-- User Sidebar -->
-  <aside class="user-sidebar">
-    <div class="user-brand">Ops Platform</div>
 
-    <nav class="user-nav">
-      <a class="active" href="#">Dashboard</a>
-      <a href="#">My Requests</a>
-      <a href="#">Notifications</a>
-      <a href="#">Profile</a>
-      <a href="#">Settings</a>
 
-      <form method="POST" action="{{ url_for('auth.logout') }}">
-        <button type="submit" class="btn user-logout">Logout</button>
-      </form>
-    </nav>
-  </aside>
+ <!-- User Sidebar -->
+<aside class="user-sidebar">
+  <div class="user-brand">Ops Platform</div>
+
+  <nav class="user-nav">
+    <a class="{{ 'active' if active_page == 'dashboard' else '' }}"
+       href="{{ url_for('dashboard.user_dashboard') }}">
+      Dashboard
+    </a>
+
+    <a class="{{ 'active' if active_page == 'requests' else '' }}"
+       href="#">
+      My Requests
+    </a>
+
+    <a class="{{ 'active' if active_page == 'notifications' else '' }}"
+       href="#">
+      Notifications
+    </a>
+
+    <a class="{{ 'active' if active_page == 'profile' else '' }}"
+       href="{{ url_for('dashboard.user_profile') }}">
+      Profile
+    </a>
+
+    <a class="{{ 'active' if active_page == 'settings' else '' }}"
+       href="#">
+      Settings
+    </a>
+
+    <form method="POST" action="{{ url_for('auth.logout') }}">
+      <button type="submit" class="btn user-logout">Logout</button>
+    </form>
+  </nav>
+</aside>
+
 
   <!-- Main Content -->
   <main class="user-content">
