@@ -1,0 +1,302 @@
+{% extends "base.html" %}
+{% block title %}{{ article['title'] }} - Knowledge Base{% endblock %}
+
+{% block content %}
+<div class="user-shell">
+
+  <!-- User Sidebar -->
+  <aside class="user-sidebar">
+    <div class="user-brand">Ops Platform</div>
+
+    <nav class="user-nav">
+      <a href="{{ url_for('dashboard.user_dashboard') }}">Dashboard</a>
+      <a href="#">My Requests</a>
+      <a href="#">Notifications</a>
+      <a href="{{ url_for('dashboard.user_profile') }}">Profile</a>
+      <a class="{{ 'active' if active_page == 'knowledge_base' else '' }}" href="{{ url_for('dashboard.user_knowledge_base') }}">Knowledge Base</a>
+      <a href="#">Settings</a>
+
+      <form method="POST" action="{{ url_for('auth.logout') }}">
+        <button type="submit" class="btn user-logout">Logout</button>
+      </form>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="user-content">
+
+    <!-- Breadcrumb -->
+    <div class="kb-breadcrumb">
+      <a href="{{ url_for('dashboard.user_knowledge_base') }}" class="kb-breadcrumb-link">Knowledge Base</a>
+      <span class="kb-breadcrumb-separator">›</span>
+      <span class="kb-breadcrumb-current">{{ article['title'] }}</span>
+    </div>
+
+    <!-- Article Header Card -->
+    <div class="card" style="margin-top:16px;">
+      <div class="kb-article-header">
+        <div class="kb-article-icon-large">
+          {% if article['category'] == 'Access' %}🔐
+          {% elif article['category'] == 'Hardware' %}💻
+          {% elif article['category'] == 'Software' %}📦
+          {% elif article['category'] == 'Account Management' %}👤
+          {% elif article['category'] == 'Onboarding' %}✅
+          {% elif article['category'] == 'Offboarding' %}👋
+          {% elif article['category'] == 'Facilities' %}🏢
+          {% elif article['category'] == 'Security' %}🛡️
+          {% else %}📄
+          {% endif %}
+        </div>
+        <div>
+          <h1 style="margin:0 0 8px 0; font-size:28px;">{{ article['title'] }}</h1>
+          <div class="kb-article-meta-row">
+            <span class="badge pending">{{ article['category'] }}</span>
+            <span class="muted" style="font-size:13px;">Last updated {{ article['created_at'] }}</span>
+          </div>
+          <p class="muted" style="margin:12px 0 0 0;">{{ article['summary'] }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Article Content Card -->
+    <div class="card kb-article-content-card" style="margin-top:16px;">
+      <div class="kb-article-body">
+  {{ article_html | safe }}
+</div>
+    </div>
+
+    <!-- Helpful Section -->
+    <div class="card" style="margin-top:16px;">
+      <div class="kb-helpful-section">
+        <div style="flex:1;">
+          <h3 style="margin:0 0 8px 0;">Was this article helpful?</h3>
+          <div class="muted">Let us know if this guide answered your question</div>
+        </div>
+        <div class="kb-helpful-buttons">
+          <button class="kb-helpful-btn" onclick="markHelpful(true, event)">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+  </svg>
+  Yes
+</button>
+
+<button class="kb-helpful-btn" onclick="markHelpful(false, event)">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"></path>
+  </svg>
+  No
+</button>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Back to Knowledge Base -->
+    <div class="card" style="margin-top:16px;">
+      <a href="{{ url_for('dashboard.user_knowledge_base') }}" class="kb-back-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back to Knowledge Base
+      </a>
+    </div>
+
+  </main>
+
+</div>
+
+<style>
+/* Breadcrumb */
+.kb-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  padding: 8px 0;
+}
+
+.kb-breadcrumb-link {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.kb-breadcrumb-link:hover {
+  text-decoration: underline;
+}
+
+.kb-breadcrumb-separator {
+  color: #9ca3af;
+}
+
+.kb-breadcrumb-current {
+  color: #6b7280;
+}
+
+/* Article Header */
+.kb-article-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.kb-article-icon-large {
+  font-size: 48px;
+  flex-shrink: 0;
+}
+
+.kb-article-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Article Content */
+.kb-article-content-card {
+  background: #ffffff;
+}
+
+.kb-article-body {
+  line-height: 1.7;
+  color: #374151;
+  font-size: 15px;
+}
+
+.kb-article-body h3 {
+  margin: 24px 0 12px 0;
+  font-size: 18px;
+  color: #111827;
+  font-weight: 600;
+  border-bottom: 2px solid #eef2f7;
+  padding-bottom: 8px;
+}
+
+.kb-article-body h3:first-child {
+  margin-top: 0;
+}
+
+.kb-article-body p {
+  margin: 12px 0;
+}
+
+.kb-article-body ul,
+.kb-article-body ol {
+  margin: 12px 0 12px 24px;
+  padding: 0;
+}
+
+.kb-article-body li {
+  margin: 8px 0;
+  padding-left: 4px;
+}
+
+.kb-article-body ul li {
+  list-style-type: disc;
+}
+
+.kb-article-body ol li {
+  list-style-type: decimal;
+}
+
+.kb-article-body strong {
+  color: #111827;
+  font-weight: 600;
+}
+
+.kb-article-body a {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.kb-article-body a:hover {
+  text-decoration: underline;
+}
+
+/* Helpful Section */
+.kb-helpful-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.kb-helpful-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.kb-helpful-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #fafafa;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.kb-helpful-btn:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.kb-helpful-btn.selected {
+  background: #ecfdf5;
+  border-color: #10b981;
+  color: #065f46;
+}
+
+/* Back Link */
+.kb-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+  transition: gap 0.2s;
+}
+
+.kb-back-link:hover {
+  gap: 12px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .kb-article-header {
+    flex-direction: column;
+  }
+  
+  .kb-helpful-section {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+</style>
+
+<script>
+function markHelpful(isHelpful, event) {
+  document.querySelectorAll('.kb-helpful-btn').forEach(btn => {
+    btn.classList.remove('selected');
+  });
+
+  event.target.closest('.kb-helpful-btn').classList.add('selected');
+
+  setTimeout(() => {
+    const feedback = document.createElement('div');
+    feedback.style.cssText =
+      'position:fixed;top:20px;right:20px;background:#10b981;color:white;padding:12px 20px;border-radius:8px;font-weight:500;z-index:1000;';
+    feedback.textContent = 'Thanks for your feedback!';
+    document.body.appendChild(feedback);
+
+    setTimeout(() => feedback.remove(), 2000);
+  }, 100);
+}
+</script>
+
+{% endblock %}

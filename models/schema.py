@@ -3,6 +3,21 @@ import os
 
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "app.db")
 
+def create_kb_articles_table(conn):
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS kb_articles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            slug TEXT NOT NULL UNIQUE,
+            category TEXT NOT NULL,
+            summary TEXT NOT NULL,
+            content TEXT NOT NULL,
+            is_published INTEGER NOT NULL DEFAULT 1,
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -18,8 +33,7 @@ def init_db():
     )
     """)
 
-
-    # requests table (CORRECT — DO NOT DROP)
+    # requests table (KEEP THIS)
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS requests (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,16 +41,19 @@ def init_db():
         request_type TEXT NOT NULL,
         category TEXT NOT NULL,
         priority TEXT NOT NULL DEFAULT 'medium',
-        department TEXT NOT NULL DEFAULT 'corporate',   
+        department TEXT NOT NULL DEFAULT 'corporate',
         status TEXT NOT NULL DEFAULT 'pending',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         reviewed_at TIMESTAMP,
         reviewed_by INTEGER,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, 
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
         FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL
     )
     """)
 
+    # ✅ ADD THIS LINE
+    create_kb_articles_table(conn)
 
     conn.commit()
     conn.close()
+

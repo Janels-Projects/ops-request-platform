@@ -1,15 +1,12 @@
-from flask import Blueprint, redirect, url_for, request, abort
+from flask import request, redirect, url_for, abort, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
+
+from . import requests_bp
+from routes.auth import admin_required
 from models.db import get_db_connection
-from flask import request, abort, redirect, url_for
-from rules.request_rules import VALID_CATEGORIES
+from rules.request_rules import validate_transition
 
 
-requests_bp = Blueprint(
-    "requests",
-    __name__,
-    url_prefix="/dashboard"
-)
 
 @requests_bp.post("/requests/<int:request_id>/review")
 @jwt_required()
@@ -91,74 +88,3 @@ def review_request(request_id):
     conn.close()
 
     return redirect(url_for("dashboard.admin_dashboard"))
-
-
-# Create Request Route
-@requests_bp.post("/requests")
-@jwt_required()
-def create_request():
-    user_id = int(get_jwt_identity())
-
-    request_type = request.form.get("request_type")
-    category = request.form.get("category")
-    priority = request.form.get("priority", "medium")
-
-    if not request_type or not category:
-        abort(400, "Missing required fields")
-
-    # ✅ Backend category validation
-    if category not in VALID_CATEGORIES:
-        abort(400, "Invalid category")
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    # Ensure user is NOT admin
-    cursor.execute(
-        "SELECT role FROM users WHERE id = ?",
-        (user_id,)
-    )
-    user = cursor.fetchone()
-
-    if not user or user["role"] != "user":
-        abort(403)
-
-    cursor.execute(
-        """
-        INSERT INTO requests (
-            user_id,
-            request_type,
-            category,
-            priority,
-            status
-        )
-        VALUES (?, ?, ?, ?, 'pending')
-        """,
-        (user_id, request_type, category, priority)
-    )
-
-    conn.commit()
-    conn.close()
-
-    return redirect("/dashboard")
-
-
-
-# Transition Validator 
-ALLOWED_TRANSITIONS = {
-    "user": {
-        "pending": {"cancelled"},
-        "approved": {"cancelled"},
-        "in_progress": {"cancelled"},  # Users can cancel in-progress requests too
-    },
-    "admin": {
-        "pending": {"approved", "denied", "in_progress"},  # 🔥 ADDED: in_progress
-        "approved": {"in_progress"},  # Keep this for backwards compatibility
-        "in_progress": {"completed"},
-    }
-}
-
-def validate_transition(current_status, new_status, actor_role):
-    allowed = ALLOWED_TRANSITIONS.get(actor_role, {})
-    return new_status in allowed.get(current_status, set())
-

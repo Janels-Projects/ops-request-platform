@@ -21,6 +21,11 @@
       My Requests
     </a>
 
+  <a class="{{ 'active' if active_page == 'knowledge_base' else '' }}"
+    href="{{ url_for('dashboard.user_knowledge_base') }}">
+    Knowledge Base
+    </a>
+
     <a class="{{ 'active' if active_page == 'notifications' else '' }}"
        href="#">
       Notifications

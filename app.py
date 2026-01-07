@@ -15,6 +15,8 @@ from routes.requests import requests_bp
 from models.schema import init_db
 from models.db import ensure_request_columns
 import routes.admin_settings
+from models.seed_kb_articles import seed_kb_articles
+
 
 
 
@@ -44,6 +46,8 @@ with app.app_context():
     ensure_request_columns()
     seed_admin()
     seed_user()
+    seed_kb_articles()
+
 
 
 # - - - - - - - - - - - -  -

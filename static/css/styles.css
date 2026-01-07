@@ -382,3 +382,13 @@ html, body {
   align-items: center;
   gap: 8px;
 }
+
+/* Knowledge Base Article Links */
+.kb-article-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.kb-article-link:visited {
+  color: inherit;
+}
