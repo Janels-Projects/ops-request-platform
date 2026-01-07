@@ -146,7 +146,7 @@ def user_profile():
 # - - - - - - - - - - - - - -
 # User Knowledge Base
 # - - - - - - - - - - - - - -
-@dashboard_bp.get("/dashboard/user/knowledge-base")
+@dashboard_bp.get("/user/knowledge-base")
 @jwt_required()
 def user_knowledge_base():
     user_id = int(get_jwt_identity())
