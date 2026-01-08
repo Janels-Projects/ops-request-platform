@@ -5,22 +5,7 @@
 <div class="user-shell">
 
   <!-- User Sidebar -->
-  <aside class="user-sidebar">
-    <div class="user-brand">Ops Platform</div>
-
-    <nav class="user-nav">
-      <a href="{{ url_for('dashboard.user_dashboard') }}">Dashboard</a>
-      <a href="#">My Requests</a>
-      <a href="#">Notifications</a>
-      <a href="{{ url_for('dashboard.user_profile') }}">Profile</a>
-      <a class="{{ 'active' if active_page == 'knowledge_base' else '' }}" href="{{ url_for('dashboard.user_knowledge_base') }}">Knowledge Base</a>
-      <a href="#">Settings</a>
-
-      <form method="POST" action="{{ url_for('auth.logout') }}">
-        <button type="submit" class="btn user-logout">Logout</button>
-      </form>
-    </nav>
-  </aside>
+  {% include 'partials/user_sidebar.html' %}
 
   <!-- Main Content -->
   <main class="user-content">

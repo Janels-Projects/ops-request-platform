@@ -5,22 +5,7 @@
 <div class="user-shell">
 
   <!-- User Sidebar -->
-  <aside class="user-sidebar">
-    <div class="user-brand">Ops Platform</div>
-
-    <nav class="user-nav">
-      <a href="{{ url_for('dashboard.user_dashboard') }}">Dashboard</a>
-      <a href="#">My Requests</a>
-      <a href="#">Notifications</a>
-      <a href="{{ url_for('dashboard.user_profile') }}">Profile</a>
-      <a class="{{ 'active' if active_page == 'knowledge_base' else '' }}" href="{{ url_for('dashboard.user_knowledge_base') }}">Knowledge Base</a>
-      <a href="#">Settings</a>
-
-      <form method="POST" action="{{ url_for('auth.logout') }}">
-        <button type="submit" class="btn user-logout">Logout</button>
-      </form>
-    </nav>
-  </aside>
+  {% include 'partials/user_sidebar.html' %}
 
   <!-- Main Content -->
   <main class="user-content">
@@ -107,12 +92,13 @@
     </div>
 
     <!-- Popular Articles -->
+     <!-- Popular Articles -->
 <div class="card" style="margin-top:16px;">
   <h3 style="margin-top:0; margin-bottom:16px;">Popular Articles</h3>
   
   <div class="kb-articles-list">
     
-    <!-- VPN Access Article - NOW CLICKABLE -->
+    <!-- VPN Access Article -->
     <a href="{{ url_for('dashboard.kb_article_detail', slug='how-to-request-vpn-access') }}" 
        class="kb-article-item kb-article-link">
       <div class="kb-article-icon">📄</div>
@@ -187,51 +173,6 @@
 </div>
 
 
-        <div class="kb-article-item">
-          <div class="kb-article-icon">💻</div>
-          <div class="kb-article-content">
-            <div class="kb-article-title">Hardware Request Guidelines</div>
-            <div class="muted" style="font-size:13px;">What to include when requesting laptops, monitors, or peripherals</div>
-          </div>
-          <div class="kb-article-meta">
-            <span class="badge" style="background:#fef3c7;color:#92400e;">Hardware</span>
-          </div>
-        </div>
-
-        <div class="kb-article-item">
-          <div class="kb-article-icon">🔐</div>
-          <div class="kb-article-content">
-            <div class="kb-article-title">Password Reset Process</div>
-            <div class="muted" style="font-size:13px;">How to reset your password and update security settings</div>
-          </div>
-          <div class="kb-article-meta">
-            <span class="badge" style="background:#fee2e2;color:#991b1b;">Security</span>
-          </div>
-        </div>
-
-        <div class="kb-article-item">
-          <div class="kb-article-icon">📦</div>
-          <div class="kb-article-content">
-            <div class="kb-article-title">Software License Requests</div>
-            <div class="muted" style="font-size:13px;">Requesting licenses for approved software and tools</div>
-          </div>
-          <div class="kb-article-meta">
-            <span class="badge" style="background:#e0e7ff;color:#3730a3;">Software</span>
-          </div>
-        </div>
-
-        <div class="kb-article-item">
-          <div class="kb-article-icon">👤</div>
-          <div class="kb-article-content">
-            <div class="kb-article-title">New Employee Onboarding Checklist</div>
-            <div class="muted" style="font-size:13px;">Essential steps for new team members during their first week</div>
-          </div>
-          <div class="kb-article-meta">
-            <span class="badge approved">Onboarding</span>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- Need Help Card -->
     <div class="card" style="margin-top:16px;">
