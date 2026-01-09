@@ -91,7 +91,6 @@
       </div>
     </div>
 
-    <!-- Popular Articles -->
      <!-- Popular Articles -->
 <div class="card" style="margin-top:16px;">
   <h3 style="margin-top:0; margin-bottom:16px;">Popular Articles</h3>
@@ -113,22 +112,24 @@
       </div>
     </a>
 
-    <!-- Hardware Article -->
-    <a href="#" class="kb-article-item kb-article-link">
-      <div class="kb-article-icon">💻</div>
-      <div class="kb-article-content">
-        <div class="kb-article-title">Hardware Request Guidelines</div>
-        <div class="muted" style="font-size:13px;">
-          What to include when requesting laptops, monitors, or peripherals
-        </div>
-      </div>
-      <div class="kb-article-meta">
-        <span class="badge" style="background:#fef3c7;color:#92400e;">Hardware</span>
-      </div>
-    </a>
+  <!-- Hardware Article -->
+  <a href="{{ url_for('dashboard.kb_article_detail', slug='hardware-request-guidelines') }}"
+    class="kb-article-item kb-article-link">
+    <div class="kb-article-icon">💻</div>
+    <div class="kb-article-content">
+    <div class="kb-article-title">Hardware Request Guidelines</div>
+    <div class="muted" style="font-size:13px;">
+      What to include when requesting laptops, monitors, or peripherals
+    </div>
+  </div>
+  <div class="kb-article-meta">
+    <span class="badge" style="background:#fef3c7;color:#92400e;">Hardware</span>
+  </div>
+</a>
 
     <!-- Security Article -->
-    <a href="#" class="kb-article-item kb-article-link">
+    <a href="{{ url_for('dashboard.kb_article_detail', slug='password-reset-process') }}"
+    class="kb-article-item kb-article-link">
       <div class="kb-article-icon">🔐</div>
       <div class="kb-article-content">
         <div class="kb-article-title">Password Reset Process</div>
@@ -142,36 +143,38 @@
     </a>
 
     <!-- Software Article -->
-    <a href="#" class="kb-article-item kb-article-link">
-      <div class="kb-article-icon">📦</div>
-      <div class="kb-article-content">
-        <div class="kb-article-title">Software License Requests</div>
-        <div class="muted" style="font-size:13px;">
-          Requesting licenses for approved software and tools
-        </div>
-      </div>
-      <div class="kb-article-meta">
-        <span class="badge" style="background:#e0e7ff;color:#3730a3;">Software</span>
-      </div>
-    </a>
+  <a href="{{ url_for('dashboard.kb_article_detail', slug='software-license-requests') }}"
+   class="kb-article-item kb-article-link">
+  <div class="kb-article-icon">📦</div>
+  <div class="kb-article-content">
+    <div class="kb-article-title">Software License Requests</div>
+    <div class="muted" style="font-size:13px;">
+      Requesting licenses for approved software and tools
+    </div>
+  </div>
+  <div class="kb-article-meta">
+    <span class="badge" style="background:#e0e7ff;color:#3730a3;">Software</span>
+  </div>
+  </a>
+
 
     <!-- Onboarding Article -->
-    <a href="#" class="kb-article-item kb-article-link">
-      <div class="kb-article-icon">👤</div>
-      <div class="kb-article-content">
-        <div class="kb-article-title">New Employee Onboarding Checklist</div>
-        <div class="muted" style="font-size:13px;">
-          Essential steps for new team members during their first week
-        </div>
-      </div>
-      <div class="kb-article-meta">
-        <span class="badge approved">Onboarding</span>
-      </div>
-    </a>
+  <a href="{{ url_for('dashboard.kb_article_detail', slug='new-employee-onboarding-checklist') }}"
+   class="kb-article-item kb-article-link">
+    <div class="kb-article-icon">👤</div>
+    <div class="kb-article-content">
+    <div class="kb-article-title">New Employee Onboarding Checklist</div>
+    <div class="muted" style="font-size:13px;">
+      Essential steps for new team members during their first week
+    </div>
+  </div>
+  <div class="kb-article-meta">
+    <span class="badge approved">Onboarding</span>
+  </div>
+</a>
 
   </div>
 </div>
-
 
 
     <!-- Need Help Card -->

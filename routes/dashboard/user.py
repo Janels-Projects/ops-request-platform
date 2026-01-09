@@ -143,6 +143,46 @@ def user_profile():
 
 
 
+# User Setting (Preferences) Route
+@dashboard_bp.get("/user/settings")
+@jwt_required()
+def user_preferences():
+    user_id = int(get_jwt_identity())
+    user = _get_user_and_role(user_id)
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Fetch preferences
+    cur.execute(
+        "SELECT * FROM user_preferences WHERE user_id = ?",
+        (user_id,)
+    )
+    prefs = cur.fetchone()
+
+    # Lazy-create defaults if missing
+    if not prefs:
+        cur.execute(
+            "INSERT INTO user_preferences (user_id) VALUES (?)",
+            (user_id,)
+        )
+        conn.commit()
+        cur.execute(
+            "SELECT * FROM user_preferences WHERE user_id = ?",
+            (user_id,)
+        )
+        prefs = cur.fetchone()
+
+    conn.close()
+
+    return render_template(
+        "user_settings.html",
+        user=user,
+        prefs=prefs,
+        active_page="settings"
+    )
+
+
 # - - - - - - - - - - - - - -
 # User Knowledge Base
 # - - - - - - - - - - - - - -

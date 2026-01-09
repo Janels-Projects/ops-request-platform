@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, redirect, make_response, abort
+from flask import Blueprint, request, jsonify, redirect, make_response, abort, url_for
 from werkzeug.security import check_password_hash
 from flask_jwt_extended import (
     create_access_token,
@@ -10,16 +10,17 @@ from flask_jwt_extended import (
 from functools import wraps
 from models.db import get_db_connection
 
-
-
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
+
+# ---------------------------
+# Login
+# ---------------------------
 @auth_bp.post("/login")
 def login():
-    data = request.get_json()
+    data = request.get_json() or {}
     email = data.get("email")
     password = data.get("password")
-
 
     if not email or not password:
         return jsonify({"error": "email and password required"}), 400
@@ -34,23 +35,30 @@ def login():
     if not user or not check_password_hash(user["password"], password):
         return jsonify({"error": "invalid credentials"}), 401
 
-    # ✅ CREATE TOKEN (FIXED - now includes role)
+    # ✅ Create JWT with role included
     access_token = create_access_token(
         identity=str(user["id"]),
         additional_claims={"role": user["role"]}
-)
+    )
 
-    # ✅ SET COOKIE + REDIRECT
-    resp = make_response(redirect("/dashboard"))
+    # ✅ Role-aware redirect (THIS FIXES YOUR ISSUE)
+    if user["role"] == "admin":
+        resp = make_response(redirect(url_for("dashboard.admin_dashboard")))
+    else:
+        resp = make_response(redirect(url_for("dashboard.user_dashboard")))
+
+    # ✅ Always set cookies for both roles
     set_access_cookies(resp, access_token)
-
     return resp
 
 
+# ---------------------------
+# Current User
+# ---------------------------
 @auth_bp.get("/me")
 @jwt_required()
 def get_me():
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
 
     conn = get_db_connection()
     user = conn.execute(
@@ -70,23 +78,26 @@ def get_me():
     }), 200
 
 
-#Logout Route
-@auth_bp.route("/logout", methods=["POST"])
+# ---------------------------
+# Logout
+# ---------------------------
+@auth_bp.post("/logout")
 def logout():
     resp = make_response(redirect("/login"))
     unset_jwt_cookies(resp)
     return resp
 
 
-# Admin settings route
-from functools import wraps
-from flask import abort
-from flask_jwt_extended import get_jwt_identity
-
+# ---------------------------
+# Admin Guard
+# ---------------------------
 def admin_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
         user_id = get_jwt_identity()
+
+        if not user_id:
+            abort(401)
 
         conn = get_db_connection()
         user = conn.execute(

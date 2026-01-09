@@ -17,6 +17,37 @@ def create_kb_articles_table(conn):
         )
     """)
 
+def create_user_preferences_table(conn):
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS user_preferences (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL UNIQUE,
+
+            -- Notifications
+            email_on_approval BOOLEAN DEFAULT 1,
+            email_on_denial BOOLEAN DEFAULT 1,
+            email_on_status_change BOOLEAN DEFAULT 1,
+            email_on_comment BOOLEAN DEFAULT 1,
+            daily_digest BOOLEAN DEFAULT 0,
+
+            -- Display
+            theme TEXT DEFAULT 'light',
+            requests_per_page INTEGER DEFAULT 25,
+            default_view TEXT DEFAULT 'list',
+
+            -- Defaults
+            default_department TEXT,
+            default_priority TEXT DEFAULT 'medium',
+
+            -- Communication
+            timezone TEXT DEFAULT 'America/New_York',
+
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        )
+    """)
 
 def init_db():
     conn = sqlite3.connect(DB_PATH)
@@ -53,6 +84,7 @@ def init_db():
 
     # ✅ ADD THIS LINE
     create_kb_articles_table(conn)
+    create_user_preferences_table(conn)
 
     conn.commit()
     conn.close()

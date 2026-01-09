@@ -54,4 +54,4 @@ def create_request():
     conn.commit()
     conn.close()
 
-    return redirect("/dashboard")
+    return redirect(url_for("dashboard.user_dashboard"))

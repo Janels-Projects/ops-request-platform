@@ -1,0 +1,350 @@
+{% extends "base.html" %}
+{% block title %}Settings - User Dashboard{% endblock %}
+{% block content %}
+<div class="user-shell">
+  <!-- User Sidebar -->
+  {% include 'partials/user_sidebar.html' %}
+  
+  <!-- Main Content -->
+  <main class="user-content">
+    <div class="settings-container">
+      <header class="settings-header">
+        <h1>Settings & Preferences</h1>
+        <p class="muted">Customize your notification and display preferences</p>
+      </header>
+
+      <form method="POST" action="/user/settings" class="settings-form">
+        
+        <!-- Notification Preferences -->
+        <section class="settings-section">
+          <h2>Notification Preferences</h2>
+          <p class="section-description">Choose when you want to receive email notifications</p>
+          
+          <div class="settings-group">
+            <label class="checkbox-label">
+              <input type="checkbox" name="email_on_approval" {% if prefs.email_on_approval %}checked{% endif %}>
+              <span>Email me when my request is approved</span>
+            </label>
+            
+            <label class="checkbox-label">
+              <input type="checkbox" name="email_on_denial" {% if prefs.email_on_denial %}checked{% endif %}>
+              <span>Email me when my request is denied</span>
+            </label>
+            
+            <label class="checkbox-label">
+              <input type="checkbox" name="email_on_status_change" {% if prefs.email_on_status_change %}checked{% endif %}>
+              <span>Email me when my request status changes</span>
+            </label>
+            
+            <label class="checkbox-label">
+              <input type="checkbox" name="email_on_comment" {% if prefs.email_on_comment %}checked{% endif %}>
+              <span>Email me when an admin adds comments to my request</span>
+            </label>
+            
+            <label class="checkbox-label">
+              <input type="checkbox" name="daily_digest" {% if prefs.daily_digest %}checked{% endif %}>
+              <span>Send me a daily digest of all my request updates</span>
+            </label>
+          </div>
+        </section>
+
+        <!-- Display Preferences -->
+        <section class="settings-section">
+          <h2>Display Preferences</h2>
+          <p class="section-description">Customize how information is displayed</p>
+          
+          <div class="settings-group">
+            <div class="field">
+              <label>Theme</label>
+              <select name="theme" class="input">
+                <option value="light" {% if prefs.theme == 'light' %}selected{% endif %}>Light</option>
+                <option value="dark" {% if prefs.theme == 'dark' %}selected{% endif %}>Dark</option>
+                <option value="auto" {% if prefs.theme == 'auto' %}selected{% endif %}>Auto (System)</option>
+              </select>
+            </div>
+            
+            <div class="field">
+              <label>Requests per page</label>
+              <select name="requests_per_page" class="input">
+                <option value="10" {% if prefs.requests_per_page == 10 %}selected{% endif %}>10</option>
+                <option value="25" {% if prefs.requests_per_page == 25 %}selected{% endif %}>25</option>
+                <option value="50" {% if prefs.requests_per_page == 50 %}selected{% endif %}>50</option>
+                <option value="100" {% if prefs.requests_per_page == 100 %}selected{% endif %}>100</option>
+              </select>
+            </div>
+            
+            <div class="field">
+              <label>Default view</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="default_view" value="list" {% if prefs.default_view == 'list' %}checked{% endif %}>
+                  <span>List</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="default_view" value="grid" {% if prefs.default_view == 'grid' %}checked{% endif %}>
+                  <span>Grid</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Request Defaults -->
+        <section class="settings-section">
+          <h2>Request Defaults</h2>
+          <p class="section-description">Set default values for new requests</p>
+          
+          <div class="settings-group">
+            <div class="field">
+              <label>Default Department</label>
+              <select name="default_department" class="input">
+                <option value="">None</option>
+                {% for dept in departments %}
+                <option value="{{ dept }}" {% if prefs.default_department == dept %}selected{% endif %}>{{ dept }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            
+            <div class="field">
+              <label>Default Priority</label>
+              <select name="default_priority" class="input">
+                <option value="low" {% if prefs.default_priority == 'low' %}selected{% endif %}>Low</option>
+                <option value="medium" {% if prefs.default_priority == 'medium' %}selected{% endif %}>Medium</option>
+                <option value="high" {% if prefs.default_priority == 'high' %}selected{% endif %}>High</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- Communication Preferences -->
+        <section class="settings-section">
+          <h2>Communication Preferences</h2>
+          <p class="section-description">How we should contact you</p>
+          
+          <div class="settings-group">
+            <div class="field">
+              <label>Time Zone</label>
+              <select name="timezone" class="input">
+                <option value="America/New_York" {% if prefs.timezone == 'America/New_York' %}selected{% endif %}>Eastern Time (ET)</option>
+                <option value="America/Chicago" {% if prefs.timezone == 'America/Chicago' %}selected{% endif %}>Central Time (CT)</option>
+                <option value="America/Denver" {% if prefs.timezone == 'America/Denver' %}selected{% endif %}>Mountain Time (MT)</option>
+                <option value="America/Los_Angeles" {% if prefs.timezone == 'America/Los_Angeles' %}selected{% endif %}>Pacific Time (PT)</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- Save Button -->
+        <div class="settings-actions">
+          <button type="submit" class="btn-primary">Save Preferences</button>
+          <a href="/dashboard" class="btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+
+<style>
+.settings-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.settings-header {
+  margin-bottom: 2rem;
+}
+
+.settings-header h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.settings-form {
+  background: #fff;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.settings-section {
+  background: #fafafa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.settings-section:last-of-type {
+  border-bottom: none;
+}
+
+.settings-section h2 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.section-description {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.checkbox-label:hover {
+  background: #f5f5f5;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.checkbox-label span {
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field label {
+  font-weight: 500;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.input {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #4A90E2;
+}
+
+.radio-group {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.radio-label input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.settings-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.btn-primary {
+  padding: 0.75rem 2rem;
+  background: #4A90E2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #357ABD;
+}
+
+.btn-secondary {
+  padding: 0.75rem 2rem;
+  background: #fff;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-block;
+}
+
+.btn-secondary:hover {
+  background: #f5f5f5;
+  border-color: #ccc;
+}
+
+.muted {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+/* Dark theme support (optional) */
+@media (prefers-color-scheme: dark) {
+  .settings-form {
+    background: #2a2a2a;
+    color: #e0e0e0;
+  }
+  
+  .settings-section h2,
+  .field label,
+  .checkbox-label span {
+    color: #e0e0e0;
+  }
+  
+  .input {
+    background: #1a1a1a;
+    border-color: #444;
+    color: #e0e0e0;
+  }
+  
+  .checkbox-label:hover {
+    background: #333;
+  }
+}
+</style>
+{% endblock %}

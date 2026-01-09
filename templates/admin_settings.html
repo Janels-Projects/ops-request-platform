@@ -514,7 +514,7 @@
       </div>
 
       <nav class="sidebar-nav">
-  <a class="nav-link" href="/dashboard/admin">
+    <a class="nav-link" href="{{ url_for('dashboard.admin_dashboard') }}">
     <span class="nav-icon">📊</span>
     <span>Dashboard</span>
   </a>
@@ -583,7 +583,7 @@
           </div>
           <p class="card-description">Add or remove categories for request classification</p>
 
-          <form method="POST" action="/dashboard/admin/settings/categories/add">
+          <form method="POST" action="{{ url_for('dashboard.add_category') }}">
             <div class="form-row">
               <input 
                 type="text" 
@@ -601,7 +601,7 @@
             <div class="list-item">
               <span class="list-item-name">{{ category }}</span>
               <div class="list-item-actions">
-                <form method="POST" action="/dashboard/admin/settings/categories/delete" style="display:inline;">
+                <form method="POST" action="{{ url_for('dashboard.delete_category') }}" style="display:inline;">
                   <input type="hidden" name="category_name" value="{{ category }}">
                   <button type="submit" class="btn-icon btn-danger" onclick="return confirm('Delete {{ category }}?')">
                     🗑️ Delete
@@ -625,7 +625,7 @@
           </div>
           <p class="card-description">Manage organizational departments</p>
 
-          <form method="POST" action="/dashboard/admin/settings/departments/add">
+          <form method="POST" action="{{ url_for('dashboard.add_department') }}">
             <div class="form-row">
               <input 
                 type="text" 
@@ -643,7 +643,7 @@
             <div class="list-item">
               <span class="list-item-name">{{ dept|capitalize }}</span>
               <div class="list-item-actions">
-                <form method="POST" action="/dashboard/admin/settings/departments/delete" style="display:inline;">
+                <form method="POST" action="{{ url_for('dashboard.delete_department') }}" style="display:inline;">
                   <input type="hidden" name="department_name" value="{{ dept }}">
                   <button type="submit" class="btn-icon btn-danger" onclick="return confirm('Delete {{ dept }}?')">
                     🗑️ Delete
@@ -683,7 +683,7 @@
                 <td><span class="badge {{ u.role }}">{{ u.role|capitalize }}</span></td>
                 <td>{{ u.department|capitalize if u.department else '—' }}</td>
                 <td>
-                  <form method="POST" action="/dashboard/admin/settings/users/toggle-role" style="display:inline;">
+                  <form method="POST" action="{{ url_for('dashboard.toggle_user_role') }}" style="display:inline;">
                     <input type="hidden" name="user_id" value="{{ u.id }}">
                     {% if u.role == 'user' %}
                       <button type="submit" class="btn-icon" title="Promote to admin">

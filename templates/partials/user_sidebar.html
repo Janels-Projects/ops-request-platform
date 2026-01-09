@@ -28,9 +28,10 @@
     </a>
 
     <a class="{{ 'active' if active_page == 'settings' else '' }}" 
-       href="#">
-      Settings
+     href="{{ url_for('dashboard.user_preferences') }}">
+    Settings
     </a>
+
 
     <form method="POST" action="{{ url_for('auth.logout') }}">
       <button type="submit" class="btn user-logout">Logout</button>

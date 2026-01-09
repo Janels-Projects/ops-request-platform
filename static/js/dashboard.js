@@ -7,11 +7,14 @@ const departmentFilter = document.getElementById('departmentFilter');
 
 // Run whenever a filter changes
 function applyFilters() {
+  if (!statusFilter || !categoryFilter || !priorityFilter || !departmentFilter) {
+    return; // user dashboard has no filters
+  }
+
   const status = statusFilter.value;
   const category = categoryFilter.value;
   const priority = priorityFilter.value;
   const department = departmentFilter.value;
-
 
   document.querySelectorAll('.request-row').forEach(row => {
     const matchesStatus =
@@ -22,23 +25,26 @@ function applyFilters() {
 
     const matchesPriority =
       priority === 'all' || row.dataset.priority === priority;
-    
+
     const matchesDepartment =
       department === 'all' || row.dataset.department === department;
 
     row.style.display =
-  matchesStatus && matchesCategory && matchesPriority && matchesDepartment
-    ? ''
-    : 'none';
-
+      matchesStatus && matchesCategory && matchesPriority && matchesDepartment
+        ? ''
+        : 'none';
   });
 }
 
+
 // Attach listeners
-statusFilter.addEventListener('change', applyFilters);
-categoryFilter.addEventListener('change', applyFilters);
-priorityFilter.addEventListener('change', applyFilters);
-departmentFilter.addEventListener('change', applyFilters);
+if (statusFilter && categoryFilter && priorityFilter && departmentFilter) {
+  statusFilter.addEventListener('change', applyFilters);
+  categoryFilter.addEventListener('change', applyFilters);
+  priorityFilter.addEventListener('change', applyFilters);
+  departmentFilter.addEventListener('change', applyFilters);
+}
+
 
 // Admin notes helper - Two-click flow
 document.addEventListener("click", function (e) {
@@ -100,3 +106,61 @@ document.addEventListener("keydown", function (e) {
     }
   }
 });
+// -------------------------------
+// User Requests Loader
+// -------------------------------
+async function loadUserRequests() {
+  const tbody = document.querySelector("#my-requests-body");
+  if (!tbody) return;
+
+  tbody.innerHTML = `<tr><td colspan="6">Loading requests...</td></tr>`;
+
+  try {
+    const res = await fetch("/dashboard/api/user/requests", {
+  credentials: "include"
+});
+console.log("FETCHED /dashboard/api/user/requests");
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+
+    if (!Array.isArray(data) || data.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6">No requests yet</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = "";
+
+    data.forEach(req => {
+      const tr = document.createElement("tr");
+      tr.classList.add("request-row");
+
+      tr.dataset.status = req.status;
+      tr.dataset.category = req.category;
+      tr.dataset.priority = req.priority;
+      tr.dataset.department = req.department;
+
+      tr.innerHTML = `
+        <td>${req.request_type}</td>
+        <td>${req.category}</td>
+        <td>${req.department || "-"}</td>
+        <td>${req.priority}</td>
+        <td><span class="badge ${req.status}">${req.status}</span></td>
+        <td>${req.created_at}</td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+    applyFilters(); // reuse your existing filter logic
+  } catch (err) {
+    console.error("Failed to load requests:", err);
+    tbody.innerHTML = `<tr><td colspan="6">Error loading requests</td></tr>`;
+  }
+}
+
+// Auto-load on page load
+document.addEventListener("DOMContentLoaded", loadUserRequests);

@@ -10,7 +10,6 @@ from routes.dashboard.user import _get_user_and_role
 
 
 
-
 # - - - - - - - - - - - - - - 
 # Admin metrics
 def _admin_metrics():

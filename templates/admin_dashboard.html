@@ -801,7 +801,7 @@
       </div>
 
       <!-- Approve Form (goes directly to "in_progress" status) -->
-      <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review" style="display:inline;">
+      <form method="POST" action="{{ url_for('requests.review_request', request_id=r['id']) }}" style="display:inline;">
         <input type="hidden" name="admin_review_notes" value="">
         <input type="hidden" name="action" value="approve">
         <button
@@ -814,7 +814,7 @@
       </form>
 
       <!-- Deny Form -->
-      <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review" style="display:inline;">
+      <form method="POST" action="{{ url_for('requests.review_request', request_id=r['id']) }}" style="display:inline;">
         <input type="hidden" name="admin_review_notes" value="">
         <input type="hidden" name="action" value="deny">
         <button
@@ -829,7 +829,7 @@
     {% elif r['status'] == 'in_progress' %}
 
       <!-- Complete Form (only action needed after approval) -->
-      <form method="POST" action="/dashboard/requests/{{ r['id'] }}/review" style="display:inline;">
+      <form method="POST" action="{{ url_for('requests.review_request', request_id=r['id']) }}" style="display:inline;">
         <input type="hidden" name="action" value="complete">
         <button type="submit" class="action-btn complete">✓ Complete</button>
       </form>
