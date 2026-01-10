@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, jsonify
+from flask import render_template, redirect, url_for, jsonify, abort, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from . import dashboard_bp
@@ -181,6 +181,69 @@ def user_preferences():
         prefs=prefs,
         active_page="settings"
     )
+
+
+
+# User Settings (preference) POST Route:
+@dashboard_bp.post("/user/settings")
+@jwt_required()
+def update_user_preferences():
+    user_id = int(get_jwt_identity())
+    
+    # Get form data
+    email_on_approval = 1 if request.form.get("email_on_approval") else 0
+    email_on_denial = 1 if request.form.get("email_on_denial") else 0
+    email_on_status_change = 1 if request.form.get("email_on_status_change") else 0
+    email_on_comment = 1 if request.form.get("email_on_comment") else 0
+    daily_digest = 1 if request.form.get("daily_digest") else 0
+    theme = request.form.get("theme", "light")
+    requests_per_page = int(request.form.get("requests_per_page", 25))
+    default_view = request.form.get("default_view", "list")
+    default_department = request.form.get("default_department") or None
+    default_priority = request.form.get("default_priority", "medium")
+    timezone = request.form.get("timezone", "America/New_York")
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    cur.execute(
+        """
+        UPDATE user_preferences 
+        SET email_on_approval = ?,
+            email_on_denial = ?,
+            email_on_status_change = ?,
+            email_on_comment = ?,
+            daily_digest = ?,
+            theme = ?,
+            requests_per_page = ?,
+            default_view = ?,
+            default_department = ?,
+            default_priority = ?,
+            timezone = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = ?
+        """,
+        (
+            email_on_approval,
+            email_on_denial,
+            email_on_status_change,
+            email_on_comment,
+            daily_digest,
+            theme,
+            requests_per_page,
+            default_view,
+            default_department,
+            default_priority,
+            timezone,
+            user_id,
+        ),
+    )
+    
+    conn.commit()
+    conn.close()
+    
+    return redirect(url_for("dashboard.user_preferences"))
+
 
 
 # - - - - - - - - - - - - - -

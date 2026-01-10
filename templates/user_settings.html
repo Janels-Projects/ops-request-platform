@@ -13,7 +13,7 @@
         <p class="muted">Customize your notification and display preferences</p>
       </header>
 
-      <form method="POST" action="/user/settings" class="settings-form">
+      <form method="POST" action="{{ url_for('dashboard.update_user_preferences') }}" class="settings-form">
         
         <!-- Notification Preferences -->
         <section class="settings-section">
@@ -134,14 +134,15 @@
           </div>
         </section>
 
-        <!-- Save Button -->
-        <div class="settings-actions">
-          <button type="submit" class="btn-primary">Save Preferences</button>
-          <a href="/dashboard" class="btn-secondary">Cancel</a>
-        </div>
-      </form>
-    </div>
-  </main>
+        <!-- Save / Back buttons -->
+<div class="settings-actions">
+  <button type="submit" class="btn-primary">
+    Save Preferences
+  </button>
+
+  <a href="{{ url_for('dashboard.user_dashboard') }}" class="btn-secondary">
+    Back to Dashboard
+  </a>
 </div>
 
 <style>

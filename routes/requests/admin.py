@@ -15,19 +15,15 @@ def review_request(request_id):
 
     action = request.form.get("action")
     admin_review_notes = request.form.get("admin_review_notes")
-    
-    # 🔥 REMOVED "start" from valid actions since we don't need it anymore
+
     if action not in ("approve", "deny", "complete"):
         abort(400, "Invalid action")
 
-    # 🔥 CHANGED: Approve now goes directly to "in_progress"
     if action == "approve":
-        new_status = "in_progress"  # Skip "approved" status
-
+        new_status = "in_progress"
     elif action == "deny":
         new_status = "denied"
-
-    else:  # action == "complete"
+    else:  # complete
         new_status = "completed"
 
     conn = get_db_connection()
@@ -43,7 +39,7 @@ def review_request(request_id):
     if not admin or admin["role"] != "admin":
         abort(403)
 
-    # Fetch current request status
+    # Fetch current status
     cursor.execute(
         "SELECT status FROM requests WHERE id = ?",
         (request_id,)
@@ -55,36 +51,37 @@ def review_request(request_id):
 
     current_status = row["status"]
 
-    # 🔒 LIFECYCLE ENFORCEMENT
+    # Enforce lifecycle
     if not validate_transition(current_status, new_status, "admin"):
         abort(409, "Invalid status transition")
 
-    # ✅ Perform update only if valid
+    # 🔑 IMPORTANT PART: preserve notes unless explicitly updated
     if admin_review_notes:
         cursor.execute(
-        """
-        UPDATE requests
-        SET status = ?,
-            reviewed_at = CURRENT_TIMESTAMP,
-            reviewed_by = ?,
-            admin_review_notes = ?
-        WHERE id = ?
-        """,
-        (new_status, admin_id, admin_review_notes, request_id)
-    )
+            """
+            UPDATE requests
+            SET status = ?,
+                reviewed_at = CURRENT_TIMESTAMP,
+                reviewed_by = ?,
+                admin_review_notes = ?
+            WHERE id = ?
+            """,
+            (new_status, admin_id, admin_review_notes, request_id)
+        )
     else:
         cursor.execute(
-        """
-        UPDATE requests
-        SET status = ?,
-            reviewed_at = CURRENT_TIMESTAMP,
-            reviewed_by = ?
-        WHERE id = ?
-        """,
-        (new_status, admin_id, request_id)
-    )
+            """
+            UPDATE requests
+            SET status = ?,
+                reviewed_at = CURRENT_TIMESTAMP,
+                reviewed_by = ?
+            WHERE id = ?
+            """,
+            (new_status, admin_id, request_id)
+        )
 
     conn.commit()
     conn.close()
 
     return redirect(url_for("dashboard.admin_dashboard"))
+

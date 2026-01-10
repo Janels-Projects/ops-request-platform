@@ -86,6 +86,30 @@ document.addEventListener("click", function (e) {
   }
 });
 
+// Event delegation for admin note toggles (USER DASHBOARD - for viewing notes)
+document.addEventListener('click', function(e) {
+  const button = e.target.closest('.admin-note-toggle');
+  if (!button) return;
+  
+  const noteId = button.dataset.noteId;
+  const content = document.getElementById(noteId);
+  
+  if (!content) {
+    console.error('Could not find admin note content for ID:', noteId);
+    return;
+  }
+  
+  // Toggle the visibility
+  if (content.classList.contains('show')) {
+    content.classList.remove('show');
+    button.classList.remove('active');
+  } else {
+    content.classList.add('show');
+    button.classList.add('active');
+  }
+});
+
+
 // Optional: ESC key to cancel
 document.addEventListener("keydown", function (e) {
   if (e.key === "Escape") {
@@ -143,14 +167,36 @@ console.log("FETCHED /dashboard/api/user/requests");
       tr.dataset.priority = req.priority;
       tr.dataset.department = req.department;
 
-      tr.innerHTML = `
-        <td>${req.request_type}</td>
-        <td>${req.category}</td>
-        <td>${req.department || "-"}</td>
-        <td>${req.priority}</td>
-        <td><span class="badge ${req.status}">${req.status}</span></td>
-        <td>${req.created_at}</td>
-      `;
+    const noteId = `note-${req.id}`;
+
+tr.innerHTML = `
+  <td>
+    <strong>${req.request_type}</strong>
+    ${
+      req.admin_review_notes
+        ? `
+        <div class="admin-note-container">
+          <button class="admin-note-toggle" data-note-id="${noteId}">
+            <span>View Admin Note</span>
+            <span class="chevron">⌄</span>
+          </button>
+          <div class="admin-note-content" id="${noteId}">
+            <div class="admin-note-text">
+              ${req.admin_review_notes}
+            </div>
+          </div>
+        </div>
+        `
+        : ""
+    }
+  </td>
+  <td>${req.category}</td>
+  <td>${req.department || "-"}</td>
+  <td>${req.priority}</td>
+  <td><span class="badge ${req.status}">${req.status}</span></td>
+  <td>${req.created_at}</td>
+`;
+
 
       tbody.appendChild(tr);
     });
@@ -164,3 +210,16 @@ console.log("FETCHED /dashboard/api/user/requests");
 
 // Auto-load on page load
 document.addEventListener("DOMContentLoaded", loadUserRequests);
+
+// User dashboard: toggle admin note visibility (read-only)
+document.addEventListener('click', function(e) {
+  const button = e.target.closest('.admin-note-toggle');
+  if (!button) return;
+
+  const noteId = button.dataset.noteId;
+  const content = document.getElementById(noteId);
+  if (!content) return;
+
+  content.classList.toggle('show');
+  button.classList.toggle('active');
+});

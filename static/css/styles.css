@@ -168,11 +168,13 @@ th {
   margin-bottom: 6px;
 }
 
+
 .user-nav a.active,
 .user-nav a:hover {
   background: rgba(255, 255, 255, 0.12);
   color: #ffffff;
 }
+
 
 /* 🔑 Push logout form to bottom */
 .user-nav form {
@@ -391,4 +393,826 @@ html, body {
 
 .kb-article-link:visited {
   color: inherit;
+}
+
+/* =========================
+   Dark Mode – Global
+   ========================= */
+
+body.dark {
+  background-color: #0a0f1e;
+  color: #f1f5f9;
+}
+
+/* =========================
+   Dark Mode – Cards & Layout
+   ========================= */
+
+body.dark .card,
+body.dark .user-content,
+body.dark .table-card,
+body.dark .kb-article,
+body.dark .kb-content,
+body.dark .article-content {
+  background-color: #151b2e;
+  color: #f1f5f9;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+}
+
+/* Page header styling */
+body.dark h1,
+body.dark h2.page-title,
+body.dark .my-requests-header {
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+body.dark .muted,
+body.dark .text-muted {
+  color: #94a3b8;
+  font-size: 0.9em;
+}
+
+/* =========================
+   Dark Mode – Tables (Enhanced)
+   ========================= */
+
+body.dark table {
+  background-color: transparent;
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+body.dark thead {
+  background: linear-gradient(to bottom, #1e293b, #1a2332);
+}
+
+body.dark th {
+  color: #f8fafc !important;
+  background-color: transparent;
+  border-bottom: 2px solid #334155;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 16px;
+}
+
+body.dark td {
+  color: #e2e8f0 !important;
+  border-bottom: 1px solid #1e293b;
+  padding: 16px;
+  background-color: transparent;
+}
+
+body.dark tbody tr {
+  background-color: #0f1623;
+  transition: all 0.2s ease;
+}
+
+body.dark tbody tr:hover {
+  background-color: #1a2332;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+body.dark tbody tr:hover td {
+  background-color: transparent;
+}
+
+/* Alternating row colors for better readability */
+body.dark tbody tr:nth-child(even) {
+  background-color: #121825;
+}
+
+body.dark tbody tr:nth-child(even):hover {
+  background-color: #1a2332;
+}
+
+/* Force readable table text */
+body.dark table td,
+body.dark table td *,
+body.dark table th,
+body.dark table th *,
+body.dark .request-row td,
+body.dark .request-row td * {
+  color: #e2e8f0 !important;
+}
+
+/* =========================
+   Dark Mode – Enhanced Badges
+   ========================= */
+
+body.dark .badge {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  text-transform: capitalize;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+/* Priority badges with icons feel */
+body.dark .badge-low,
+body.dark .badge.low {
+  background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+  color: #d1fae5;
+  border: 1px solid #059669;
+  box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
+}
+
+body.dark .badge-medium,
+body.dark .badge.medium {
+  background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
+  color: #fed7aa;
+  border: 1px solid #f59e0b;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+}
+
+body.dark .badge-high,
+body.dark .badge.high {
+  background: linear-gradient(135deg, #991b1b 0%, #dc2626 100%);
+  color: #fecaca;
+  border: 1px solid #dc2626;
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+}
+
+body.dark .badge-corporate,
+body.dark .badge.corporate {
+  background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
+  color: #ede9fe;
+  border: 1px solid #8b5cf6;
+  box-shadow: 0 2px 4px rgba(139, 92, 246, 0.2);
+}
+
+/* Status badges */
+body.dark .badge.pending {
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+  color: #dbeafe;
+  border: 1px solid #3b82f6;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+
+body.dark .badge.completed {
+  background: linear-gradient(135deg, #065f46 0%, #059669 100%);
+  color: #d1fae5;
+  border: 1px solid #10b981;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+body.dark .badge.denied {
+  background: linear-gradient(135deg, #991b1b 0%, #dc2626 100%);
+  color: #fecaca;
+  border: 1px solid #ef4444;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+}
+
+body.dark .badge.approved {
+  background: linear-gradient(135deg, #065f46 0%, #059669 100%);
+  color: #d1fae5;
+  border: 1px solid #10b981;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+/* =========================
+   Dark Mode – Filter Buttons (Enhanced)
+   ========================= */
+
+body.dark button,
+body.dark .btn {
+  background: linear-gradient(to bottom, #334155, #1e293b);
+  color: #f1f5f9;
+  border: 1px solid #475569;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+body.dark button:hover,
+body.dark .btn:hover {
+  background: linear-gradient(to bottom, #475569, #334155);
+  border-color: #64748b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+body.dark button.active,
+body.dark .btn.active {
+  background: linear-gradient(to bottom, #2563eb, #1d4ed8);
+  border-color: #3b82f6;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+
+/* Primary/submit buttons */
+body.dark button[type="submit"],
+body.dark .btn-primary {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
+  border: 1px solid #3b82f6;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+}
+
+body.dark button[type="submit"]:hover,
+body.dark .btn-primary:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  box-shadow: 0 6px 12px rgba(37, 99, 235, 0.4);
+  transform: translateY(-2px);
+}
+
+/* =========================
+   Dark Mode – Section Spacing
+   ========================= */
+
+body.dark h3 {
+  color: #f8fafc;
+  font-weight: 600;
+  margin-top: 32px;
+  margin-bottom: 16px;
+}
+
+/* =========================
+   Dark Mode – Form Elements
+   ========================= */
+
+body.dark input,
+body.dark textarea,
+body.dark select {
+  background-color: #1e293b;
+  color: #f1f5f9;
+  border: 1px solid #475569;
+  padding: 10px 14px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+body.dark select option {
+  background-color: #1e293b;
+  color: #f1f5f9;
+}
+
+body.dark input::placeholder,
+body.dark textarea::placeholder {
+  color: #64748b;
+}
+
+body.dark input:focus,
+body.dark textarea:focus,
+body.dark select:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  background-color: #151b2e;
+}
+
+body.dark label,
+body.dark .field-label {
+  color: #e2e8f0;
+  font-weight: 500;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* =========================
+   Dark Mode – Knowledge Base Articles (Complete Fix)
+   ========================= */
+
+/* Main KB article cards */
+body.dark .kb-article-content-card,
+body.dark .kb-article-body {
+  background-color: #151b2e !important;
+}
+
+/* All text inside KB article body */
+body.dark .kb-article-body,
+body.dark .kb-article-body p,
+body.dark .kb-article-body div,
+body.dark .kb-article-body span,
+body.dark .kb-article-body li,
+body.dark .kb-article-body td,
+body.dark .kb-article-body label {
+  color: #e2e8f0 !important;
+  line-height: 1.7;
+}
+
+/* KB article headings */
+body.dark .kb-article-body h1,
+body.dark .kb-article-body h2,
+body.dark .kb-article-body h3,
+body.dark .kb-article-body h4,
+body.dark .kb-article-body h5,
+body.dark .kb-article-body h6 {
+  color: #f8fafc !important;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}
+
+/* KB article header section */
+body.dark .kb-article-header h1 {
+  color: #f8fafc !important;
+}
+
+body.dark .kb-article-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* KB breadcrumb */
+body.dark .kb-breadcrumb {
+  color: #94a3b8;
+}
+
+body.dark .kb-breadcrumb-link {
+  color: #60a5fa !important;
+  text-decoration: none;
+}
+
+body.dark .kb-breadcrumb-link:hover {
+  color: #93c5fd !important;
+  text-decoration: underline;
+}
+
+body.dark .kb-breadcrumb-separator {
+  color: #64748b;
+  margin: 0 8px;
+}
+
+body.dark .kb-breadcrumb-current {
+  color: #e2e8f0;
+}
+
+/* KB helpful section */
+body.dark .kb-helpful-section h3 {
+  color: #f8fafc !important;
+  margin: 0 0 8px 0 !important;
+}
+
+body.dark .kb-helpful-btn {
+  background: linear-gradient(to bottom, #334155, #1e293b);
+  color: #f1f5f9;
+  border: 1px solid #475569;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+body.dark .kb-helpful-btn:hover {
+  background: linear-gradient(to bottom, #475569, #334155);
+  border-color: #64748b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+body.dark .kb-helpful-btn svg {
+  stroke: currentColor;
+}
+
+/* KB back link */
+body.dark .kb-back-link {
+  color: #60a5fa !important;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+body.dark .kb-back-link:hover {
+  color: #93c5fd !important;
+  transform: translateX(-4px);
+}
+
+body.dark .kb-back-link svg {
+  stroke: currentColor;
+}
+
+/* KB article icon */
+body.dark .kb-article-icon-large {
+  font-size: 48px;
+  line-height: 1;
+}
+
+/* Links inside KB article content */
+body.dark .kb-article-body a {
+  color: #60a5fa !important;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+body.dark .kb-article-body a:hover {
+  color: #93c5fd !important;
+  border-bottom-color: #93c5fd;
+}
+
+/* Lists in KB articles */
+body.dark .kb-article-body ul,
+body.dark .kb-article-body ol {
+  color: #e2e8f0;
+  padding-left: 24px;
+  margin: 16px 0;
+}
+
+body.dark .kb-article-body li {
+  margin-bottom: 8px;
+}
+
+/* Code blocks in KB articles */
+body.dark .kb-article-body code {
+  background-color: #1e293b;
+  color: #e879f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+body.dark .kb-article-body pre {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  border: 1px solid #334155;
+}
+
+body.dark .kb-article-body pre code {
+  background-color: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+/* Horizontal rules in KB */
+body.dark .kb-article-body hr {
+  border: none;
+  border-top: 1px solid #334155;
+  opacity: 0.8;
+  margin: 32px 0;
+}
+
+/* Tables in KB articles */
+body.dark .kb-article-body table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 24px 0;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+body.dark .kb-article-body table th {
+  background-color: #1e293b;
+  color: #f1f5f9 !important;
+  padding: 12px;
+  text-align: left;
+  border-bottom: 2px solid #334155;
+}
+
+body.dark .kb-article-body table td {
+  padding: 12px;
+  border-bottom: 1px solid #1e293b;
+}
+
+body.dark .kb-article-body table tr:hover {
+  background-color: #1a2332;
+}
+
+/* Blockquotes in KB */
+body.dark .kb-article-body blockquote {
+  border-left: 4px solid #3b82f6;
+  padding-left: 16px;
+  margin: 24px 0;
+  color: #cbd5e1 !important;
+  font-style: italic;
+}
+
+/* =========================
+   Dark Mode – Settings & Preferences Pages (CORRECTED)
+   ========================= */
+
+/* Settings sections */
+body.dark .settings-section {
+  background-color: #151b2e;
+  padding: 24px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  border: 1px solid #1e293b;
+}
+
+/* Settings section headings */
+body.dark .settings-section h2 {
+  color: #f8fafc !important;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+/* Section descriptions */
+body.dark .section-description {
+  color: #94a3b8 !important;
+  margin-bottom: 24px;
+}
+
+/* Settings group */
+body.dark .settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Field labels */
+body.dark .settings-section label,
+body.dark .field label {
+  color: #e2e8f0 !important;
+  font-weight: 500;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* Radio group labels */
+body.dark .radio-label {
+  color: #e2e8f0 !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+body.dark .radio-label span {
+  color: #e2e8f0 !important;
+}
+
+/* Radio buttons */
+body.dark .radio-group {
+  display: flex;
+  gap: 20px;
+  margin-top: 8px;
+}
+
+body.dark input[type="radio"] {
+  accent-color: #3b82f6;
+  cursor: pointer;
+}
+
+/* Select dropdowns in settings */
+body.dark .settings-section select,
+body.dark .settings-section .input {
+  background-color: #1e293b;
+  color: #f1f5f9 !important;
+  border: 1px solid #475569;
+  padding: 10px 14px;
+  border-radius: 8px;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+body.dark .settings-section select:focus,
+body.dark .settings-section .input:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+body.dark .settings-section select option {
+  background-color: #1e293b;
+  color: #f1f5f9;
+}
+/* =========================
+   Dark Mode – Checkbox Labels in Settings
+   ========================= */
+
+/* Checkbox labels */
+body.dark .checkbox-label {
+  color: #e2e8f0 !important;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+body.dark .checkbox-label:hover {
+  background-color: #1e293b;
+}
+
+body.dark .checkbox-label span {
+  color: #e2e8f0 !important;
+  font-weight: 400;
+}
+
+/* Checkboxes */
+body.dark .checkbox-label input[type="checkbox"] {
+  accent-color: #f59e0b;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Make sure all text in settings sections is visible */
+body.dark .settings-section * {
+  color: #e2e8f0;
+}
+
+/* Override for headings */
+body.dark .settings-section h2,
+body.dark .settings-section h3 {
+  color: #f8fafc !important;
+}
+
+/* Override for descriptions */
+body.dark .settings-section .section-description {
+  color: #94a3b8 !important;
+}
+
+/* =========================
+   Dark Mode – Fix for Missing Text in KB Articles
+   ========================= */
+
+/* Ensure ALL text elements in KB articles are visible */
+body.dark .kb-article-body * {
+  color: #e2e8f0 !important;
+}
+
+/* Keep headings bright */
+body.dark .kb-article-body h1,
+body.dark .kb-article-body h2,
+body.dark .kb-article-body h3,
+body.dark .kb-article-body h4 {
+  color: #f8fafc !important;
+}
+
+/* Keep links distinct */
+body.dark .kb-article-body a {
+  color: #60a5fa !important;
+}
+
+/* =========================
+   Dark Mode – Admin Notes in User Dashboard
+   ========================= */
+
+/* Admin note container */
+body.dark .admin-note-container {
+  margin-top: 8px;
+}
+
+/* Admin note toggle button */
+body.dark .admin-note-toggle {
+  background: linear-gradient(to bottom, #334155, #1e293b);
+  color: #f1f5f9;
+  border: 1px solid #475569;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+body.dark .admin-note-toggle:hover {
+  background: linear-gradient(to bottom, #475569, #334155);
+  border-color: #64748b;
+  transform: translateY(-1px);
+}
+
+body.dark .admin-note-toggle.active {
+  background: linear-gradient(to bottom, #2563eb, #1d4ed8);
+  border-color: #3b82f6;
+}
+
+body.dark .admin-note-toggle .note-icon,
+body.dark .admin-note-toggle .chevron {
+  stroke: currentColor;
+  transition: transform 0.3s ease;
+}
+
+body.dark .admin-note-toggle.active .chevron {
+  transform: rotate(180deg);
+}
+
+/* Admin note content (collapsed by default) */
+body.dark .admin-note-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, margin-top 0.3s ease;
+  margin-top: 0;
+}
+
+body.dark .admin-note-content.show {
+  max-height: 500px;
+  margin-top: 8px;
+}
+
+/* Admin note text */
+body.dark .admin-note-text {
+  background-color: #1e293b;
+  color: #e2e8f0 !important;
+  padding: 12px;
+  border-radius: 6px;
+  border-left: 4px solid #3b82f6;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* =========================
+   Light Mode – Admin Notes in User Dashboard
+   ========================= */
+
+/* Admin note container */
+body.light .admin-note-container {
+  margin-top: 8px;
+}
+
+/* Admin note toggle button */
+body.light .admin-note-toggle {
+  background: linear-gradient(to bottom, #f1f5f9, #e2e8f0);
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+body.light .admin-note-toggle:hover {
+  background: linear-gradient(to bottom, #e2e8f0, #cbd5e1);
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+}
+
+body.light .admin-note-toggle.active {
+  background: linear-gradient(to bottom, #3b82f6, #2563eb);
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+body.light .admin-note-toggle .note-icon,
+body.light .admin-note-toggle .chevron {
+  stroke: currentColor;
+  transition: transform 0.3s ease;
+}
+
+body.light .admin-note-toggle.active .chevron {
+  transform: rotate(180deg);
+}
+
+/* Admin note content (collapsed by default) */
+body.light .admin-note-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, margin-top 0.3s ease;
+  margin-top: 0;
+}
+
+/* Admin note content (expanded) */
+body.dark .admin-note-content.show {
+  max-height: 500px;   /* large enough for notes */
+  margin-top: 8px;
+}
+
+
+body.light .admin-note-content.show {
+  max-height: 500px;
+  margin-top: 8px;
+}
+
+/* Admin note text */
+body.light .admin-note-text {
+  background-color: #eff6ff;
+  color: #1e293b;
+  padding: 12px;
+  border-radius: 6px;
+  border-left: 4px solid #3b82f6;
+  font-size: 0.875rem;
+  line-height: 1.6;
 }

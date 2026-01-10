@@ -828,11 +828,20 @@
 
     {% elif r['status'] == 'in_progress' %}
 
+    
       <!-- Complete Form (only action needed after approval) -->
-      <form method="POST" action="{{ url_for('requests.review_request', request_id=r['id']) }}" style="display:inline;">
-        <input type="hidden" name="action" value="complete">
-        <button type="submit" class="action-btn complete">✓ Complete</button>
-      </form>
+      <form method="POST"
+      action="{{ url_for('requests.review_request', request_id=r['id']) }}"
+      style="display:inline;">
+
+  <input type="hidden" name="action" value="complete">
+  <input type="hidden" name="admin_review_notes" value="{{ r['admin_review_notes'] or '' }}">
+
+  <button type="submit" class="action-btn complete">
+    ✓ Complete
+  </button>
+</form>
+
 
     {% endif %}
 

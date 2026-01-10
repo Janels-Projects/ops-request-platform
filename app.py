@@ -24,6 +24,31 @@ app = Flask(__name__)
 CORS(app)
 
 
+# Context processor
+@app.context_processor
+def inject_user_prefs():
+    from flask_jwt_extended import get_jwt_identity
+    from models.db import get_db_connection
+
+    try:
+        user_id = get_jwt_identity()
+        if not user_id:
+            return {}
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT * FROM user_preferences WHERE user_id = ?",
+            (int(user_id),)
+        )
+        prefs = cur.fetchone()
+        conn.close()
+
+        return {"prefs": prefs}
+    except Exception:
+        return {}
+
+
 # JWT config
 app.config["JWT_SECRET_KEY"] = "dev-secret-change-later"
 app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
