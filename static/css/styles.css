@@ -241,6 +241,7 @@ th {
   transform: rotate(180deg);
 }
 
+/* Temp Disabled
 .admin-note-content {
   max-height: 0;
   overflow: hidden;
@@ -248,10 +249,13 @@ th {
   margin-top: 0;
 }
 
+
+/* Temp Disabled
 .admin-note-content.show {
-  max-height: 9999px; /* allow full expansion */
-  margin-top: 8px;
-}
+  max-height: 9999px; 
+  margin-top: 8px; 
+} */ 
+
 
 .admin-note-text {
   padding: 12px 16px;
@@ -1116,18 +1120,24 @@ body.dark .admin-note-toggle.active .chevron {
   transform: rotate(180deg);
 }
 
-/* Admin note content (collapsed by default) */
+/* Temp Disabled
+/* Admin note content (collapsed by default) 
 body.dark .admin-note-content {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease, margin-top 0.3s ease;
   margin-top: 0;
-}
+} */ 
 
+
+/*
 body.dark .admin-note-content.show {
   max-height: 500px;
   margin-top: 8px;
 }
+
+
+
 
 /* Admin note text */
 body.dark .admin-note-text {
@@ -1186,25 +1196,28 @@ body.light .admin-note-toggle.active .chevron {
   transform: rotate(180deg);
 }
 
-/* Admin note content (collapsed by default) */
+/* Admin note content (collapsed by default) */ /* Temp Disabled
 body.light .admin-note-content {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease, margin-top 0.3s ease;
   margin-top: 0;
-}
+} 
 
-/* Admin note content (expanded) */
+
+/* TEMP DISABLED
+/* Admin note content (expanded) */ /*
 body.dark .admin-note-content.show {
-  max-height: 500px;   /* large enough for notes */
-  margin-top: 8px;
+  max-height: 500px;   /* large enough for notes */ /* */ /*
+  margin-top: 8px; 
 }
 
 
+/*
 body.light .admin-note-content.show {
   max-height: 500px;
   margin-top: 8px;
-}
+}*/ 
 
 /* Admin note text */
 body.light .admin-note-text {
@@ -1216,3 +1229,75 @@ body.light .admin-note-text {
   font-size: 0.875rem;
   line-height: 1.6;
 }
+
+
+/* Admin notes: collapsed by default (ALL THEMES) */ /*
+.admin-note-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, margin-top 0.3s ease;
+  margin-top: 0;
+}
+
+
+/* Admin notes: expanded  
+.admin-note-content.show {
+  max-height: 500px;
+  margin-top: 8px;
+} */
+
+
+/* ===== TEMP: unblock admin note visibility ===== */ /*
+.admin-note-content.show {
+  display: block !important;
+} /* */ 
+
+
+.admin-note-content {
+  display: block;
+}
+
+
+/* Admin notes – collapsed by default */ /*
+.admin-note-content {
+  display: none;
+}
+
+/* Admin notes – expanded */
+.admin-note-content.show {
+  display: block;
+}
+
+
+/* FINAL admin note toggle – must be last *//*
+.admin-note-content {
+  display: none;
+} */
+
+
+/* Admin notes toggle – final authority */
+.admin-note-content {
+  display: none;
+}
+
+.admin-note-content.show {
+  display: block;
+}
+
+/* 🔥 Admin note text – FORCE readable card inside tables */
+body.dark td .admin-note-text,
+body.dark td .admin-note-text *,
+body.dark .request-row td .admin-note-text,
+body.dark .request-row td .admin-note-text * {
+  background-color: #f8fafc !important; /* light card */
+  color: #3b82f6 !important;            /* admin note blue */
+}
+
+/* Keep the card shape */
+body.dark .admin-note-text {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border-left: 4px solid #3b82f6;
+}
+
+

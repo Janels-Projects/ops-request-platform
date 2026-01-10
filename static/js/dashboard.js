@@ -86,28 +86,6 @@ document.addEventListener("click", function (e) {
   }
 });
 
-// Event delegation for admin note toggles (USER DASHBOARD - for viewing notes)
-document.addEventListener('click', function(e) {
-  const button = e.target.closest('.admin-note-toggle');
-  if (!button) return;
-  
-  const noteId = button.dataset.noteId;
-  const content = document.getElementById(noteId);
-  
-  if (!content) {
-    console.error('Could not find admin note content for ID:', noteId);
-    return;
-  }
-  
-  // Toggle the visibility
-  if (content.classList.contains('show')) {
-    content.classList.remove('show');
-    button.classList.remove('active');
-  } else {
-    content.classList.add('show');
-    button.classList.add('active');
-  }
-});
 
 
 // Optional: ESC key to cancel
@@ -211,15 +189,27 @@ tr.innerHTML = `
 // Auto-load on page load
 document.addEventListener("DOMContentLoaded", loadUserRequests);
 
-// User dashboard: toggle admin note visibility (read-only)
-document.addEventListener('click', function(e) {
-  const button = e.target.closest('.admin-note-toggle');
+
+// User dashboard: toggle admin note visibility (FORCE INLINE)
+document.addEventListener("click", function (e) {
+  const button = e.target.closest(".admin-note-toggle");
   if (!button) return;
+
+  e.preventDefault();
 
   const noteId = button.dataset.noteId;
   const content = document.getElementById(noteId);
   if (!content) return;
 
-  content.classList.toggle('show');
-  button.classList.toggle('active');
+  // 🔥 INLINE TOGGLE — ignores CSS entirely
+  if (content.style.display === "block") {
+    content.style.display = "none";
+    button.classList.remove("active");
+  } else {
+    content.style.display = "block";
+    button.classList.add("active");
+  }
 });
+
+
+
