@@ -1,0 +1,889 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin – Integrations</title>
+  <link rel="stylesheet" href="/static/css/styles.css" />
+</head>
+
+<body>
+  <div class="admin-shell">
+
+    {% include "partials/admin_sidebar.html" %}
+
+    <!-- Main Content -->
+    <main class="admin-content">
+      <div class="integrations-container">
+
+        <!-- Header -->
+        <header class="integrations-header">
+          <div class="header-content">
+            <h1>🔌 Integration Management</h1>
+            <p class="subtitle">
+              Configure and manage Azure services and external integrations for your organization
+            </p>
+          </div>
+          <div class="header-actions">
+            <button class="btn-secondary" onclick="refreshStatus()">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M14 8A6 6 0 1 1 8 2M8 2V6M8 2L10 4M8 2L6 4" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+              Refresh Status
+            </button>
+            <button class="btn-primary" onclick="addIntegration()">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 2V14M2 8H14" stroke="white" stroke-width="2"/>
+              </svg>
+              Add Integration
+            </button>
+          </div>
+        </header>
+
+        <!-- Quick Stats -->
+        <div class="stats-grid">
+          <div class="stat-card active">
+            <div class="stat-icon">✓</div>
+            <div class="stat-info">
+              <div class="stat-value">3</div>
+              <div class="stat-label">Active Integrations</div>
+            </div>
+          </div>
+          
+          <div class="stat-card pending">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-info">
+              <div class="stat-value">1</div>
+              <div class="stat-label">Pending Configuration</div>
+            </div>
+          </div>
+          
+          <div class="stat-card usage">
+            <div class="stat-icon">📊</div>
+            <div class="stat-info">
+              <div class="stat-value">1,247</div>
+              <div class="stat-label">API Calls Today</div>
+            </div>
+          </div>
+          
+          <div class="stat-card cost">
+            <div class="stat-icon">💰</div>
+            <div class="stat-info">
+              <div class="stat-value">$42.50</div>
+              <div class="stat-label">Estimated Monthly Cost</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Azure Services -->
+        <section class="integration-category">
+          <div class="category-header">
+            <h2>☁️ Azure Services</h2>
+            <p class="category-description">Manage enterprise Azure infrastructure and services</p>
+          </div>
+
+          <div class="integration-grid">
+
+            <!-- Azure Blob Storage -->
+            <div class="integration-card connected">
+              <div class="card-header">
+                <div class="integration-icon azure-blob">
+                  <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                    <rect width="56" height="56" rx="12" fill="#0078D4"/>
+                    <path d="M28 16L38 23V37L28 44L18 37V23L28 16Z" fill="white" opacity="0.9"/>
+                    <circle cx="28" cy="28" r="4" fill="white"/>
+                  </svg>
+                </div>
+                <div class="card-status">
+                  <span class="status-badge connected">
+                    <span class="status-dot"></span>
+                    Connected
+                  </span>
+                </div>
+              </div>
+
+              <div class="integration-info">
+                <h3>Azure Blob Storage</h3>
+                <p class="integration-description">
+                  Secure cloud storage for request attachments, data exports, and long-term retention
+                </p>
+
+                <div class="integration-metrics">
+                  <div class="metric">
+                    <span class="metric-label">Storage Used</span>
+                    <span class="metric-value">2.4 GB</span>
+                  </div>
+                  <div class="metric">
+                    <span class="metric-label">Files Stored</span>
+                    <span class="metric-value">342</span>
+                  </div>
+                  <div class="metric">
+                    <span class="metric-label">Last Sync</span>
+                    <span class="metric-value">2 min ago</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="integration-actions">
+                <button class="btn-action" onclick="configureIntegration('azure_blob')">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M7 1L8.5 4.5L12 6L8.5 7.5L7 11L5.5 7.5L2 6L5.5 4.5L7 1Z" fill="currentColor"/>
+                  </svg>
+                  Configure
+                </button>
+                <button class="btn-test" onclick="testIntegration('azure_blob')">Test Connection</button>
+                <button class="btn-danger" onclick="disconnectIntegration('azure_blob')">Disconnect</button>
+              </div>
+            </div>
+
+            <!-- Azure AD / Entra ID -->
+            <div class="integration-card connected system-integration">
+              <div class="card-header">
+                <div class="integration-icon azure-ad">
+                  <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                    <rect width="56" height="56" rx="12" fill="#00A4EF"/>
+                    <circle cx="28" cy="28" r="12" stroke="white" stroke-width="2" fill="none"/>
+                    <circle cx="28" cy="28" r="4" fill="white"/>
+                    <path d="M28 16V24M28 32V40M16 28H24M32 28H40" stroke="white" stroke-width="2"/>
+                  </svg>
+                </div>
+                <div class="card-status">
+                  <span class="status-badge connected">
+                    <span class="status-dot pulsing"></span>
+                    System Active
+                  </span>
+                </div>
+              </div>
+
+              <div class="integration-info">
+                <h3>Azure AD / Entra ID</h3>
+                <p class="integration-description">
+                  Enterprise authentication provider with SSO, MFA, and role-based access control
+                </p>
+
+                <div class="integration-metrics">
+                  <div class="metric">
+                    <span class="metric-label">Active Users</span>
+                    <span class="metric-value">47</span>
+                  </div>
+                  <div class="metric">
+                    <span class="metric-label">Logins Today</span>
+                    <span class="metric-value">126</span>
+                  </div>
+                  <div class="metric">
+                    <span class="metric-label">Tenant ID</span>
+                    <span class="metric-value">abc12345...</span>
+                  </div>
+                </div>
+
+                <div class="system-notice">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <circle cx="8" cy="8" r="7" stroke="#4CAF50" stroke-width="1.5"/>
+                    <path d="M5 8L7 10L11 6" stroke="#4CAF50" stroke-width="1.5"/>
+                  </svg>
+                  <span>System-critical integration - Cannot be disabled</span>
+                </div>
+              </div>
+
+              <div class="integration-actions">
+                <button class="btn-action" onclick="configureIntegration('azure_ad')">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M7 1L8.5 4.5L12 6L8.5 7.5L7 11L5.5 7.5L2 6L5.5 4.5L7 1Z" fill="currentColor"/>
+                  </svg>
+                  Configure
+                </button>
+                <button class="btn-test" onclick="testIntegration('azure_ad')">Test SSO</button>
+                <button class="btn-info" onclick="viewLogs('azure_ad')">View Logs</button>
+              </div>
+            </div>
+
+            <!-- Azure Key Vault -->
+            <div class="integration-card">
+              <div class="card-header">
+                <div class="integration-icon azure-keyvault">
+                  <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                    <rect width="56" height="56" rx="12" fill="#FFB900"/>
+                    <rect x="20" y="26" width="16" height="18" rx="2" fill="white" opacity="0.9"/>
+                    <path d="M23 26V20C23 17.2386 25.2386 15 28 15C30.7614 15 33 17.2386 33 20V26" stroke="white" stroke-width="2.5"/>
+                    <circle cx="28" cy="35" r="2" fill="#FFB900"/>
+                  </svg>
+                </div>
+                <div class="card-status">
+                  <span class="status-badge disconnected">
+                    <span class="status-dot"></span>
+                    Not Configured
+                  </span>
+                </div>
+              </div>
+
+              <div class="integration-info">
+                <h3>Azure Key Vault</h3>
+                <p class="integration-description">
+                  Centralized secrets management with HSM protection for API keys and certificates
+                </p>
+
+                <div class="setup-prompt">
+                  <p>🔒 Recommended: Store sensitive credentials securely in Key Vault</p>
+                </div>
+              </div>
+
+              <div class="integration-actions">
+                <button class="btn-primary" onclick="connectIntegration('azure_keyvault')">Connect Key Vault</button>
+              </div>
+            </div>
+
+            <!-- Azure Monitor -->
+            <div class="integration-card">
+              <div class="card-header">
+                <div class="integration-icon azure-monitor">
+                  <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                    <rect width="56" height="56" rx="12" fill="#7FBA00"/>
+                    <path d="M16 32L22 26L28 30L38 20" stroke="white" stroke-width="3"/>
+                    <circle cx="38" cy="20" r="3" fill="white"/>
+                  </svg>
+                </div>
+                <div class="card-status">
+                  <span class="status-badge disconnected">
+                    <span class="status-dot"></span>
+                    Not Configured
+                  </span>
+                </div>
+              </div>
+
+              <div class="integration-info">
+                <h3>Azure Monitor</h3>
+                <p class="integration-description">
+                  Application insights, performance monitoring, and alerting for system health tracking
+                </p>
+
+                <div class="setup-prompt">
+                  <p>📊 Enable monitoring to track system health and performance</p>
+                </div>
+              </div>
+
+              <div class="integration-actions">
+                <button class="btn-primary" onclick="connectIntegration('azure_monitor')">Enable Monitoring</button>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- Productivity Tools -->
+        <section class="integration-category">
+          <div class="category-header">
+            <h2>🔔 Notifications & Productivity</h2>
+            <p class="category-description">Configure notification channels and collaboration tools</p>
+          </div>
+
+          <div class="integration-grid">
+
+            <!-- Microsoft Teams -->
+            <div class="integration-card">
+              <div class="card-header">
+                <div class="integration-icon teams">
+                  <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                    <rect width="56" height="56" rx="12" fill="#6264A7"/>
+                    <text x="28" y="36" text-anchor="middle" fill="white" font-size="28" font-weight="bold" font-family="Arial">T</text>
+                  </svg>
+                </div>
+                <div class="card-status">
+                  <span class="status-badge disconnected">
+                    <span class="status-dot"></span>
+                    Not Configured
+                  </span>
+                </div>
+              </div>
+
+              <div class="integration-info">
+                <h3>Microsoft Teams</h3>
+                <p class="integration-description">
+                  Send request notifications and system alerts to Teams channels via webhooks
+                </p>
+
+                <div class="setup-prompt">
+                  <p>💬 Connect Teams to notify staff of new requests and updates</p>
+                </div>
+              </div>
+
+              <div class="integration-actions">
+                <button class="btn-primary" onclick="connectIntegration('teams')">Connect Teams</button>
+              </div>
+            </div>
+
+            <!-- Slack -->
+            <div class="integration-card coming-soon-card">
+              <div class="card-header">
+                <div class="integration-icon slack">
+                  <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                    <rect width="56" height="56" rx="12" fill="#4A154B"/>
+                    <text x="28" y="36" text-anchor="middle" fill="white" font-size="28" font-weight="bold" font-family="Arial">#</text>
+                  </svg>
+                </div>
+                <div class="card-status">
+                  <span class="status-badge planned">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right: 4px; vertical-align: middle;">
+                      <circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                      <path d="M6 3V6L8 8" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                    Planned
+                  </span>
+                </div>
+              </div>
+
+              <div class="integration-info">
+                <h3>Slack</h3>
+                <p class="integration-description">
+                  Deliver real-time notifications to Slack workspaces and channels
+                </p>
+
+                <div class="setup-prompt">
+                  <p>🚀 Slack integration coming in Q3 2026</p>
+                </div>
+              </div>
+
+              <div class="integration-actions">
+                <button class="btn-disabled" disabled>Coming Soon</button>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- Activity Log -->
+        <section class="activity-section">
+          <div class="section-header">
+            <h3>📋 Recent Integration Activity</h3>
+            <button class="btn-link" onclick="viewAllLogs()">View All Logs →</button>
+          </div>
+
+          <div class="activity-log">
+            <div class="activity-item">
+              <div class="activity-icon success">✓</div>
+              <div class="activity-content">
+                <div class="activity-message">Azure Blob Storage connection test successful</div>
+                <div class="activity-meta">
+                  <span class="activity-integration">Azure Blob Storage</span>
+                  <span class="activity-time">2 minutes ago</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="activity-item">
+              <div class="activity-icon info">ℹ</div>
+              <div class="activity-content">
+                <div class="activity-message">342 files uploaded to blob storage today</div>
+                <div class="activity-meta">
+                  <span class="activity-integration">Azure Blob Storage</span>
+                  <span class="activity-time">1 hour ago</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="activity-item">
+              <div class="activity-icon success">✓</div>
+              <div class="activity-content">
+                <div class="activity-message">Azure AD authentication successful for 47 users</div>
+                <div class="activity-meta">
+                  <span class="activity-integration">Azure AD</span>
+                  <span class="activity-time">3 hours ago</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="activity-item">
+              <div class="activity-icon warning">⚠</div>
+              <div class="activity-content">
+                <div class="activity-message">Azure Key Vault not configured - recommended setup</div>
+                <div class="activity-meta">
+                  <span class="activity-integration">System</span>
+                  <span class="activity-time">5 hours ago</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function refreshStatus() {
+      alert('Refreshing integration status...');
+      location.reload();
+    }
+
+    function addIntegration() {
+      alert('Add new integration feature coming soon!');
+    }
+
+    function connectIntegration(type) {
+      alert(`Connecting ${type}... This would redirect to OAuth/config flow.`);
+    }
+
+    function configureIntegration(type) {
+      alert(`Opening configuration for ${type}...`);
+    }
+
+    function testIntegration(type) {
+      alert(`Testing ${type} connection...`);
+    }
+
+    function disconnectIntegration(type) {
+      if (confirm(`Are you sure you want to disconnect ${type}?`)) {
+        alert(`Disconnecting ${type}...`);
+      }
+    }
+
+    function viewLogs(type) {
+      alert(`Viewing logs for ${type}...`);
+    }
+
+    function viewDashboard(type) {
+      alert(`Opening dashboard for ${type}...`);
+    }
+
+    function rotateSecrets(type) {
+      if (confirm('Rotate all secrets in Key Vault? This will generate new keys.')) {
+        alert('Rotating secrets...');
+      }
+    }
+
+    function sendTestMessage(type) {
+      alert(`Sending test message to ${type}...`);
+    }
+
+    function viewAllLogs() {
+      alert('Opening full activity log...');
+    }
+  </script>
+
+  <style>
+    /* Integration-specific styles (add to your styles.css) */
+    .integrations-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .integrations-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 2px solid #e8e8e8;
+    }
+
+    .header-content h1 {
+      font-size: 2.25rem;
+      margin-bottom: 0.5rem;
+      color: #222;
+    }
+
+    .subtitle {
+      color: #666;
+      font-size: 1rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn-primary, .btn-secondary {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(74, 144, 226, 0.4);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #666;
+      border: 2px solid #e0e0e0;
+    }
+
+    .btn-secondary:hover {
+      border-color: #4A90E2;
+      color: #4A90E2;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .stat-card {
+      background: white;
+      border: 2px solid #e8e8e8;
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: all 0.3s;
+    }
+
+    .stat-card:hover {
+      border-color: #4A90E2;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.1);
+    }
+
+    .stat-card.active {
+      border-color: #4CAF50;
+      background: linear-gradient(135deg, #f1f8f4 0%, #ffffff 100%);
+    }
+
+    .stat-card.pending {
+      border-color: #FFB900;
+      background: linear-gradient(135deg, #fff9e6 0%, #ffffff 100%);
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      background: #f5f5f5;
+      border-radius: 10px;
+    }
+
+    .stat-info {
+      flex: 1;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #222;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 0.25rem;
+    }
+
+    .integration-category {
+      margin-bottom: 3.5rem;
+    }
+
+    .category-header {
+      margin-bottom: 2rem;
+    }
+
+    .category-header h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    .category-description {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    .integration-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+
+    .integration-card {
+      background: white;
+      border: 2px solid #e8e8e8;
+      border-radius: 16px;
+      padding: 0;
+      transition: all 0.3s;
+      overflow: hidden;
+    }
+
+    .integration-card:hover {
+      border-color: #4A90E2;
+      box-shadow: 0 8px 24px rgba(74, 144, 226, 0.12);
+      transform: translateY(-4px);
+    }
+
+    .integration-card.connected {
+      border-color: #4CAF50;
+      background: linear-gradient(to bottom, #f1f8f4 0%, #ffffff 100%);
+    }
+
+    .integration-card.system-integration {
+      border-color: #4CAF50;
+      box-shadow: 0 4px 16px rgba(76, 175, 80, 0.15);
+    }
+
+    .integration-card.coming-soon-card {
+      opacity: 0.7;
+    }
+
+    .card-header {
+      padding: 1.75rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .integration-info {
+      padding: 0 1.75rem 1.5rem;
+    }
+
+    .integration-info h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.75rem;
+      color: #222;
+    }
+
+    .integration-description {
+      font-size: 0.9rem;
+      color: #555;
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .status-badge.connected {
+      background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
+      color: white;
+      box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+    }
+
+    .status-badge.disconnected {
+      background: #f5f5f5;
+      color: #999;
+    }
+
+    .status-badge.planned {
+      background: #e0e0e0;
+      color: #666;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      background: currentColor;
+      border-radius: 50%;
+    }
+
+    .status-dot.pulsing {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.2); }
+    }
+
+    .integration-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      padding: 1rem;
+      background: #fafafa;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .metric {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .metric-label {
+      font-size: 0.75rem;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .metric-value {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .setup-prompt {
+      padding: 1rem;
+      background: #fff3e0;
+      border: 1px solid #ffb74d;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .setup-prompt p {
+      margin: 0;
+      color: #e65100;
+      font-size: 0.9rem;
+    }
+
+    .system-notice {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: #e8f5e9;
+      border: 1px solid #4CAF50;
+      border-radius: 8px;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: #2e7d32;
+    }
+
+    .integration-actions {
+      padding: 0 1.75rem 1.75rem;
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-action, .btn-test, .btn-danger, .btn-warning, .btn-info, .btn-disabled {
+      padding: 0.65rem 1rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-action {
+      background: #4A90E2;
+      color: white;
+    }
+
+    .btn-action:hover {
+      background: #357ABD;
+    }
+
+    .btn-test {
+      background: white;
+      color: #4A90E2;
+      border: 1px solid #4A90E2;
+    }
+
+    .btn-test:hover {
+      background: #EBF4FF;
+    }
+
+    .btn-danger {
+      background: white;
+      color: #f44336;
+      border: 1px solid #f44336;
+    }
+
+    .btn-danger:hover {
+      background: #ffebee;
+    }
+
+    .btn-warning {
+      background: white;
+      color: #FF9800;
+      border: 1px solid #FF9800;
+    }
+
+    .btn-warning:hover {
+      background: #fff3e0;
+    }
+
+    .btn-info {
+      background: white;
+      color: #666;
+      border: 1px solid #e0e0e0;
+    }
+
+    .btn-info:hover {
+      background: #f5f5f5;
+    }
+
+    .btn-disabled {
+      background: #f5f5f5;
+      color: #999;
+      cursor: not-allowed;
+    }
+
+    .activity-section {
+      margin-top: 3rem;
+      background: white;
+      border: 2px solid #e8e8e8;
+      border-radius: 16px;
+      padding: 2rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-header h3 {
+      font-size: 1.25rem;
+      color: #333;
+      margin: 0;
+    }
+
+    .btn-link {
+      background: none;
+      border: none;
+      color: #4A90E2;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn-link:hover {
+      text-decoration: underline;
+    }
+
+    .activity-log {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .activity-item {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1rem;
+      background: #fafafa
+    }

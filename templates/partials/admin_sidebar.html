@@ -1,0 +1,62 @@
+<!-- TEMP: Dashboard hard-coded active until admin routes unified -->
+
+
+<!-- admin_sidebar.html -->
+<aside class="admin-sidebar">
+  <!-- Brand Section -->
+  <div class="sidebar-brand">
+    <div class="brand-icon">⚡</div>
+    <div class="brand-text">Ops Platform</div>
+  </div>
+
+  <!-- Navigation Links -->
+  <nav class="sidebar-nav">
+    <a class="nav-link {% if request.endpoint == 'dashboard.admin_dashboard' %}active{% endif %}" 
+       href="{{ url_for('dashboard.admin_dashboard') }}">
+      <span class="nav-icon">📊</span>
+      <span class="nav-text">Dashboard</span>
+    </a>
+
+    <a class="nav-link" href="#">
+      <span class="nav-icon">📋</span>
+      <span class="nav-text">Requests</span>
+    </a>
+
+    <a class="nav-link" href="#">
+      <span class="nav-icon">👥</span>
+      <span class="nav-text">Users</span>
+    </a>
+
+    <a class="nav-link {% if request.endpoint == 'dashboard.admin_integrations' %}active{% endif %}" 
+       href="{{ url_for('dashboard.admin_integrations') }}">
+      <span class="nav-icon">🔌</span>
+      <span class="nav-text">Integrations</span>
+    </a>
+
+    <a class="nav-link {% if request.endpoint == 'dashboard.admin_analytics' %}active{% endif %}" 
+       href="{{ url_for('dashboard.admin_analytics') }}">
+      <span class="nav-icon">📈</span>
+      <span class="nav-text">Analytics</span>
+    </a>
+
+    <a class="nav-link {% if request.endpoint == 'dashboard.admin_settings_page' %}active{% endif %}" 
+       href="{{ url_for('dashboard.admin_settings_page') }}">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-text">Settings</span>
+    </a>
+  </nav>
+
+  <!-- User Section (pushed to bottom) -->
+  <div class="sidebar-user">
+    <div class="user-info">
+      <div class="user-avatar">{{ user["email"][0]|upper }}</div>
+      <div class="user-details">
+        <div class="user-name">{{ user["email"] }}</div>
+        <div class="user-role">Administrator</div>
+      </div>
+    </div>
+    <form method="POST" action="/auth/logout">
+      <button class="logout-btn" type="submit">Logout</button>
+    </form>
+  </div>
+</aside>

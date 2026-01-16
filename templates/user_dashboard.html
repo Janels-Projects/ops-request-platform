@@ -1,95 +1,288 @@
 {% extends "base.html" %}
-{% block title %}My Requests{% endblock %}
+{% block title %}My Dashboard{% endblock %}
 
 {% block content %}
+
+
 <div class="user-shell">
-
-
-
- <!-- User Sidebar -->
-{% include 'partials/user_sidebar.html' %}
-
+  <!-- User Sidebar -->
+  {% include 'partials/user_sidebar.html' %}
 
   <!-- Main Content -->
   <main class="user-content">
+    <div class="dashboard-container">
+      <!-- Header -->
+      <div class="dashboard-header">
+        <h1>My Dashboard</h1>
+        <div class="user-info">Signed in as {{ user["email"] }}</div>
+      </div>
 
-    <div class="card">
-      <h2 style="margin-top:0;">My Requests</h2>
-      <div class="muted">Signed in as {{ user["email"] }}</div>
-    </div>
+      <!-- Alert Banner -->
+      <div class="alert-banner" id="alert-banner">
+        <div class="alert-icon">!</div>
+        <div class="alert-content">
+          <h3>Action Required</h3>
+          <p id="alert-text">You have 1 request awaiting review</p>
+        </div>
+      </div>
 
-    <div class="card" style="margin-top:16px;">
-      <span class="badge pending">Pending</span>
-      <span class="badge approved" style="margin-left:8px;">Approved</span>
-      <span class="badge denied" style="margin-left:8px;">Denied</span>
-    </div>
-
-    <h3 style="margin:24px 0 8px;">Recent Requests</h3>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Request</th>
-          <th>Category</th>
-          <th>Status</th>
-          <th>Priority</th>
-          <th>State</th>
-          <th>Submitted</th>
-        </tr>
-      </thead>
-
-      <tbody id="my-requests-body">
-        <tr>
-          <td colspan="4">Loading requests…</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="card" style="margin-top:24px;">
-      <h3 style="margin-top:0;">Submit a New Request</h3>
-
-      <form method="POST" action="{{ url_for('requests.create_request') }}">
-        <div class="field">
-          <input
-            class="input"
-            name="request_type"
-            placeholder="Request type (e.g. VPN Access)"
-            required
-          >
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Open Items</div>
+          <div class="stat-value" id="open-items">0</div>
+          <div class="stat-description">Pending action</div>
         </div>
 
-  <div class="field">
-    <select class="input" name="category" required>
-      <option value="">Select category</option>
-      <option value="Access">Access</option>
-      <option value="Hardware">Hardware</option>
-      <option value="Software">Software</option>
-      <option value="Account Management">Account Management</option>
-      <option value="Onboarding">Onboarding</option>
-      <option value="Offboarding">Offboarding</option>
-      <option value="Facilities">Facilities</option>
-      <option value="Security">Security</option>
-  </select>
-</div>
-
-        <div class="field">
-          <select class="input" name="priority" required>
-            <option value="">Select priority</option>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
+        <div class="stat-card">
+          <div class="stat-label">Completed Recently</div>
+          <div class="stat-value" id="completed-recently">0</div>
+          <div class="stat-description">Last 30 days</div>
         </div>
 
-        <button type="submit" class="btn">Submit Request</button>
-      </form>
-    </div>
+        <div class="stat-card">
+          <div class="stat-label">Avg Processing Time</div>
+          <div class="stat-value" id="avg-time">0</div>
+          <div class="stat-description">Days to completion</div>
+        </div>
 
+        <div class="stat-card">
+          <div class="stat-label">This Week</div>
+          <div class="stat-value" id="this-week">0</div>
+          <div class="stat-description">New submissions</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs-container">
+        <div class="tabs">
+          <button class="tab active" data-tab="active">Active</button>
+          <button class="tab" data-tab="history">History</button>
+          <button class="tab" data-tab="all">All Requests</button>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="search-box">
+          <input type="text" id="search-requests" placeholder="Search requests...">
+        </div>
+        <button class="new-request-btn" onclick="scrollToNewRequest()">
+          <span>+</span>
+          New Request
+        </button>
+      </div>
+
+      <!-- Requests Table -->
+      <div class="requests-card">
+        <table class="requests-table">
+          <thead>
+            <tr>
+              <th>Request</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Priority</th>
+              <th>Submitted</th>
+            </tr>
+          </thead>
+          <tbody id="my-requests-body">
+            <tr>
+              <td colspan="5" style="text-align: center; padding: 2rem; color: #9ca3af;">
+                Loading requests...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </main>
 </div>
 
+<!-- New Request Modal -->
+<div class="modal-overlay" id="newRequestModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Submit a New Request</h2>
+      <button class="modal-close" onclick="closeRequestModal()">&times;</button>
+    </div>
+    
+    <form method="POST" action="{{ url_for('requests.create_request') }}" class="modal-form">
+      <div class="field">
+        <label for="request_type">Request Type</label>
+        <input
+          id="request_type"
+          class="input"
+          name="request_type"
+          placeholder="e.g. VPN Access"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label for="category">Category</label>
+        <select id="category" class="input" name="category" required>
+          <option value="">Select category</option>
+          <option value="Access">Access</option>
+          <option value="Hardware">Hardware</option>
+          <option value="Software">Software</option>
+          <option value="Account Management">Account Management</option>
+          <option value="Onboarding">Onboarding</option>
+          <option value="Offboarding">Offboarding</option>
+          <option value="Facilities">Facilities</option>
+          <option value="Security">Security</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="priority">Priority</label>
+        <select id="priority" class="input" name="priority" required>
+          <option value="">Select priority</option>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+
+      <div class="btn-group">
+        <button type="button" class="btn btn-secondary" onclick="closeRequestModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Submit Request</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// Tab functionality
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+    
+    const tabType = this.dataset.tab;
+    filterRequests(tabType);
+  });
+});
+
+// Search functionality
+document.getElementById('search-requests').addEventListener('input', function(e) {
+  const searchTerm = e.target.value.toLowerCase();
+  const rows = document.querySelectorAll('#my-requests-body tr');
+  
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(searchTerm) ? '' : 'none';
+  });
+});
+
+// Scroll to new request form (redirects to create request page)
+function scrollToNewRequest() {
+  openRequestModal();
+}
+
+// Open the new request modal
+function openRequestModal() {
+  document.getElementById('newRequestModal').classList.add('active');
+  document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+// Close the new request modal
+function closeRequestModal() {
+  document.getElementById('newRequestModal').classList.remove('active');
+  document.body.style.overflow = ''; // Restore scrolling
+  
+  // Reset form
+  const form = document.querySelector('#newRequestModal form');
+  if (form) {
+    form.reset();
+  }
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+  const modal = document.getElementById('newRequestModal');
+  if (e.target === modal) {
+    closeRequestModal();
+  }
+});
+
+// Close modal with ESC key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('newRequestModal');
+    if (modal && modal.classList.contains('active')) {
+      closeRequestModal();
+    }
+  }
+});
+
+// Collapsible notes functionality
+function toggleNotes(requestId) {
+  const notesRow = document.getElementById(`notes-${requestId}`);
+  if (notesRow) {
+    notesRow.classList.toggle('expanded');
+  }
+}
+
+// Filter requests by tab
+function filterRequests(tabType) {
+  const rows = document.querySelectorAll('#my-requests-body tr');
+  
+  rows.forEach(row => {
+    const status = row.dataset.status;
+    
+    if (tabType === 'all') {
+      row.style.display = '';
+    } else if (tabType === 'active') {
+      row.style.display = status === 'pending' ? '' : 'none';
+    } else if (tabType === 'history') {
+      row.style.display = (status === 'approved' || status === 'denied' || status === 'completed') ? '' : 'none';
+    }
+  });
+}
+
+// Update stats (this would be populated from your existing dashboard.js)
+function updateStats(requests) {
+  const openItems = requests.filter(r => r.status === 'pending').length;
+  const completedRecently = requests.filter(r => {
+    const submittedDate = new Date(r.submitted_at);
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    return (r.status === 'approved' || r.status === 'completed') && submittedDate >= thirtyDaysAgo;
+  }).length;
+  
+  const thisWeek = requests.filter(r => {
+    const submittedDate = new Date(r.submitted_at);
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    return submittedDate >= weekAgo;
+  }).length;
+
+  document.getElementById('open-items').textContent = openItems;
+  document.getElementById('completed-recently').textContent = completedRecently;
+  document.getElementById('this-week').textContent = thisWeek;
+  
+  // Calculate average processing time
+  const completed = requests.filter(r => r.status === 'approved' || r.status === 'completed');
+  if (completed.length > 0) {
+    const avgTime = completed.reduce((sum, r) => {
+      const start = new Date(r.submitted_at);
+      const end = new Date(r.updated_at || r.submitted_at);
+      const days = Math.floor((end - start) / (1000 * 60 * 60 * 24));
+      return sum + days;
+    }, 0) / completed.length;
+    document.getElementById('avg-time').textContent = avgTime.toFixed(1);
+  }
+
+  // Show/hide alert banner
+  const alertBanner = document.getElementById('alert-banner');
+  if (openItems > 0) {
+    alertBanner.classList.remove('hidden');
+  } else {
+    alertBanner.classList.add('hidden');
+  }
+}
+</script>
 
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-
 
 {% endblock %}

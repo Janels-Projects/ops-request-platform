@@ -108,6 +108,7 @@ document.addEventListener("keydown", function (e) {
     }
   }
 });
+
 // -------------------------------
 // User Requests Loader
 // -------------------------------
@@ -115,13 +116,13 @@ async function loadUserRequests() {
   const tbody = document.querySelector("#my-requests-body");
   if (!tbody) return;
 
-  tbody.innerHTML = `<tr><td colspan="6">Loading requests...</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="5">Loading requests...</td></tr>`;
 
   try {
     const res = await fetch("/dashboard/api/user/requests", {
-  credentials: "include"
-});
-console.log("FETCHED /dashboard/api/user/requests");
+      credentials: "include"
+    });
+    console.log("FETCHED /dashboard/api/user/requests");
 
     if (!res.ok) {
       throw new Error(`HTTP ${res.status}`);
@@ -130,51 +131,56 @@ console.log("FETCHED /dashboard/api/user/requests");
     const data = await res.json();
 
     if (!Array.isArray(data) || data.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6">No requests yet</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5">No requests yet</td></tr>`;
       return;
     }
 
+    // Sort by created_at (most recent first) and take only top 5
+    const recentRequests = data
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      .slice(0, 5);
+
     tbody.innerHTML = "";
 
-    data.forEach(req => {
+    // Calculate stats from ALL requests (not just the 5 shown)
+    updateDashboardStats(data);
+
+    recentRequests.forEach(req => {
       const tr = document.createElement("tr");
       tr.classList.add("request-row");
 
       tr.dataset.status = req.status;
       tr.dataset.category = req.category;
       tr.dataset.priority = req.priority;
-      tr.dataset.department = req.department;
 
-    const noteId = `note-${req.id}`;
+      const noteId = `note-${req.id}`;
 
-tr.innerHTML = `
-  <td>
-    <strong>${req.request_type}</strong>
-    ${
-      req.admin_review_notes
-        ? `
-        <div class="admin-note-container">
-          <button class="admin-note-toggle" data-note-id="${noteId}">
-            <span>View Admin Note</span>
-            <span class="chevron">⌄</span>
-          </button>
-          <div class="admin-note-content" id="${noteId}">
-            <div class="admin-note-text">
-              ${req.admin_review_notes}
-            </div>
-          </div>
-        </div>
-        `
-        : ""
-    }
-  </td>
-  <td>${req.category}</td>
-  <td>${req.department || "-"}</td>
-  <td>${req.priority}</td>
-  <td><span class="badge ${req.status}">${req.status}</span></td>
-  <td>${req.created_at}</td>
-`;
-
+      tr.innerHTML = `
+        <td>
+          <strong class="request-title">${req.request_type}</strong>
+          ${
+            req.admin_review_notes
+              ? `
+              <div class="admin-note-container">
+                <button class="admin-note-toggle" data-note-id="${noteId}">
+                  <span>View Admin Note</span>
+                  <span class="chevron">⌄</span>
+                </button>
+                <div class="admin-note-content" id="${noteId}">
+                  <div class="admin-note-text">
+                    ${req.admin_review_notes}
+                  </div>
+                </div>
+              </div>
+              `
+              : ""
+          }
+        </td>
+        <td>${req.category}</td>
+        <td><span class="status-badge ${req.status}">${req.status}</span></td>
+        <td><span class="priority-badge ${req.priority}">${req.priority}</span></td>
+        <td>${req.created_at}</td>
+      `;
 
       tbody.appendChild(tr);
     });
@@ -182,7 +188,86 @@ tr.innerHTML = `
     applyFilters(); // reuse your existing filter logic
   } catch (err) {
     console.error("Failed to load requests:", err);
-    tbody.innerHTML = `<tr><td colspan="6">Error loading requests</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5">Error loading requests</td></tr>`;
+  }
+}
+
+// Update dashboard statistics
+function updateDashboardStats(requests) {
+  // Open Items (pending status)
+  const openItems = requests.filter(r => r.status === 'pending').length;
+  const openItemsEl = document.getElementById('open-items');
+  if (openItemsEl) {
+    openItemsEl.textContent = openItems;
+  }
+
+  // Completed Recently (last 30 days)
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  
+  const completedRecently = requests.filter(r => {
+    const createdDate = new Date(r.created_at);
+    return (r.status === 'approved' || r.status === 'completed' || r.status === 'denied') 
+           && createdDate >= thirtyDaysAgo;
+  }).length;
+  
+  const completedRecentlyEl = document.getElementById('completed-recently');
+  if (completedRecentlyEl) {
+    completedRecentlyEl.textContent = completedRecently;
+  }
+
+  // This Week (last 7 days)
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  
+  const thisWeek = requests.filter(r => {
+    const createdDate = new Date(r.created_at);
+    return createdDate >= sevenDaysAgo;
+  }).length;
+  
+  const thisWeekEl = document.getElementById('this-week');
+  if (thisWeekEl) {
+    thisWeekEl.textContent = thisWeek;
+  }
+
+  // Average Processing Time
+  const completed = requests.filter(r => 
+    r.status === 'approved' || r.status === 'completed' || r.status === 'denied'
+  );
+  
+  if (completed.length > 0) {
+    const avgTime = completed.reduce((sum, r) => {
+      const start = new Date(r.created_at);
+      const end = r.updated_at ? new Date(r.updated_at) : new Date();
+      const days = Math.floor((end - start) / (1000 * 60 * 60 * 24));
+      return sum + days;
+    }, 0) / completed.length;
+    
+    const avgTimeEl = document.getElementById('avg-time');
+    if (avgTimeEl) {
+      avgTimeEl.textContent = avgTime.toFixed(1);
+    }
+  }
+
+  // Show/hide alert banner
+  const alertBanner = document.getElementById('alert-banner');
+  const alertText = document.getElementById('alert-text');
+  
+  if (alertBanner) {
+    if (openItems > 0) {
+      alertBanner.classList.remove('hidden');
+      
+      // Update alert text with proper pluralization
+      if (alertText) {
+        if (openItems === 1) {
+          alertText.textContent = 'You have 1 request awaiting review';
+        } else {
+          alertText.textContent = `You have ${openItems} requests awaiting review`;
+        }
+      }
+    } else {
+      alertBanner.classList.add('hidden');
+    }
   }
 }
 
@@ -210,6 +295,3 @@ document.addEventListener("click", function (e) {
     button.classList.add("active");
   }
 });
-
-
-

@@ -3,6 +3,27 @@ import os
 
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "app.db")
 
+def create_user_integrations_table(conn):
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS user_integrations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL UNIQUE,
+
+            -- Access / capability flags
+            csv_export_enabled BOOLEAN DEFAULT 1,
+            cloud_export_visible BOOLEAN DEFAULT 1,
+
+            can_export BOOLEAN DEFAULT 1,
+            can_view_integration_status BOOLEAN DEFAULT 1,
+
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    """)
+
+
 def create_kb_articles_table(conn):
     conn.execute("""
         CREATE TABLE IF NOT EXISTS kb_articles (
@@ -82,9 +103,10 @@ def init_db():
     )
     """)
 
-    # ✅ ADD THIS LINE
+    # ✅ Supporting tables 
     create_kb_articles_table(conn)
     create_user_preferences_table(conn)
+    create_user_integrations_table(conn)
 
     conn.commit()
     conn.close()

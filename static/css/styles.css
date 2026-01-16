@@ -197,7 +197,580 @@ th {
 }
 
 
-/* Professional Admin Notes Styling */
+/* =========================
+   User Dashboard – Layout/Container
+   ========================= */
+  .dashboard-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+/* =========================
+   User Dashboard – Header
+   ========================= */
+ .dashboard-header {
+    margin-bottom: 2rem;
+  }
+
+  .dashboard-header h1 {
+    font-size: 2rem;
+    margin: 0 0 0.5rem 0;
+    color: #1a1a1a;
+  }
+
+  .dashboard-header .user-info {
+    color: #666;
+    font-size: 0.95rem;
+  }
+
+
+/* =========================
+   User Dashboard – Alerts
+   ========================= */
+ /* Alert Banner */
+  .alert-banner {
+    background: linear-gradient(135deg, #ff9f43 0%, #ffb84d 100%);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 4px 12px rgba(255, 159, 67, 0.2);
+    animation: slideDown 0.4s ease-out;
+  }
+
+  .alert-banner.hidden {
+    display: none;
+  }
+
+  .alert-icon {
+    width: 28px;
+    height: 28px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .alert-content h3 {
+    margin: 0 0 0.25rem 0;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .alert-content p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 0.9rem;
+  }
+
+
+/* ======================================
+   User Dashboard – Stats Grid (stats / cards)
+   ===================================== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border-color: #d1d5db;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+  }
+
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+    line-height: 1;
+  }
+
+  .stat-description {
+    font-size: 0.875rem;
+    color: #9ca3af;
+  }
+
+
+   /* ====================================
+   User Dashboard –  Controls (tabs + toolbar) 
+   =================================== */
+.tabs-container {
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 0;
+  }
+
+  .tab {
+    padding: 1rem 1.5rem;
+    background: none;
+    border: none;
+    color: #6b7280;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s ease;
+  }
+
+  .tab:hover {
+    color: #3b82f6;
+  }
+
+  .tab.active {
+    color: #3b82f6;
+  }
+
+  .tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #3b82f6;
+    animation: slideIn 0.3s ease;
+  }
+  .toolbar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: center;
+  }
+
+  .search-box {
+    flex: 1;
+    position: relative;
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+  }
+
+  .search-box input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .new-request-btn {
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .new-request-btn:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+/* ==============================
+   User Dashboard – Requests Table
+   ============================ */
+.requests-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+
+  .requests-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .requests-table thead {
+    background: #f9fafb;
+  }
+
+  .requests-table th {
+    padding: 1rem 1.25rem;
+    text-align: left;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .requests-table tbody tr {
+    border-bottom: 1px solid #f3f4f6;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+  }
+
+  .requests-table tbody tr:hover {
+    background: #f9fafb;
+  }
+
+  .requests-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .requests-table td {
+    padding: 1rem 1.25rem;
+    font-size: 0.95rem;
+  }
+
+  .request-title {
+    font-weight: 500;
+    color: #1a1a1a;
+  }
+
+    .status-badge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .status-badge.pending {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  .status-badge.completed {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .status-badge.approved {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .status-badge.denied {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .priority-badge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .priority-badge.high {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .priority-badge.medium {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .priority-badge.low {
+    background: #f3f4f6;
+    color: #4b5563;
+  }
+
+
+/* =================================
+   User Dashboard – Collapsible Notes
+   ================================= */
+/* Collapsible Notes */
+  .request-notes {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .request-notes.expanded {
+    max-height: 500px;
+  }
+
+  .notes-content {
+    padding: 1rem 1.25rem;
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .notes-content h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    color: #6b7280;
+    font-weight: 600;
+  }
+
+  .notes-content p {
+    margin: 0;
+    color: #4b5563;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+/* =======================
+  User Dashboard -Animations
+  ======================== */
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+
+
+/* =========================
+   User Dashboard – Modals
+   ========================= */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-content {
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #1a1a1a;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .modal-close:hover {
+    background: #f3f4f6;
+    color: #1a1a1a;
+  }
+
+  .modal-form .field {
+    margin-bottom: 1.25rem;
+  }
+
+  .modal-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #374151;
+  }
+
+  .modal-form input,
+  .modal-form select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+  }
+
+  .modal-form input:focus,
+  .modal-form select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .modal-form .btn-group {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .modal-form .btn {
+    flex: 1;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .modal-form .btn-primary {
+    background: #3b82f6;
+    color: #fff;
+  }
+
+  .modal-form .btn-primary:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  .modal-form .btn-secondary {
+    background: #f3f4f6;
+    color: #374151;
+  }
+
+  .modal-form .btn-secondary:hover {
+    background: #e5e7eb;
+  }
+
+/* =========================
+  User Dashboard - Key frames
+  ======================== */
+   @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+
+/* =========================
+  User Dashboard - Responsive
+  ========================= */
+   @media (max-width: 768px) {
+    .dashboard-container {
+      padding: 1rem;
+    }
+
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .toolbar {
+      flex-direction: column;
+    }
+
+    .search-box {
+      width: 100%;
+    }
+
+    .requests-table {
+      font-size: 0.85rem;
+    }
+
+    .requests-table th,
+    .requests-table td {
+      padding: 0.75rem;
+    }
+
+    .modal-content {
+      padding: 1.5rem;
+    }
+  }
+
+/* ===========================
+ Professional Admin Notes Styling
+ ============================ */
 
 .admin-note-container {
   margin-top: 8px;
@@ -400,7 +973,7 @@ html, body {
 }
 
 /* =========================
-   Dark Mode – Global
+   User Dark Mode – Global
    ========================= */
 
 body.dark {
@@ -409,7 +982,7 @@ body.dark {
 }
 
 /* =========================
-   Dark Mode – Cards & Layout
+   User Dark Mode – Cards & Layout
    ========================= */
 
 body.dark .card,
@@ -1300,4 +1873,184 @@ body.dark .admin-note-text {
   border-left: 4px solid #3b82f6;
 }
 
+/* ===== Admin Sidebar - Complete Styling ===== */
+
+.admin-sidebar {
+  width: 240px;
+  background: linear-gradient(180deg, #0f172a, #1e293b);
+  color: #e5e7eb;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+}
+
+/* Brand Section */
+.admin-sidebar .sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-sidebar .brand-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.admin-sidebar .brand-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+/* Navigation */
+.admin-sidebar .sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1; /* This pushes user section to bottom */
+}
+
+.admin-sidebar .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.admin-sidebar .nav-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+}
+
+.admin-sidebar .nav-link.active {
+  background: #4f46e5;
+  color: white;
+}
+
+.admin-sidebar .nav-icon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+}
+
+.admin-sidebar .nav-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* User Section (at bottom) */
+.admin-sidebar .sidebar-user {
+  margin-top: auto; /* Pushes to bottom */
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-sidebar .user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.admin-sidebar .user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.admin-sidebar .user-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-sidebar .user-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: #e5e7eb;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-sidebar .user-role {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.admin-sidebar .logout-btn {
+  width: 100%;
+  padding: 10px;
+  background: #1f2937;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.admin-sidebar .logout-btn:hover {
+  background: #374151;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.admin-sidebar form {
+  margin: 0;
+}
+
+/* ===== Admin Layout Fix ===== */
+.admin-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.admin-sidebar {
+  width: 240px;
+  background: linear-gradient(180deg, #0f172a, #1e293b);
+  color: #e5e7eb;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+/* Push content to the right of sidebar */
+.admin-shell > main,
+.admin-shell > .admin-content {
+  margin-left: 240px;
+  flex: 1;
+  width: 100%;
+  max-width: calc(100vw - 240px);
+}
 

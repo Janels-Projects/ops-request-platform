@@ -165,3 +165,45 @@ def admin_analytics_post():
     # Later: read form data (date range, category, department)
     # For now, just reload page
     return redirect(url_for("dashboard.admin_analytics"))
+
+
+
+# - - - - - - - - - - - - - -
+# Admin Integrations GET route
+@dashboard_bp.get("/admin/integrations")
+@jwt_required()
+@admin_required
+def admin_integrations():
+    admin_id = int(get_jwt_identity())
+    admin = _get_user_and_role(admin_id)
+
+    stats = {
+        "active_integrations": 1,
+        "pending_configs": 3,
+        "api_calls_today": 0,
+        "monthly_cost": "0.00"
+    }
+
+    integrations = {
+        "azure_blob": {"connected": False},
+        "azure_keyvault": {"connected": False},
+        "azure_monitor": {"connected": False},
+        "azure_ad": {
+            "active_users": 0,
+            "logins_today": 0,
+            "tenant_id": "example-tenant"
+        },
+        "teams": {"connected": False}
+    }
+
+    recent_activity = []  # empty list is fine
+
+    return render_template(
+        "admin_integrations.html",
+        user=admin,
+        active_page="integrations",
+        stats=stats,
+        integrations=integrations,
+        recent_activity=recent_activity
+    )
+

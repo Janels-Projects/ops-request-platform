@@ -304,6 +304,21 @@ def kb_article_detail(slug):
     )
 
 
+# User Integrations GET Route
+@dashboard_bp.get("/integrations")
+@jwt_required()
+def user_integrations():
+    user_id = int(get_jwt_identity())
+    user = _get_user_and_role(user_id)
+
+    return render_template(
+        "integrations.html",
+        user=user,
+        is_admin=False,
+        active_page="integrations"
+    )
+
+
 
 # - - - - - - - - - - - - - -
 # API Route 
