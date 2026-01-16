@@ -1,0 +1,975 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>All Requests - Ops Platform</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+  <style>
+    * { box-sizing: border-box; }
+    
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
+      background: #f8fafc;
+      margin: 0;
+      color: #1e293b;
+      overflow-x: hidden;
+    }
+
+    .admin-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Dark Sidebar */
+    .admin-sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      color: white;
+      padding: 24px;
+      box-shadow: 4px 0 12px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .brand-text {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      color: #cbd5e1;
+      text-decoration: none;
+      transition: all 0.2s;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .nav-link:hover {
+      background: rgba(255,255,255,0.08);
+      color: white;
+    }
+
+    .nav-link.active {
+      background: rgba(102, 126, 234, 0.2);
+      color: white;
+    }
+
+    .nav-icon {
+      font-size: 18px;
+      width: 20px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .sidebar-user {
+      margin-top: auto;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .user-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .user-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: white;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-role {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .logout-btn {
+      width: 100%;
+      padding: 12px;
+      background: rgba(71, 85, 105, 0.3);
+      color: #e2e8f0;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .logout-btn:hover {
+      background: rgba(100, 116, 139, 0.4);
+      color: white;
+      border-color: rgba(203, 213, 225, 0.4);
+    }
+
+    /* Main Content Area */
+    .admin-main {
+      flex: 1;
+      padding: 32px;
+      overflow-y: auto;
+      max-height: 100vh;
+    }
+
+    /* Page Header - Subtle */
+    .page-header {
+      margin-bottom: 28px;
+    }
+
+    .page-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0 0 6px;
+    }
+
+    .page-subtitle {
+      color: #64748b;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    /* Toolbar */
+    .requests-toolbar {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-bar {
+      flex: 1;
+      min-width: 280px;
+      position: relative;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 10px 14px 10px 38px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .search-bar input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 16px;
+    }
+
+    .date-range-picker {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .date-range-picker input {
+      padding: 10px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: inherit;
+      color: #475569;
+    }
+
+    .date-range-picker input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .export-btn {
+      padding: 10px 18px;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: inherit;
+    }
+
+    .export-btn:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      color: #1e293b;
+    }
+
+    /* Filters */
+    .filters-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+
+    .filters-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .filter-select {
+      padding: 10px 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      background: white;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    /* Table Card */
+    .table-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+
+    /* Row Count Indicator */
+    .table-header-bar {
+      padding: 16px 20px;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .row-count {
+      font-size: 14px;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .row-count strong {
+      color: #1e293b;
+    }
+
+    /* Table */
+    .table-wrapper {
+      overflow-x: auto;
+      position: relative;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    /* Sticky Header */
+    thead {
+      position: sticky;
+      top: 0;
+      background: #f8fafc;
+      z-index: 10;
+    }
+
+    thead th {
+      padding: 14px 16px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #64748b;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #f1f5f9;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    /* Row Hover State */
+    tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    /* Subtle Row Styling by Status */
+    tbody tr[data-status="approved"] {
+      border-left: 3px solid #10b981;
+    }
+
+    tbody tr[data-status="denied"] {
+      border-left: 3px solid #ef4444;
+    }
+
+    tbody tr[data-status="completed"] {
+      border-left: 3px solid #8b5cf6;
+    }
+
+    tbody tr[data-status="pending"] {
+      border-left: 3px solid #3b82f6;
+    }
+
+    tbody tr[data-status="in_progress"] {
+      border-left: 3px solid #f59e0b;
+    }
+
+    tbody td {
+      padding: 16px;
+      font-size: 14px;
+      color: #475569;
+    }
+
+    tbody td:first-child {
+      padding-left: 20px;
+    }
+
+    /* Status Chips */
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .badge.pending {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .badge.approved {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .badge.in_progress {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge.denied {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .badge.completed {
+      background: #ede9fe;
+      color: #5b21b6;
+    }
+
+    /* Priority Pills */
+    .priority-low {
+      color: #059669;
+      font-weight: 600;
+    }
+
+    .priority-medium {
+      color: #d97706;
+      font-weight: 600;
+    }
+
+    .priority-high {
+      color: #dc2626;
+      font-weight: 600;
+    }
+
+    /* Expandable Row Details */
+    .detail-row {
+      display: none;
+      background: #f8fafc;
+    }
+
+    .detail-row.expanded {
+      display: table-row;
+    }
+
+    .detail-cell {
+      padding: 24px 20px !important;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .detail-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .detail-section {
+      background: white;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .detail-section h4 {
+      margin: 0 0 12px;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #64748b;
+      letter-spacing: 0.05em;
+    }
+
+    .detail-field {
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .detail-field:last-child {
+      margin-bottom: 0;
+    }
+
+    .detail-label {
+      font-weight: 600;
+      color: #475569;
+      display: inline-block;
+      min-width: 120px;
+    }
+
+    .detail-value {
+      color: #1e293b;
+    }
+
+    .admin-notes-box {
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 12px;
+    }
+
+    .admin-notes-box h5 {
+      margin: 0 0 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #92400e;
+    }
+
+    .admin-notes-box p {
+      margin: 0;
+      font-size: 14px;
+      color: #78350f;
+      line-height: 1.6;
+    }
+
+    /* Chevron Icon */
+    .chevron-icon {
+      display: inline-block;
+      margin-right: 8px;
+      transition: transform 0.2s;
+      color: #94a3b8;
+    }
+
+    .chevron-icon.expanded {
+      transform: rotate(90deg);
+    }
+
+    /* Go to Dashboard Button */
+    .goto-dashboard-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      margin-top: 12px;
+    }
+
+    .goto-dashboard-btn:hover {
+      background: #5568d3;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #94a3b8;
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .empty-state h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      color: #475569;
+    }
+
+    .empty-state p {
+      margin: 0;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    
+    <!-- Sidebar -->
+    {% include "partials/admin_sidebar.html" %}
+
+    <!-- Main Content -->
+    <main class="admin-main">
+
+      <!-- Page Header - Subtle -->
+      <div class="page-header">
+        <h1 class="page-title">All Requests</h1>
+        <p class="page-subtitle">Complete operational request history across all departments</p>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="requests-toolbar">
+        <!-- Search Bar -->
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="Search by employee, request type, or category..."
+            autocomplete="off"
+          />
+        </div>
+
+        <!-- Date Range Picker -->
+        <div class="date-range-picker">
+          <input type="date" id="dateFrom" />
+          <span style="color: #94a3b8;">to</span>
+          <input type="date" id="dateTo" />
+        </div>
+
+        <!-- Export CSV Button -->
+        <button class="export-btn" id="exportBtn">
+          <span>📊</span>
+          Export CSV
+        </button>
+      </div>
+
+      <!-- Filters -->
+      <div class="filters-card">
+        <div class="filters-row">
+          <select id="statusFilter" class="filter-select">
+            <option value="all">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="in_progress">In Progress</option>
+            <option value="denied">Denied</option>
+            <option value="completed">Completed</option>
+          </select>
+
+          <select id="departmentFilter" class="filter-select">
+            <option value="all">All Departments</option>
+            <option value="corporate">Corporate</option>
+            <option value="healthcare">Healthcare</option>
+            <option value="legal">Legal</option>
+          </select>
+
+          <select id="categoryFilter" class="filter-select">
+            <option value="all">All Categories</option>
+            {% for c in categories %}
+              <option value="{{ c }}">{{ c }}</option>
+            {% endfor %}
+          </select>
+
+          <select id="priorityFilter" class="filter-select">
+            <option value="all">All Priorities</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-card">
+        <!-- Row Count Indicator -->
+        <div class="table-header-bar">
+          <div class="row-count">
+            Showing <strong id="visibleCount">{{ requests|length }}</strong> of <strong id="totalCount">{{ requests|length }}</strong> requests
+          </div>
+        </div>
+
+        <!-- Table Wrapper with Sticky Header -->
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Request</th>
+                <th>Category</th>
+                <th>Priority</th>
+                <th>Department</th>
+                <th>Status</th>
+                <th>Submitted</th>
+                <th>Age</th>
+              </tr>
+            </thead>
+            <tbody id="requestTableBody">
+              {% if requests|length == 0 %}
+                <tr>
+                  <td colspan="8">
+                    <div class="empty-state">
+                      <div class="empty-state-icon">📋</div>
+                      <h3>No requests found</h3>
+                      <p>There are no requests matching your criteria.</p>
+                    </div>
+                  </td>
+                </tr>
+              {% else %}
+                {% for r in requests %}
+                <tr class="request-row"
+                    data-status="{{ r['status'] }}"
+                    data-category="{{ r['category'] }}"
+                    data-priority="{{ r['priority'] }}"
+                    data-department="{{ r['department'] }}"
+                    data-employee="{{ r['employee']|lower }}"
+                    data-request="{{ r['request_type']|lower }}"
+                    data-submitted="{{ r['created_at'] }}"
+                    onclick="toggleDetails('{{ r['id'] }}')">
+
+                  <td>
+                    <span class="chevron-icon" id="chevron-{{ r['id'] }}">▶</span>
+                    {{ r["employee"] }}
+                  </td>
+                  <td><strong>{{ r["request_type"] }}</strong></td>
+                  <td>{{ r["category"] }}</td>
+                  <td class="priority-{{ r['priority'] }}">
+                    {{ r["priority"]|capitalize }}
+                  </td>
+                  <td>{{ r["department"]|capitalize }}</td>
+                  <td>
+                    <span class="badge {{ r['status'] }}">
+                      {{ r["status"]|capitalize }}
+                    </span>
+                  </td>
+                  <td>{{ r["created_at"][:10] }}</td>
+                  <td>{{ r["age_days"] }}d</td>
+                </tr>
+
+                <!-- Expandable Detail Row -->
+                <tr class="detail-row" id="detail-{{ r['id'] }}">
+                  <td colspan="8" class="detail-cell">
+                    <div class="detail-content">
+                      
+                      <!-- Request Details -->
+                      <div class="detail-section">
+                        <h4>Request Details</h4>
+                        <div class="detail-field">
+                          <span class="detail-label">Request ID:</span>
+                          <span class="detail-value">{{ r["id"] }}</span>
+                        </div>
+                        <div class="detail-field">
+                          <span class="detail-label">Employee:</span>
+                          <span class="detail-value">{{ r["employee"] }}</span>
+                        </div>
+                        <div class="detail-field">
+                          <span class="detail-label">Request Type:</span>
+                          <span class="detail-value">{{ r["request_type"] }}</span>
+                        </div>
+                        <div class="detail-field">
+                          <span class="detail-label">Category:</span>
+                          <span class="detail-value">{{ r["category"] }}</span>
+                        </div>
+                        <div class="detail-field">
+                          <span class="detail-label">Priority:</span>
+                          <span class="detail-value priority-{{ r['priority'] }}">{{ r["priority"]|capitalize }}</span>
+                        </div>
+                        <div class="detail-field">
+                          <span class="detail-label">Department:</span>
+                          <span class="detail-value">{{ r["department"]|capitalize }}</span>
+                        </div>
+                      </div>
+
+                      <!-- Timeline -->
+                      <div class="detail-section">
+                        <h4>Timeline</h4>
+                        <div class="detail-field">
+                          <span class="detail-label">Submitted:</span>
+                          <span class="detail-value">{{ r["created_at"] }}</span>
+                        </div>
+                        {% if r["reviewed_at"] %}
+                        <div class="detail-field">
+                          <span class="detail-label">Reviewed:</span>
+                          <span class="detail-value">{{ r["reviewed_at"] }}</span>
+                        </div>
+                        {% endif %}
+                        {% if r["completed_at"] %}
+                        <div class="detail-field">
+                          <span class="detail-label">Completed:</span>
+                          <span class="detail-value">{{ r["completed_at"] }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="detail-field">
+                          <span class="detail-label">Age:</span>
+                          <span class="detail-value">{{ r["age_days"] }} days</span>
+                        </div>
+                        <div class="detail-field">
+                          <span class="detail-label">Current Status:</span>
+                          <span class="badge {{ r['status'] }}">{{ r["status"]|capitalize }}</span>
+                        </div>
+                      </div>
+
+                      <!-- Review Information -->
+                      <div class="detail-section">
+                        <h4>Review Information</h4>
+                        {% if r["reviewed_by"] %}
+                        <div class="detail-field">
+                          <span class="detail-label">Reviewed By:</span>
+                          <span class="detail-value">{{ r["reviewed_by"] }}</span>
+                        </div>
+                        {% else %}
+                        <div class="detail-field">
+                          <span class="detail-value" style="color: #94a3b8; font-style: italic;">
+                            Not yet reviewed
+                          </span>
+                        </div>
+                        {% endif %}
+
+                        {% if r["admin_review_notes"] %}
+                        <div class="admin-notes-box">
+                          <h5>📝 Admin Review Notes</h5>
+                          <p>{{ r["admin_review_notes"] }}</p>
+                        </div>
+                        {% endif %}
+
+                        {% if r["status"] == "pending" %}
+                        <form method="POST"
+                          action="{{ url_for('dashboard.go_to_dashboard_from_requests') }}">
+                    <input type="hidden" name="request_id" value="{{ r['id'] }}">
+                    <button type="submit" class="goto-dashboard-btn">
+                      → Go to Dashboard to Review
+                  </button>
+                    </form> 
+                    {% endif %}
+
+                      </div>
+
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+  <script>
+    // Toggle expandable row details
+    function toggleDetails(requestId) {
+      const detailRow = document.getElementById('detail-' + requestId);
+      const chevron = document.getElementById('chevron-' + requestId);
+      
+      if (detailRow.classList.contains('expanded')) {
+        detailRow.classList.remove('expanded');
+        chevron.classList.remove('expanded');
+      } else {
+        detailRow.classList.add('expanded');
+        chevron.classList.add('expanded');
+      }
+    }
+
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', applyFilters);
+
+    // Date range filtering
+    const dateFrom = document.getElementById('dateFrom');
+    const dateTo = document.getElementById('dateTo');
+    dateFrom.addEventListener('change', applyFilters);
+    dateTo.addEventListener('change', applyFilters);
+
+    // Enhanced filter function
+    function applyFilters() {
+      const status = document.getElementById('statusFilter').value;
+      const category = document.getElementById('categoryFilter').value;
+      const priority = document.getElementById('priorityFilter').value;
+      const department = document.getElementById('departmentFilter').value;
+      const searchTerm = searchInput.value.toLowerCase();
+      const fromDate = dateFrom.value;
+      const toDate = dateTo.value;
+
+      let visibleCount = 0;
+      const allRows = document.querySelectorAll('.request-row');
+
+      allRows.forEach(row => {
+        const matchesStatus = status === 'all' || row.dataset.status === status;
+        const matchesCategory = category === 'all' || row.dataset.category === category;
+        const matchesPriority = priority === 'all' || row.dataset.priority === priority;
+        const matchesDepartment = department === 'all' || row.dataset.department === department;
+        
+        const matchesSearch = searchTerm === '' || 
+          row.dataset.employee.includes(searchTerm) ||
+          row.dataset.request.includes(searchTerm) ||
+          row.dataset.category.toLowerCase().includes(searchTerm);
+
+        let matchesDateRange = true;
+        if (fromDate || toDate) {
+          const rowDate = row.dataset.submitted.split(' ')[0]; // Get YYYY-MM-DD part
+          if (fromDate && rowDate < fromDate) matchesDateRange = false;
+          if (toDate && rowDate > toDate) matchesDateRange = false;
+        }
+
+        const shouldShow = matchesStatus && matchesCategory && matchesPriority && 
+                          matchesDepartment && matchesSearch && matchesDateRange;
+
+        if (shouldShow) {
+          row.style.display = '';
+          // Also show the detail row if it's expanded
+          const detailRow = row.nextElementSibling;
+          if (detailRow && detailRow.classList.contains('detail-row')) {
+            detailRow.style.display = detailRow.classList.contains('expanded') ? 'table-row' : 'none';
+          }
+          visibleCount++;
+        } else {
+          row.style.display = 'none';
+          // Hide the detail row too
+          const detailRow = row.nextElementSibling;
+          if (detailRow && detailRow.classList.contains('detail-row')) {
+            detailRow.style.display = 'none';
+          }
+        }
+      });
+
+      // Update row count
+      document.getElementById('visibleCount').textContent = visibleCount;
+    }
+
+    // Export to CSV functionality
+    document.getElementById('exportBtn').addEventListener('click', function() {
+      const rows = document.querySelectorAll('.request-row');
+      let csv = 'Employee,Request Type,Category,Priority,Department,Status,Submitted,Age (days)\n';
+
+      rows.forEach(row => {
+        if (row.style.display !== 'none') {
+          const cells = row.querySelectorAll('td');
+          const rowData = [];
+          
+          // Skip the first cell (chevron icon) and get text content
+          for (let i = 1; i < cells.length; i++) {
+            let cellText = cells[i].textContent.trim();
+            // Escape quotes and wrap in quotes if contains comma
+            if (cellText.includes(',') || cellText.includes('"')) {
+              cellText = '"' + cellText.replace(/"/g, '""') + '"';
+            }
+            rowData.push(cellText);
+          }
+          
+          csv += rowData.join(',') + '\n';
+        }
+      });
+
+      // Create download link
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'requests_export_' + new Date().toISOString().split('T')[0] + '.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    });
+
+    // Set total count on page load
+    document.getElementById('totalCount').textContent = document.querySelectorAll('.request-row').length;
+  </script>
+</body>
+</html>

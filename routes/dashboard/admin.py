@@ -1,4 +1,4 @@
-from flask import render_template, jsonify, redirect, url_for, abort
+from flask import render_template, jsonify, redirect, url_for, abort, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from . import dashboard_bp
@@ -207,3 +207,66 @@ def admin_integrations():
         recent_activity=recent_activity
     )
 
+
+#- - - - - - - - - - - - - - - - -
+# Admin Requests GET route
+@dashboard_bp.get("/dashboard/admin/requests")
+@jwt_required()
+@admin_required
+def admin_requests():
+    admin_id = int(get_jwt_identity())
+    admin = _get_user_and_role(admin_id)
+
+    conn = get_db_connection()
+    requests = conn.execute("""
+        SELECT *
+        FROM requests
+        ORDER BY created_at DESC
+    """).fetchall()
+    conn.close()
+
+    categories = sorted(VALID_CATEGORIES)
+
+    return render_template(
+        "admin_requests.html",
+        user=admin,
+        requests=requests,
+        categories=categories
+    )
+
+# - - - - - - - - - - - - - - 
+# Admin Requests POST route:
+@dashboard_bp.post("/dashboard/admin/requests/go-to-dashboard")
+@jwt_required()
+@admin_required
+def go_to_dashboard_from_requests():
+    request_id = request.form.get("request_id")
+
+    # Optional: pass request_id as a query param for future highlighting
+    if request_id:
+        return redirect(url_for("dashboard.admin_dashboard", focus=request_id))
+
+    return redirect(url_for("dashboard.admin_dashboard"))
+
+
+# Admin Get Route Users
+@dashboard_bp.get("/dashboard/admin/users")
+@jwt_required()
+@admin_required
+def admin_users():
+    admin_id = int(get_jwt_identity())
+    admin = _get_user_and_role(admin_id)
+
+    conn = get_db_connection()
+    users = conn.execute("""
+        SELECT id, email, role, created_at
+        FROM users
+        ORDER BY created_at DESC
+    """).fetchall()
+    conn.close()
+
+    return render_template(
+        "admin_users.html",
+        user=admin,
+        users=users
+    )
