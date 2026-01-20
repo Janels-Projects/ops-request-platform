@@ -8,7 +8,7 @@ const departmentFilter = document.getElementById('departmentFilter');
 // Run whenever a filter changes
 function applyFilters() {
   if (!statusFilter || !categoryFilter || !priorityFilter || !departmentFilter) {
-    return; // user dashboard has no filters
+    return;
   }
 
   const status = statusFilter.value;
@@ -17,8 +17,13 @@ function applyFilters() {
   const department = departmentFilter.value;
 
   document.querySelectorAll('.request-row').forEach(row => {
-    const matchesStatus =
-      status === 'all' || row.dataset.status === status;
+
+    let matchesStatus = true;
+
+    if (status !== 'all') {
+      matchesStatus = row.dataset.status === status;
+  }
+
 
     const matchesCategory =
       category === 'all' || row.dataset.category === category;
@@ -37,6 +42,7 @@ function applyFilters() {
 }
 
 
+
 // Attach listeners
 if (statusFilter && categoryFilter && priorityFilter && departmentFilter) {
   statusFilter.addEventListener('change', applyFilters);
@@ -46,7 +52,7 @@ if (statusFilter && categoryFilter && priorityFilter && departmentFilter) {
 }
 
 
-// Admin notes helper - Two-click flow
+// Admin notes helper - Enhanced two-click flow
 document.addEventListener("click", function (e) {
   const btn = e.target.closest("[data-requires-notes]");
   if (!btn) return;
@@ -57,35 +63,46 @@ document.addEventListener("click", function (e) {
 
   const notesWrap = row.querySelector(".admin-notes-wrap");
   const textarea = row.querySelector(".admin-notes-shared");
+  const actionGroup = row.querySelector(".action-group");
 
   if (!notesWrap || !textarea) return;
 
-  // Check if textarea is already visible
-  if (notesWrap.style.display === "none" || notesWrap.style.display === "") {
-    // FIRST CLICK: Show textarea, prevent submission
+  // For in_progress status, notes are already visible
+  const isInProgress = row.dataset.status === 'in_progress';
+
+  // FIRST CLICK: reveal notes (only for pending), stop submit
+  if (!isInProgress && (notesWrap.style.display === "none" || notesWrap.style.display === "")) {
     e.preventDefault();
-    
     notesWrap.style.display = "block";
     textarea.focus();
     
-    // Update button to show it needs another click
-    const originalText = btn.textContent;
-    btn.dataset.originalText = originalText;
-    btn.textContent = originalText + " (Click again)";
+    // Hide all other buttons to reduce clutter
+    const allButtons = actionGroup.querySelectorAll("button");
+    allButtons.forEach(b => {
+      if (b !== btn) {
+        b.style.display = "none";
+      }
+    });
     
-  } else {
-    // SECOND CLICK: Transfer notes to hidden field and submit
-    const hidden = form.querySelector('input[name="admin_review_notes"]');
-    if (hidden) {
-      hidden.value = textarea.value.trim();
-    }
+    // Change button text to confirm
+    btn.textContent = btn.textContent.includes("Approve") ? "✓ Confirm Approval" : "✗ Confirm Denial";
     
-    // Change button type to submit so form will submit
-    btn.type = "submit";
-    // Form will submit naturally after this click
+    return;
   }
-});
 
+  // SECOND CLICK: inject notes and submit
+  const hidden = form.querySelector('input[name="admin_review_notes"]');
+  if (hidden) {
+    hidden.value = textarea.value.trim();
+  }
+
+  // Disable button and show loading state
+  btn.disabled = true;
+  btn.textContent = "Processing...";
+  
+  // Explicitly submit the form
+  form.submit();
+});
 
 
 // Optional: ESC key to cancel
@@ -295,3 +312,5 @@ document.addEventListener("click", function (e) {
     button.classList.add("active");
   }
 });
+
+

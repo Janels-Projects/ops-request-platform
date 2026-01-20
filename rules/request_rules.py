@@ -22,9 +22,9 @@ ALLOWED_TRANSITIONS = {
         "in_progress": {"cancelled"},  # Users can cancel in-progress requests too
     },
     "admin": {
-        "pending": {"approved", "denied", "in_progress"},  # 🔥 ADDED: in_progress
+        "pending": {"approved", "denied", "in_progress"},
         "approved": {"in_progress"},  # Keep this for backwards compatibility
-        "in_progress": {"completed"},
+        "in_progress": {"completed", "denied"},  # ✅ CHANGED THIS LINE
     }
 }
 

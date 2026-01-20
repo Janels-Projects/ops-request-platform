@@ -641,14 +641,13 @@
       <!-- Filters -->
       <div class="filters-card">
         <div class="filters-row">
-          <select id="statusFilter" class="filter-select">
-            <option value="all">All Statuses</option>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="in_progress">In Progress</option>
-            <option value="denied">Denied</option>
-            <option value="completed">Completed</option>
-          </select>
+        <select id="statusFilter" class="filter-select">
+          <option value="all" {% if selected_status == 'all' %}selected{% endif %}>All Statuses</option>
+          <option value="pending" {% if selected_status == 'pending' %}selected{% endif %}>Pending</option>
+          <option value="in_progress" {% if selected_status == 'in_progress' %}selected{% endif %}>In Progress</option>
+          <option value="completed" {% if selected_status == 'completed' %}selected{% endif %}>Completed</option>
+          <option value="denied" {% if selected_status == 'denied' %}selected{% endif %}>Denied</option>
+</select>
 
           <select id="departmentFilter" class="filter-select">
             <option value="all">All Departments</option>
@@ -711,6 +710,7 @@
               {% else %}
                 {% for r in requests %}
                 <tr class="request-row"
+                  data-id="{{ r['id'] }}"
                     data-status="{{ r['status'] }}"
                     data-category="{{ r['category'] }}"
                     data-priority="{{ r['priority'] }}"
@@ -740,7 +740,7 @@
                 </tr>
 
                 <!-- Expandable Detail Row -->
-                <tr class="detail-row" id="detail-{{ r['id'] }}">
+                <tr class="detail-row" id="details-{{ r['id'] }}" style="display:none;">
                   <td colspan="8" class="detail-cell">
                     <div class="detail-content">
                       
@@ -802,16 +802,17 @@
                         </div>
                       </div>
 
-                      <!-- Review Information -->
+                        <!-- Review Information -->
                       <div class="detail-section">
                         <h4>Review Information</h4>
                         {% if r["reviewed_by"] %}
                         <div class="detail-field">
                           <span class="detail-label">Reviewed By:</span>
-                          <span class="detail-value">{{ r["reviewed_by"] }}</span>
+                          <span class="detail-value">{{ r["reviewed_by_email"] }}</span>
                         </div>
                         {% else %}
                         <div class="detail-field">
+                          <span class="detail-label">Reviewed By:</span>
                           <span class="detail-value" style="color: #94a3b8; font-style: italic;">
                             Not yet reviewed
                           </span>
@@ -828,15 +829,14 @@
                         {% if r["status"] == "pending" %}
                         <form method="POST"
                           action="{{ url_for('dashboard.go_to_dashboard_from_requests') }}">
-                    <input type="hidden" name="request_id" value="{{ r['id'] }}">
-                    <button type="submit" class="goto-dashboard-btn">
-                      → Go to Dashboard to Review
-                  </button>
-                    </form> 
-                    {% endif %}
+                          <input type="hidden" name="request_id" value="{{ r['id'] }}">
+                          <button type="submit" class="goto-dashboard-btn">
+                            → Go to Dashboard to Review
+                          </button>
+                        </form> 
+                        {% endif %}
 
                       </div>
-
                     </div>
                   </td>
                 </tr>
@@ -852,124 +852,147 @@
 
   <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
   <script>
+    console.log("Script loaded");  // ✅ ADD THIS LINE FOR TESTING
+
     // Toggle expandable row details
     function toggleDetails(requestId) {
-      const detailRow = document.getElementById('detail-' + requestId);
-      const chevron = document.getElementById('chevron-' + requestId);
-      
-      if (detailRow.classList.contains('expanded')) {
-        detailRow.classList.remove('expanded');
-        chevron.classList.remove('expanded');
-      } else {
-        detailRow.classList.add('expanded');
-        chevron.classList.add('expanded');
-      }
-    }
+  const detailRow = document.getElementById('details-' + requestId);
+  const chevron = document.getElementById('chevron-' + requestId);
+  if (!detailRow) return;
 
-    // Search functionality
-    const searchInput = document.getElementById('searchInput');
-    searchInput.addEventListener('input', applyFilters);
+  if (detailRow.style.display === 'table-row') {
+    detailRow.style.display = 'none';
+    chevron.classList.remove('expanded');
+  } else {
+    detailRow.style.display = 'table-row';
+    chevron.classList.add('expanded');
+  }
+}
+    
 
-    // Date range filtering
-    const dateFrom = document.getElementById('dateFrom');
-    const dateTo = document.getElementById('dateTo');
-    dateFrom.addEventListener('change', applyFilters);
-    dateTo.addEventListener('change', applyFilters);
+    // Wrap everything else in DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', function() {
 
-    // Enhanced filter function
-    function applyFilters() {
-      const status = document.getElementById('statusFilter').value;
-      const category = document.getElementById('categoryFilter').value;
-      const priority = document.getElementById('priorityFilter').value;
-      const department = document.getElementById('departmentFilter').value;
-      const searchTerm = searchInput.value.toLowerCase();
-      const fromDate = dateFrom.value;
-      const toDate = dateTo.value;
+      // Search functionality
+      const searchInput = document.getElementById('searchInput');
+      searchInput.addEventListener('input', applyFilters);
 
-      let visibleCount = 0;
-      const allRows = document.querySelectorAll('.request-row');
+      // Date range filtering
+      const dateFrom = document.getElementById('dateFrom');
+      const dateTo = document.getElementById('dateTo');
+      dateFrom.addEventListener('change', applyFilters);
+      dateTo.addEventListener('change', applyFilters);
 
-      allRows.forEach(row => {
-        const matchesStatus = status === 'all' || row.dataset.status === status;
-        const matchesCategory = category === 'all' || row.dataset.category === category;
-        const matchesPriority = priority === 'all' || row.dataset.priority === priority;
-        const matchesDepartment = department === 'all' || row.dataset.department === department;
-        
-        const matchesSearch = searchTerm === '' || 
-          row.dataset.employee.includes(searchTerm) ||
-          row.dataset.request.includes(searchTerm) ||
-          row.dataset.category.toLowerCase().includes(searchTerm);
+      // Enhanced filter function
+      function applyFilters() {
+        console.log("applyFilters called");  // ✅ ADD THIS
+        const status = document.getElementById('statusFilter').value;
+        console.log("Status filter value:", status);  // ✅ ADD THIS
 
-        let matchesDateRange = true;
-        if (fromDate || toDate) {
-          const rowDate = row.dataset.submitted.split(' ')[0]; // Get YYYY-MM-DD part
-          if (fromDate && rowDate < fromDate) matchesDateRange = false;
-          if (toDate && rowDate > toDate) matchesDateRange = false;
-        }
+        const category = document.getElementById('categoryFilter').value;
+        const priority = document.getElementById('priorityFilter').value;
+        const department = document.getElementById('departmentFilter').value;
+        const searchTerm = searchInput.value.toLowerCase();
+        const fromDate = dateFrom.value;
+        const toDate = dateTo.value;
 
-        const shouldShow = matchesStatus && matchesCategory && matchesPriority && 
-                          matchesDepartment && matchesSearch && matchesDateRange;
+        let visibleCount = 0;
+        const allRows = document.querySelectorAll('.request-row');
 
-        if (shouldShow) {
-          row.style.display = '';
-          // Also show the detail row if it's expanded
-          const detailRow = row.nextElementSibling;
-          if (detailRow && detailRow.classList.contains('detail-row')) {
-            detailRow.style.display = detailRow.classList.contains('expanded') ? 'table-row' : 'none';
-          }
-          visibleCount++;
-        } else {
-          row.style.display = 'none';
-          // Hide the detail row too
-          const detailRow = row.nextElementSibling;
-          if (detailRow && detailRow.classList.contains('detail-row')) {
-            detailRow.style.display = 'none';
-          }
-        }
-      });
-
-      // Update row count
-      document.getElementById('visibleCount').textContent = visibleCount;
-    }
-
-    // Export to CSV functionality
-    document.getElementById('exportBtn').addEventListener('click', function() {
-      const rows = document.querySelectorAll('.request-row');
-      let csv = 'Employee,Request Type,Category,Priority,Department,Status,Submitted,Age (days)\n';
-
-      rows.forEach(row => {
-        if (row.style.display !== 'none') {
-          const cells = row.querySelectorAll('td');
-          const rowData = [];
+        allRows.forEach(row => {
+          const matchesStatus = status === 'all' || row.dataset.status === status;
+          const matchesCategory = category === 'all' || row.dataset.category === category;
+          const matchesPriority = priority === 'all' || row.dataset.priority === priority;
+          const matchesDepartment = department === 'all' || row.dataset.department === department;
           
-          // Skip the first cell (chevron icon) and get text content
-          for (let i = 1; i < cells.length; i++) {
-            let cellText = cells[i].textContent.trim();
-            // Escape quotes and wrap in quotes if contains comma
-            if (cellText.includes(',') || cellText.includes('"')) {
-              cellText = '"' + cellText.replace(/"/g, '""') + '"';
+          const matchesSearch = searchTerm === '' || 
+            row.dataset.employee.includes(searchTerm) ||
+            row.dataset.request.includes(searchTerm) ||
+            row.dataset.category.toLowerCase().includes(searchTerm);
+
+          let matchesDateRange = true;
+          if (fromDate || toDate) {
+            const rowDate = row.dataset.submitted.split(' ')[0]; // Get YYYY-MM-DD part
+            if (fromDate && rowDate < fromDate) matchesDateRange = false;
+            if (toDate && rowDate > toDate) matchesDateRange = false;
+          }
+
+          const shouldShow = matchesStatus && matchesCategory && matchesPriority && 
+                            matchesDepartment && matchesSearch && matchesDateRange;
+
+          if (shouldShow) {
+            row.style.display = '';
+            // Also show the detail row if it's expanded
+            const detailRow = row.nextElementSibling;
+            if (detailRow && detailRow.classList.contains('detail-row')) {
+              detailRow.style.display = detailRow.classList.contains('expanded') ? 'table-row' : 'none';
             }
-            rowData.push(cellText);
+            visibleCount++;
+          } else {
+            row.style.display = 'none';
+            // Hide the detail row too
+            const detailRow = row.nextElementSibling;
+            if (detailRow && detailRow.classList.contains('detail-row')) {
+              detailRow.style.display = 'none';
+            }
           }
-          
-          csv += rowData.join(',') + '\n';
-        }
+        });
+
+        // Update row count
+        document.getElementById('visibleCount').textContent = visibleCount;
+      }
+
+      // Export to CSV functionality
+      document.getElementById('exportBtn').addEventListener('click', function() {
+        const rows = document.querySelectorAll('.request-row');
+        let csv = 'Employee,Request Type,Category,Priority,Department,Status,Submitted,Age (days)\n';
+
+        rows.forEach(row => {
+          if (row.style.display !== 'none') {
+            const cells = row.querySelectorAll('td');
+            const rowData = [];
+            
+            // Skip the first cell (chevron icon) and get text content
+            for (let i = 1; i < cells.length; i++) {
+              let cellText = cells[i].textContent.trim();
+              // Escape quotes and wrap in quotes if contains comma
+              if (cellText.includes(',') || cellText.includes('"')) {
+                cellText = '"' + cellText.replace(/"/g, '""') + '"';
+              }
+              rowData.push(cellText);
+            }
+            
+            csv += rowData.join(',') + '\n';
+          }
+        });
+
+        // Create download link
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'requests_export_' + new Date().toISOString().split('T')[0] + '.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
       });
 
-      // Create download link
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'requests_export_' + new Date().toISOString().split('T')[0] + '.csv';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    });
+      
+    // Attach listeners to filters
+      document.getElementById('statusFilter').addEventListener('change', applyFilters);
+      document.getElementById('departmentFilter').addEventListener('change', applyFilters);
+      document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+      document.getElementById('priorityFilter').addEventListener('change', applyFilters);
 
-    // Set total count on page load
-    document.getElementById('totalCount').textContent = document.querySelectorAll('.request-row').length;
-  </script>
+  // Set total count on page load
+document.getElementById('totalCount').textContent = document.querySelectorAll('.request-row').length;
+
+// Run filter on page load
+  applyFilters();
+      
+    }); // ✅ THIS WAS MISSING - closes DOMContentLoaded
+
+</script>
 </body>
 </html>

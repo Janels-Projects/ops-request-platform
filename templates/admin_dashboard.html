@@ -618,23 +618,24 @@
         <p class="page-subtitle">Manage and review pending operations requests</p>
       </div>
 
-      <!-- Light Blue KPI Cards -->
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-label">{{ labels.pending }}</div>
-          <div class="kpi-value">{{ pending_count }}</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">{{ labels.avg }}</div>
-          <div class="kpi-value">
-            {% if avg_hours is none %}—{% else %}{{ "%.1f"|format(avg_hours) }}h{% endif %}
-          </div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">{{ labels.new_today }}</div>
-          <div class="kpi-value">{{ new_today }}</div>
-        </div>
-      </div>
+    <!-- Light Blue KPI Cards -->
+    <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">{{ labels.pending }}</div>
+      <div class="kpi-value">{{ action_required_count }}</div>  <!-- ← CHANGED -->
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">{{ labels.avg }}</div>
+      <div class="kpi-value">
+        {% if avg_hours is none %}—{% else %}{{ "%.1f"|format(avg_hours) }}h{% endif %}
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">{{ labels.new_today }}</div>
+    <div class="kpi-value">{{ new_today }}</div>
+  </div>
+</div>
+        
 
       <!-- Insight Box -->
       <div class="insight-box">
@@ -667,7 +668,6 @@
             <select id="statusFilter" class="filter-select">
               <option value="all">All Statuses</option>
               <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
               <option value="in_progress">In Progress</option>
               <option value="denied">Denied</option>
               <option value="completed">Completed</option>
@@ -755,12 +755,12 @@
         ></textarea>
       </div>
 
-      <!-- Approve Form (goes directly to "in_progress" status) -->
+      <!-- Approve Form -->
       <form method="POST" action="{{ url_for('requests.review_request', request_id=r['id']) }}" style="display:inline;">
         <input type="hidden" name="admin_review_notes" value="">
         <input type="hidden" name="action" value="approve">
         <button
-          type="button"
+          type="submit"
           class="action-btn approve"
           data-requires-notes
         >
@@ -773,7 +773,7 @@
         <input type="hidden" name="admin_review_notes" value="">
         <input type="hidden" name="action" value="deny">
         <button
-          type="button"
+          type="submit"
           class="action-btn deny"
           data-requires-notes
         >
@@ -783,23 +783,46 @@
 
     {% elif r['status'] == 'in_progress' %}
 
-    
-      <!-- Complete Form (only action needed after approval) -->
-      <form method="POST"
-      action="{{ url_for('requests.review_request', request_id=r['id']) }}"
-      style="display:inline;">
+      <!-- EDITABLE notes for in_progress -->
+      <div class="admin-notes-wrap" style="width:100%; margin-bottom:8px;">
+        <label style="display:block; font-size:12px; font-weight:600; margin-bottom:4px; color:#64748b;">
+          📝 Admin Notes (editable)
+        </label>
+        <textarea
+          class="admin-notes-shared"
+          rows="3"
+          placeholder="Update your notes or add more details..."
+          style="width:100%; padding:8px; border:2px solid #3b82f6; border-radius:8px; font-size:13px; font-family:inherit; background:#eff6ff;"
+        >{{ r['admin_review_notes'] or '' }}</textarea>
+      </div>
 
-  <input type="hidden" name="action" value="complete">
-  <input type="hidden" name="admin_review_notes" value="{{ r['admin_review_notes'] or '' }}">
+      <!-- Complete Form -->
+      <form method="POST" action="{{ url_for('requests.review_request', request_id=r['id']) }}" style="display:inline;">
+        <input type="hidden" name="action" value="complete">
+        <input type="hidden" name="admin_review_notes" value="">
+        <button 
+          type="submit" 
+          class="action-btn complete"
+          data-requires-notes
+        >
+          ✓ Mark Complete
+        </button>
+      </form>
 
-  <button type="submit" class="action-btn complete">
-    ✓ Complete
-  </button>
-</form>
-
+      <!-- Optional: Deny from in_progress -->
+      <form method="POST" action="{{ url_for('requests.review_request', request_id=r['id']) }}" style="display:inline; margin-left:8px;">
+        <input type="hidden" name="action" value="deny">
+        <input type="hidden" name="admin_review_notes" value="">
+        <button 
+          type="submit" 
+          class="action-btn deny"
+          data-requires-notes
+        >
+          ✗ Deny
+        </button>
+      </form>
 
     {% endif %}
-
   </div>
 </td>
 

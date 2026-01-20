@@ -17,8 +17,9 @@ def _admin_metrics():
     cur = conn.cursor()
 
     # --- Metrics ---
-    cur.execute("SELECT COUNT(*) AS c FROM requests WHERE status = 'pending'")
-    pending_count = cur.fetchone()["c"]
+    # FIXED: Count both pending AND in_progress
+    cur.execute("SELECT COUNT(*) AS c FROM requests WHERE status IN ('pending', 'in_progress')")
+    action_required_count = cur.fetchone()["c"]
 
     cur.execute("SELECT COUNT(*) AS c FROM requests WHERE DATE(created_at) = DATE('now')")
     new_today = cur.fetchone()["c"]
@@ -27,7 +28,7 @@ def _admin_metrics():
     cur.execute("""
         SELECT AVG((julianday(reviewed_at) - julianday(created_at)) * 24.0) AS avg_hours
         FROM requests
-        WHERE status = 'approved' AND reviewed_at IS NOT NULL
+        WHERE status = 'completed' AND reviewed_at IS NOT NULL
     """)
     avg_hours = cur.fetchone()["avg_hours"]
 
@@ -41,31 +42,29 @@ def _admin_metrics():
             r.priority,
             r.department,
             r.status,
+            r.admin_review_notes,
             CAST((julianday('now') - julianday(r.created_at)) AS INT) AS age_days,
             r.created_at
         FROM requests r
         JOIN users u ON u.id = r.user_id
-        WHERE r.status != 'cancelled'
+        WHERE r.status IN ('pending', 'in_progress')
         ORDER BY
             CASE r.status
                 WHEN 'pending' THEN 1
-                WHEN 'approved' THEN 2
-                WHEN 'in_progress' THEN 3
-                WHEN 'completed' THEN 4
-                WHEN 'denied' THEN 5
-                ELSE 6
+                WHEN 'in_progress' THEN 2
+                ELSE 3
             END,
             r.created_at DESC
         LIMIT 50
     """)
     requests = cur.fetchall()
 
-    # --- Insight (still based on pending only) ---
+    # --- Insight (based on pending + in_progress) ---
     cur.execute("""
         SELECT category,
                AVG(julianday('now') - julianday(created_at)) AS avg_pending_days
         FROM requests
-        WHERE status = 'pending'
+        WHERE status IN ('pending', 'in_progress')
         GROUP BY category
         ORDER BY avg_pending_days DESC
         LIMIT 1
@@ -80,12 +79,14 @@ def _admin_metrics():
         insight = "Queue looks healthy. No category is significantly delayed."
 
     return {
-        "pending_count": pending_count,
+        "action_required_count": action_required_count,  # RENAMED
         "new_today": new_today,
         "avg_hours": avg_hours,
-        "requests": requests,     # 👈 unified dataset
+        "requests": requests,
         "insight": insight
     }
+
+
 
 # - - - - - - - - - - - - - - 
 # Admin Dashboard
@@ -102,7 +103,7 @@ def admin_dashboard():
     # Theme-ready labels (corporate base). Later you can swap by org theme.
     labels = {
         "title": "Corporate Operations Dashboard",
-        "pending": "Pending Requests",
+        "pending": "Action Required", #Changed from 'pending requests'
         "avg": "Avg Approval Time",
         "new_today": "New Requests Today"
     }
@@ -217,11 +218,20 @@ def admin_requests():
     admin_id = int(get_jwt_identity())
     admin = _get_user_and_role(admin_id)
 
+    # Get filter from query params
+    selected_status = request.args.get('status', 'all')  
+
     conn = get_db_connection()
     requests = conn.execute("""
-        SELECT *
-        FROM requests
-        ORDER BY created_at DESC
+        SELECT 
+            r.*,
+            u.email AS employee,
+            reviewer.email AS reviewed_by_email,
+            CAST((julianday('now') - julianday(r.created_at)) AS INT) AS age_days
+        FROM requests r
+        JOIN users u ON u.id = r.user_id
+        LEFT JOIN users reviewer ON reviewer.id = r.reviewed_by
+        ORDER BY r.created_at DESC
     """).fetchall()
     conn.close()
 
@@ -231,7 +241,8 @@ def admin_requests():
         "admin_requests.html",
         user=admin,
         requests=requests,
-        categories=categories
+        categories=categories,
+        selected_status=selected_status
     )
 
 # - - - - - - - - - - - - - - 
