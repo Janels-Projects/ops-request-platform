@@ -90,7 +90,7 @@ def _admin_metrics():
 
 # - - - - - - - - - - - - - - 
 # Admin Dashboard
-@dashboard_bp.get("/dashboard/admin")
+@dashboard_bp.get("/admin")
 @jwt_required()
 def admin_dashboard():
     user_id = get_jwt_identity()
@@ -121,8 +121,8 @@ def admin_dashboard():
 
 
 # - - - - - - - - - - - - - - 
-#Admin Setting's GET Route (POST route on admin_settings.py file)
-@dashboard_bp.get("/dashboard/admin/settings")
+#Admin Setting's GET Route 
+@dashboard_bp.get("/admin/settings")
 @jwt_required()
 @admin_required
 def admin_settings_page():
@@ -136,7 +136,7 @@ def admin_settings_page():
 
 # - - - - - - - - - - - - - - 
 # Admin analytics GET route 
-@dashboard_bp.get("/dashboard/admin/analytics")
+@dashboard_bp.get("/admin/analytics")
 @jwt_required()
 @admin_required
 def admin_analytics():
@@ -211,28 +211,45 @@ def admin_integrations():
 
 #- - - - - - - - - - - - - - - - -
 # Admin Requests GET route
-@dashboard_bp.get("/dashboard/admin/requests")
+@dashboard_bp.get("/admin/requests")
 @jwt_required()
 @admin_required
 def admin_requests():
     admin_id = int(get_jwt_identity())
     admin = _get_user_and_role(admin_id)
 
-    # Get filter from query params
-    selected_status = request.args.get('status', 'all')  
+    # --- Read filter from query params ---
+    selected_status = request.args.get("status", "all")
 
     conn = get_db_connection()
-    requests = conn.execute("""
-        SELECT 
-            r.*,
+
+    sql = """
+        SELECT
+            r.id,
+            r.request_type,
+            r.category,
+            r.priority,
+            r.department,
+            r.status,
+            r.created_at,
+            r.admin_review_notes,
             u.email AS employee,
             reviewer.email AS reviewed_by_email,
             CAST((julianday('now') - julianday(r.created_at)) AS INT) AS age_days
         FROM requests r
         JOIN users u ON u.id = r.user_id
         LEFT JOIN users reviewer ON reviewer.id = r.reviewed_by
-        ORDER BY r.created_at DESC
-    """).fetchall()
+    """
+
+    params = []
+
+    if selected_status != "all":
+        sql += " WHERE r.status = ?"
+        params.append(selected_status)
+
+    sql += " ORDER BY r.created_at DESC"
+
+    requests = conn.execute(sql, params).fetchall()
     conn.close()
 
     categories = sorted(VALID_CATEGORIES)
@@ -244,6 +261,7 @@ def admin_requests():
         categories=categories,
         selected_status=selected_status
     )
+
 
 # - - - - - - - - - - - - - - 
 # Admin Requests POST route:
@@ -261,7 +279,7 @@ def go_to_dashboard_from_requests():
 
 
 # Admin Get Route Users
-@dashboard_bp.get("/dashboard/admin/users")
+@dashboard_bp.get("/admin/users")
 @jwt_required()
 @admin_required
 def admin_users():

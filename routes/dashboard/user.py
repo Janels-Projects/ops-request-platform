@@ -47,7 +47,7 @@ def _user_metrics(user_id: int):
     }
 
 
-@dashboard_bp.get("/dashboard")
+@dashboard_bp.get("/")
 @jwt_required()
 def dashboard_router():
     user_id = get_jwt_identity()
@@ -63,7 +63,7 @@ def dashboard_router():
 
 # - - - - - - - - - - - - - - 
 # User Dashboard 
-@dashboard_bp.get("/dashboard/user")
+@dashboard_bp.get("/user")
 @jwt_required()
 def user_dashboard():
     user_id = get_jwt_identity()
@@ -266,7 +266,7 @@ def user_knowledge_base():
     )
 
 # User Knowledge base article:
-@dashboard_bp.get("/dashboard/user/knowledge-base/article/<slug>")
+@dashboard_bp.get("/user/knowledge-base/article/<slug>")
 @jwt_required()
 def kb_article_detail(slug):
     import markdown
@@ -305,7 +305,7 @@ def kb_article_detail(slug):
 
 
 # User Integrations GET Route
-@dashboard_bp.get("/integrations")
+@dashboard_bp.get("/user/integrations")
 @jwt_required()
 def user_integrations():
     user_id = int(get_jwt_identity())

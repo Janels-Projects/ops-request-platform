@@ -8,9 +8,10 @@
     </a>
 
     <a class="{{ 'active' if active_page == 'integrations' else '' }}"
-    href="/dashboard/integrations">
-    Integrations
-    </a>
+     href="{{ url_for('dashboard.user_integrations') }}">
+     Integrations
+  </a>
+
 
 
     <a class="{{ 'active' if active_page == 'notifications' else '' }}" 

@@ -8,7 +8,7 @@ from routes.auth import admin_required
 
 
 # -------- Categories --------
-@dashboard_bp.post("/dashboard/admin/settings/categories/add")
+@dashboard_bp.post("/admin/settings/categories/add")
 @jwt_required()
 @admin_required
 def add_category():
@@ -22,13 +22,13 @@ def delete_category():
 
 
 # -------- Departments --------
-@dashboard_bp.post("/dashboard/admin/settings/departments/add")
+@dashboard_bp.post("/admin/settings/departments/add")
 @jwt_required()
 @admin_required
 def add_department():
     return redirect(url_for("dashboard.admin_settings_page"))
 
-@dashboard_bp.post("/dashboard/admin/settings/departments/delete")
+@dashboard_bp.post("/admin/settings/departments/delete")
 @jwt_required()
 @admin_required
 def delete_department():
@@ -36,7 +36,7 @@ def delete_department():
 
 
 # -------- Users --------
-@dashboard_bp.post("/dashboard/admin/settings/users/toggle-role")
+@dashboard_bp.post("/admin/settings/users/toggle-role")
 @jwt_required()
 @admin_required
 def toggle_user_role():
