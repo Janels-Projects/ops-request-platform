@@ -1,633 +1,336 @@
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{ labels.title }}</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <style>
-    * { box-sizing: border-box; }
-    
-    body { 
-      font-family: -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
-      background: #f8fafc;
-      margin: 0;
-      color: #1e293b;
-      overflow-x: hidden;
-    }
-
-    .admin-layout {
-      display: flex;
-      min-height: 100vh;
-    }
-
-    /* Dark Sidebar */
-    .admin-sidebar {
-      width: 260px;
-      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-      color: white;
-      padding: 24px;
-      box-shadow: 4px 0 12px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow-y: auto;
-    }
-
-    .sidebar-brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 32px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .brand-icon {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      flex-shrink: 0;
-    }
-
-    .brand-text {
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .sidebar-nav {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      flex: 1;
-    }
-
-    .nav-link {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      border-radius: 10px;
-      color: #cbd5e1;
-      text-decoration: none;
-      transition: all 0.2s;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-    }
-
-    .nav-link:hover {
-      background: rgba(255,255,255,0.08);
-      color: white;
-    }
-
-    .nav-link.active {
-      background: rgba(102, 126, 234, 0.2);
-      color: white;
-    }
-
-    .nav-icon {
-      font-size: 18px;
-      width: 20px;
-      text-align: center;
-      flex-shrink: 0;
-    }
-
-    .sidebar-user {
-      margin-top: auto;
-      padding-top: 20px;
-      border-top: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 10px;
-      margin-bottom: 12px;
-    }
-
-    .user-avatar {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      font-weight: 600;
-      flex-shrink: 0;
-    }
-
-    .user-details {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .user-name {
-      font-size: 13px;
-      font-weight: 600;
-      color: white;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .user-role {
-      font-size: 11px;
-      color: #94a3b8;
-    }
-
-    .logout-btn {
-      width: 100%;
-      padding: 12px;
-      background: rgba(71, 85, 105, 0.3);
-      color: #e2e8f0;
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      border-radius: 10px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: inherit;
-    }
-
-    .logout-btn:hover {
-      background: rgba(100, 116, 139, 0.4);
-      color: white;
-      border-color: rgba(203, 213, 225, 0.4);
-    }
-
-    /* Main Content Area */
-    .admin-main {
-      flex: 1;
-      padding: 32px;
-      overflow-y: auto;
-      max-height: 100vh;
-    }
-
-    .page-header {
-      margin-bottom: 32px;
-    }
-
-    .page-title {
-      font-size: 28px;
-      font-weight: 700;
-      color: #0f172a;
-      margin: 0 0 8px;
-    }
-
-    .page-subtitle {
-      color: #64748b;
-      font-size: 14px;
-    }
-
-    /* KPI Cards - Light Blue */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      margin-bottom: 28px;
-    }
-
-    .kpi-card {
-      background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-      border: 1px solid #bfdbfe;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .kpi-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.15);
-    }
-
-    .kpi-label {
-      font-size: 13px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #1e40af;
-      margin-bottom: 8px;
-    }
-
-    .kpi-value {
-      font-size: 36px;
-      font-weight: 800;
-      color: #1e3a8a;
-      line-height: 1;
-    }
-
-    /* Insight Box */
-    .insight-box {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 16px;
-      padding: 20px 24px;
-      color: white;
-      margin-bottom: 28px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-    }
-
-    .insight-icon {
-      width: 40px;
-      height: 40px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
-    }
-
-    .insight-text h3 {
-      margin: 0 0 4px;
-      font-size: 15px;
-      font-weight: 600;
-      opacity: 0.95;
-    }
-
-    .insight-text p {
-      margin: 0;
-      opacity: 0.9;
-      font-size: 14px;
-    }
-
-    /* Charts Section */
-    .charts-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-      margin-bottom: 28px;
-    }
-
-    .chart-card {
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-      border: 1px solid #f1f5f9;
-      height: 320px;
-    }
-
-    .chart-card h3 {
-      margin: 0 0 20px;
-      font-size: 16px;
-      font-weight: 600;
-      color: #0f172a;
-    }
-
-    .chart-card canvas {
-      width: 100% !important;
-      height: calc(100% - 40px) !important;
-      display: block;
-    }
-
-    /* Queue Section */
-    .queue-section h2 {
-      font-size: 20px;
-      font-weight: 700;
-      margin: 0 0 16px;
-      color: #0f172a;
-    }
-
-    .filters-card {
-      background: white;
-      border-radius: 12px;
-      padding: 16px 20px;
-      margin-bottom: 16px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-      border: 1px solid #f1f5f9;
-    }
-
-    .filters-row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .filter-select {
-      padding: 10px 14px;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      background: white;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: inherit;
-    }
-
-    .filter-select:hover {
-      border-color: #cbd5e1;
-    }
-
-    .filter-select:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    /* Table */
-    .table-card {
-      background: white;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-      border: 1px solid #f1f5f9;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    thead {
-      background: #f8fafc;
-    }
-
-    th {
-      padding: 16px;
-      text-align: left;
-      font-size: 13px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #64748b;
-      border-bottom: 2px solid #e2e8f0;
-    }
-
-    td {
-      padding: 16px;
-      font-size: 14px;
-      border-bottom: 1px solid #f1f5f9;
-    }
-
-    tr:hover {
-      background: #f8fafc;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 5px 12px;
-      border-radius: 9999px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .badge.pending { background: #dbeafe; color: #1e40af; }
-    .badge.approved { background: #d1fae5; color: #047857; }
-    .badge.denied { background: #fee2e2; color: #991b1b; }
-    .badge.in_progress { background: #fef3c7; color: #92400e; }
-    .badge.completed { background: #e0e7ff; color: #3730a3; }
-
-    .priority-high { color: #dc2626; font-weight: 600; }
-    .priority-medium { color: #f59e0b; font-weight: 600; }
-    .priority-low { color: #10b981; font-weight: 600; }
-
-    .action-group {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .action-btn {
-      padding: 7px 14px;
-      border: 1px solid #e2e8f0;
-      background: white;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .action-btn:hover {
-      background: #f8fafc;
-    }
-
-    .action-btn.approve {
-      background: #d1fae5;
-      border-color: #10b981;
-      color: #047857;
-    }
-
-    .action-btn.approve:hover {
-      background: #a7f3d0;
-    }
-
-    .action-btn.deny {
-      background: #fee2e2;
-      border-color: #ef4444;
-      color: #991b1b;
-    }
-
-    .action-btn.deny:hover {
-      background: #fecaca;
-    }
-
-    .action-btn.start {
-      background: #dbeafe;
-      border-color: #3b82f6;
-      color: #1e40af;
-    }
-
-    .action-btn.start:hover {
-      background: #bfdbfe;
-    }
-
-    .action-btn.complete {
-      background: #e0e7ff;
-      border-color: #6366f1;
-      color: #3730a3;
-    }
-
-    .action-btn.complete:hover {
-      background: #c7d2fe;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: #94a3b8;
-    }
-
-    .empty-state-icon {
-      font-size: 48px;
-      margin-bottom: 16px;
-    }
-
-    /* Mobile Responsive - KEEP SIDEBAR ON LEFT */
-    @media (max-width: 768px) {
-      .admin-layout {
-        /* Keep flex-direction: row so sidebar stays on left */
-      }
-
-      .admin-sidebar {
-        width: 70px; /* Narrow sidebar on mobile */
-        padding: 16px 8px;
-      }
-
-      .sidebar-brand {
-        flex-direction: column;
-        gap: 4px;
-        margin-bottom: 20px;
-        padding-bottom: 16px;
-      }
-
-      .brand-text {
-        display: none; /* Hide text on mobile, keep icon */
-      }
-
-      .brand-icon {
-        width: 32px;
-        height: 32px;
-      }
-
-      .sidebar-nav {
-        gap: 8px;
-      }
-
-      .nav-link {
-        flex-direction: column;
-        padding: 10px 8px;
-        gap: 4px;
-        font-size: 10px;
-        text-align: center;
-      }
-
-      .nav-icon {
-        font-size: 20px;
-      }
-
-      .user-info {
-        flex-direction: column;
-        padding: 8px;
-        gap: 4px;
-      }
-
-      .user-details {
-        display: none; /* Hide user details on mobile */
-      }
-
-      .user-avatar {
-        width: 32px;
-        height: 32px;
-        font-size: 14px;
-      }
-
-      .logout-btn {
-        padding: 8px;
-        font-size: 11px;
-      }
-
-      .admin-main {
-        padding: 16px 12px;
-      }
-
-      .page-title {
-        font-size: 22px;
-      }
-
-      .kpi-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
-
-      .kpi-card {
-        padding: 16px;
-      }
-
-      .kpi-value {
-        font-size: 28px;
-      }
-
-      .charts-row {
-        grid-template-columns: 1fr;
-      }
-
-      .chart-card {
-        height: 280px;
-      }
-
-      .filters-row {
-        flex-direction: column;
-      }
-
-      .filter-select {
-        width: 100%;
-      }
-
-      table {
-        font-size: 11px;
-      }
-
-      th, td {
-        padding: 10px 6px;
-      }
-
-      .action-btn {
-        padding: 6px 10px;
-        font-size: 11px;
-      }
-    }
-
-    /* Very small phones - even narrower sidebar */
-    @media (max-width: 480px) {
-      .admin-sidebar {
-        width: 60px;
-        padding: 12px 6px;
-      }
-
-      .nav-link {
-        padding: 8px 6px;
-        font-size: 9px;
-      }
-
-      .nav-icon {
-        font-size: 18px;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="admin-layout">
-
-    <!-- Dark Sidebar -->
-    {% include "partials/admin_sidebar.html" %}
-
-    <!-- Main Content -->
-    <main class="admin-main">
-
-      <!-- Page Header -->
-      <div class="page-header">
-        <h1 class="page-title">{{ labels.title }}</h1>
-        <p class="page-subtitle">Manage and review pending operations requests</p>
-      </div>
-
-    <!-- Light Blue KPI Cards -->
-    <div class="kpi-grid">
-    <div class="kpi-card">
-      <div class="kpi-label">{{ labels.pending }}</div>
-      <div class="kpi-value">{{ action_required_count }}</div>  <!-- ← CHANGED -->
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">{{ labels.avg }}</div>
-      <div class="kpi-value">
-        {% if avg_hours is none %}—{% else %}{{ "%.1f"|format(avg_hours) }}h{% endif %}
+{% extends "admin_base.html" %}
+
+{% block title %}{{ labels.title }}{% endblock %}
+
+{% block head_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block page_styles %}
+/* KPI Cards - Light Blue */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.kpi-card {
+  background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  border: 1px solid #bfdbfe;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.15);
+}
+
+.kpi-label {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #1e40af;
+  margin-bottom: 8px;
+}
+
+.kpi-value {
+  font-size: 36px;
+  font-weight: 800;
+  color: #1e3a8a;
+  line-height: 1;
+}
+
+/* Insight Box */
+.insight-box {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 20px 24px;
+  color: white;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.insight-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.insight-text h3 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 0.95;
+}
+
+.insight-text p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 14px;
+}
+
+/* Charts Section */
+.charts-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.chart-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  border: 1px solid #f1f5f9;
+  height: 320px;
+}
+
+.chart-card h3 {
+  margin: 0 0 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.chart-card canvas {
+  width: 100% !important;
+  height: calc(100% - 40px) !important;
+  display: block;
+}
+
+/* Queue Section */
+.queue-section h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 16px;
+  color: #0f172a;
+}
+
+.filters-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  border: 1px solid #f1f5f9;
+}
+
+.filters-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-select {
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.filter-select:hover {
+  border-color: #cbd5e1;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Table */
+.table-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  border: 1px solid #f1f5f9;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: #f8fafc;
+}
+
+th {
+  padding: 16px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #64748b;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+td {
+  padding: 16px;
+  font-size: 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+tr:hover {
+  background: #f8fafc;
+}
+
+.action-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  padding: 7px 14px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background: #f8fafc;
+}
+
+.action-btn.approve {
+  background: #d1fae5;
+  border-color: #10b981;
+  color: #047857;
+}
+
+.action-btn.approve:hover {
+  background: #a7f3d0;
+}
+
+.action-btn.deny {
+  background: #fee2e2;
+  border-color: #ef4444;
+  color: #991b1b;
+}
+
+.action-btn.deny:hover {
+  background: #fecaca;
+}
+
+.action-btn.start {
+  background: #dbeafe;
+  border-color: #3b82f6;
+  color: #1e40af;
+}
+
+.action-btn.start:hover {
+  background: #bfdbfe;
+}
+
+.action-btn.complete {
+  background: #e0e7ff;
+  border-color: #6366f1;
+  color: #3730a3;
+}
+
+.action-btn.complete:hover {
+  background: #c7d2fe;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #94a3b8;
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .kpi-card {
+    padding: 16px;
+  }
+
+  .kpi-value {
+    font-size: 28px;
+  }
+
+  .charts-row {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-card {
+    height: 280px;
+  }
+
+  .filters-row {
+    flex-direction: column;
+  }
+
+  .filter-select {
+    width: 100%;
+  }
+
+  table {
+    font-size: 11px;
+  }
+
+  th, td {
+    padding: 10px 6px;
+  }
+
+  .action-btn {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+  <h1 class="page-title">{{ labels.title }}</h1>
+  <p class="page-subtitle">Manage and review pending operations requests</p>
+</div>
+
+<!-- Light Blue KPI Cards -->
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">{{ labels.pending }}</div>
+    <div class="kpi-value">{{ action_required_count }}</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">{{ labels.avg }}</div>
+    <div class="kpi-value">
+      {% if avg_hours is none %}—{% else %}{{ "%.1f"|format(avg_hours) }}h{% endif %}
     </div>
   </div>
   <div class="kpi-card">
@@ -635,222 +338,210 @@
     <div class="kpi-value">{{ new_today }}</div>
   </div>
 </div>
-        
 
-      <!-- Insight Box -->
-      <div class="insight-box">
-        <div class="insight-icon">💡</div>
-        <div class="insight-text">
-          <h3>Ops Insight</h3>
-          <p>{{ insight }}</p>
-        </div>
-      </div>
-
-      <!-- Charts -->
-      <div class="charts-row">
-        <div class="chart-card">
-          <h3>Requests by Department</h3>
-          <canvas id="departmentChart"></canvas>
-        </div>
-        <div class="chart-card">
-          <h3>Priority Distribution</h3>
-          <canvas id="priorityChart"></canvas>
-        </div>
-      </div>
-
-      <!-- Queue Section -->
-      <div class="queue-section">
-        <h2>Pending Queue</h2>
-
-        <!-- Filters -->
-        <div class="filters-card">
-          <div class="filters-row">
-            <select id="statusFilter" class="filter-select">
-              <option value="all">All Statuses</option>
-              <option value="pending">Pending</option>
-              <option value="in_progress">In Progress</option>
-              <option value="denied">Denied</option>
-              <option value="completed">Completed</option>
-            </select>
-
-            <select id="departmentFilter" class="filter-select">
-              <option value="all">All Departments</option>
-              <option value="corporate">Corporate</option>
-              <option value="healthcare">Healthcare</option>
-              <option value="legal">Legal</option>
-            </select>
-
-            <select id="categoryFilter" class="filter-select">
-              <option value="all">All Categories</option>
-              {% for c in categories %}
-                <option value="{{ c }}">{{ c }}</option>
-              {% endfor %}
-            </select>
-
-            <select id="priorityFilter" class="filter-select">
-              <option value="all">All Priorities</option>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Table -->
-        <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th>Employee</th>
-                <th>Request</th>
-                <th>Category</th>
-                <th>Priority</th>
-                <th>Department</th>
-                <th>Status</th>
-                <th>Age</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-<tbody>
-  {% for r in requests %}
-  <tr class="request-row"
-      data-status="{{ r['status'] }}"
-      data-category="{{ r['category'] }}"
-      data-priority="{{ r['priority'] }}"
-      data-department="{{ r['department'] }}">
-
-    <td>{{ r["employee"] }}</td>
-
-    <td><strong>{{ r["request_type"] }}</strong></td>
-
-    <td>{{ r["category"] }}</td>
-
-    <td class="priority-{{ r['priority'] }}">
-      {{ r["priority"]|capitalize }}
-    </td>
-
-    <td>{{ r["department"]|capitalize }}</td>
-
-    <td>
-      <span class="badge {{ r['status'] }}">
-        {{ r["status"]|capitalize }}
-      </span>
-    </td>
-
-    <td>{{ r["age_days"] }}d</td>
-    
-<!-- ACTION COLUMN -->
-<td>
-  <div class="action-group">
-
-    {% if r['status'] == 'pending' %}
-
-      <!-- Shared admin notes (hidden by default, OUTSIDE forms) -->
-      <div class="admin-notes-wrap" style="display:none; width:100%; margin-bottom:8px;">
-        <textarea
-          class="admin-notes-shared"
-          rows="3"
-          placeholder="Add a note for the user (optional)"
-          style="width:100%; padding:8px; border:2px solid #e2e8f0; border-radius:8px; font-size:13px; font-family:inherit;"
-        ></textarea>
-      </div>
-
-      <!-- Approve Form -->
-      <form method="POST" action="{{ url_for('requests.review_request', request_id=r['id']) }}" style="display:inline;">
-        <input type="hidden" name="admin_review_notes" value="">
-        <input type="hidden" name="action" value="approve">
-        <button
-          type="submit"
-          class="action-btn approve"
-          data-requires-notes
-        >
-          ✓ Approve & Start
-        </button>
-      </form>
-
-      <!-- Deny Form -->
-      <form method="POST" action="{{ url_for('requests.review_request', request_id=r['id']) }}" style="display:inline;">
-        <input type="hidden" name="admin_review_notes" value="">
-        <input type="hidden" name="action" value="deny">
-        <button
-          type="submit"
-          class="action-btn deny"
-          data-requires-notes
-        >
-          ✗ Deny
-        </button>
-      </form>
-
-    {% elif r['status'] == 'in_progress' %}
-
-      <!-- EDITABLE notes for in_progress -->
-      <div class="admin-notes-wrap" style="width:100%; margin-bottom:8px;">
-        <label style="display:block; font-size:12px; font-weight:600; margin-bottom:4px; color:#64748b;">
-          📝 Admin Notes (editable)
-        </label>
-        <textarea
-          class="admin-notes-shared"
-          rows="3"
-          placeholder="Update your notes or add more details..."
-          style="width:100%; padding:8px; border:2px solid #3b82f6; border-radius:8px; font-size:13px; font-family:inherit; background:#eff6ff;"
-        >{{ r['admin_review_notes'] or '' }}</textarea>
-      </div>
-
-      <!-- Complete Form -->
-      <form method="POST" action="{{ url_for('requests.review_request', request_id=r['id']) }}" style="display:inline;">
-        <input type="hidden" name="action" value="complete">
-        <input type="hidden" name="admin_review_notes" value="">
-        <button 
-          type="submit" 
-          class="action-btn complete"
-          data-requires-notes
-        >
-          ✓ Mark Complete
-        </button>
-      </form>
-
-      <!-- Optional: Deny from in_progress -->
-      <form method="POST" action="{{ url_for('requests.review_request', request_id=r['id']) }}" style="display:inline; margin-left:8px;">
-        <input type="hidden" name="action" value="deny">
-        <input type="hidden" name="admin_review_notes" value="">
-        <button 
-          type="submit" 
-          class="action-btn deny"
-          data-requires-notes
-        >
-          ✗ Deny
-        </button>
-      </form>
-
-    {% endif %}
+<!-- Insight Box -->
+<div class="insight-box">
+  <div class="insight-icon">💡</div>
+  <div class="insight-text">
+    <h3>Ops Insight</h3>
+    <p>{{ insight }}</p>
   </div>
-</td>
+</div>
 
-  </tr>
-  {% else %}
-  <tr>
-    <td colspan="8">
-      <div class="empty-state">
-        <div class="empty-state-icon">🎉</div>
-        <p>No requests found</p>
-      </div>
-    </td>
-  </tr>
-  {% endfor %}
-</tbody>
+<!-- Charts -->
+<div class="charts-row">
+  <div class="chart-card">
+    <h3>Requests by Department</h3>
+    <canvas id="departmentChart"></canvas>
+  </div>
+  <div class="chart-card">
+    <h3>Priority Distribution</h3>
+    <canvas id="priorityChart"></canvas>
+  </div>
+</div>
 
-            </tbody>
-          </table>
-        </div>
+<!-- Queue Section -->
+<div class="queue-section">
+  <h2>Pending Queue</h2>
 
-      </div>
+  <!-- Filters -->
+  <div class="filters-card">
+    <div class="filters-row">
+      <select id="statusFilter" class="filter-select">
+        <option value="all">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="in_progress">In Progress</option>
+        <option value="denied">Denied</option>
+        <option value="completed">Completed</option>
+      </select>
 
-    </main>
+      <select id="departmentFilter" class="filter-select">
+        <option value="all">All Departments</option>
+        <option value="corporate">Corporate</option>
+        <option value="healthcare">Healthcare</option>
+        <option value="legal">Legal</option>
+      </select>
 
+      <select id="categoryFilter" class="filter-select">
+        <option value="all">All Categories</option>
+        {% for c in categories %}
+          <option value="{{ c }}">{{ c }}</option>
+        {% endfor %}
+      </select>
+
+      <select id="priorityFilter" class="filter-select">
+        <option value="all">All Priorities</option>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+      </select>
+    </div>
   </div>
 
-  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-  <!-- Admin notes helper (one textarea per request) -->
+  <!-- Table -->
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Request</th>
+          <th>Category</th>
+          <th>Priority</th>
+          <th>Department</th>
+          <th>Status</th>
+          <th>Age</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in requests %}
+        <tr class="request-row"
+            data-status="{{ r['status'] }}"
+            data-category="{{ r['category'] }}"
+            data-priority="{{ r['priority'] }}"
+            data-department="{{ r['department'] }}">
+
+          <td>{{ r["employee"] }}</td>
+          <td><strong>{{ r["request_type"] }}</strong></td>
+          <td>{{ r["category"] }}</td>
+          <td class="priority-{{ r['priority'] }}">
+            {{ r["priority"]|capitalize }}
+          </td>
+          <td>{{ r["department"]|capitalize }}</td>
+          <td>
+            <span class="badge {{ r['status'] }}">
+              {{ r["status"]|capitalize }}
+            </span>
+          </td>
+          <td>{{ r["age_days"] }}d</td>
+          
+          <!-- ACTION COLUMN -->
+          <td>
+            <div class="action-group">
+
+              {% if r['status'] == 'pending' %}
+
+                <!-- Shared admin notes (hidden by default, OUTSIDE forms) -->
+                <div class="admin-notes-wrap" style="display:none; width:100%; margin-bottom:8px;">
+                  <textarea
+                    class="admin-notes-shared"
+                    rows="3"
+                    placeholder="Add a note for the user (optional)"
+                    style="width:100%; padding:8px; border:2px solid #e2e8f0; border-radius:8px; font-size:13px; font-family:inherit;"
+                  ></textarea>
+                </div>
+
+                <!-- Approve Form -->
+                <form method="POST" action="{{ url_for('requests.review_request', request_id=r['id']) }}" style="display:inline;">
+                  <input type="hidden" name="admin_review_notes" value="">
+                  <input type="hidden" name="action" value="approve">
+                  <button
+                    type="submit"
+                    class="action-btn approve"
+                    data-requires-notes
+                  >
+                    ✓ Approve & Start
+                  </button>
+                </form>
+
+                <!-- Deny Form -->
+                <form method="POST" action="{{ url_for('requests.review_request', request_id=r['id']) }}" style="display:inline;">
+                  <input type="hidden" name="admin_review_notes" value="">
+                  <input type="hidden" name="action" value="deny">
+                  <button
+                    type="submit"
+                    class="action-btn deny"
+                    data-requires-notes
+                  >
+                    ✗ Deny
+                  </button>
+                </form>
+
+              {% elif r['status'] == 'in_progress' %}
+
+                <!-- EDITABLE notes for in_progress -->
+                <div class="admin-notes-wrap" style="width:100%; margin-bottom:8px;">
+                  <label style="display:block; font-size:12px; font-weight:600; margin-bottom:4px; color:#64748b;">
+                    📝 Admin Notes (editable)
+                  </label>
+                  <textarea
+                    class="admin-notes-shared"
+                    rows="3"
+                    placeholder="Update your notes or add more details..."
+                    style="width:100%; padding:8px; border:2px solid #3b82f6; border-radius:8px; font-size:13px; font-family:inherit; background:#eff6ff;"
+                  >{{ r['admin_review_notes'] or '' }}</textarea>
+                </div>
+
+                <!-- Complete Form -->
+                <form method="POST" action="{{ url_for('requests.review_request', request_id=r['id']) }}" style="display:inline;">
+                  <input type="hidden" name="action" value="complete">
+                  <input type="hidden" name="admin_review_notes" value="">
+                  <button 
+                    type="submit" 
+                    class="action-btn complete"
+                    data-requires-notes
+                  >
+                    ✓ Mark Complete
+                  </button>
+                </form>
+
+                <!-- Optional: Deny from in_progress -->
+                <form method="POST" action="{{ url_for('requests.review_request', request_id=r['id']) }}" style="display:inline; margin-left:8px;">
+                  <input type="hidden" name="action" value="deny">
+                  <input type="hidden" name="admin_review_notes" value="">
+                  <button 
+                    type="submit" 
+                    class="action-btn deny"
+                    data-requires-notes
+                  >
+                    ✗ Deny
+                  </button>
+                </form>
+
+              {% endif %}
+            </div>
+          </td>
+
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="8">
+            <div class="empty-state">
+              <div class="empty-state-icon">🎉</div>
+              <p>No requests found</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block page_scripts %}
+<!-- Admin notes helper (one textarea per request) -->
 <script>
 document.addEventListener("click", function (e) {
   const btn = e.target.closest("[data-requires-notes]");
@@ -889,61 +580,59 @@ document.addEventListener("submit", function (e) {
 });
 </script>
 
-
-  <script>
-    // Department Chart
-    const deptCtx = document.getElementById('departmentChart').getContext('2d');
-    new Chart(deptCtx, {
-      type: 'doughnut',
-      data: {
-        labels: ['Corporate', 'Healthcare', 'Legal'],
-        datasets: [{
-          data: [
-            {{ requests|selectattr('department', 'equalto', 'corporate')|list|length }},
-            {{ requests|selectattr('department', 'equalto', 'healthcare')|list|length }},
-            {{ requests|selectattr('department', 'equalto', 'legal')|list|length }}
-          ],
-          backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6'],
-          borderWidth: 0
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'bottom' }
-        }
+<script>
+  // Department Chart
+  const deptCtx = document.getElementById('departmentChart').getContext('2d');
+  new Chart(deptCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Corporate', 'Healthcare', 'Legal'],
+      datasets: [{
+        data: [
+          {{ requests|selectattr('department', 'equalto', 'corporate')|list|length }},
+          {{ requests|selectattr('department', 'equalto', 'healthcare')|list|length }},
+          {{ requests|selectattr('department', 'equalto', 'legal')|list|length }}
+        ],
+        backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom' }
       }
-    });
+    }
+  });
 
-    // Priority Chart
-    const prioCtx = document.getElementById('priorityChart').getContext('2d');
-    new Chart(prioCtx, {
-      type: 'bar',
-      data: {
-        labels: ['Low', 'Medium', 'High'],
-        datasets: [{
-          label: 'Requests',
-          data: [
-            {{ requests|selectattr('priority', 'equalto', 'low')|list|length }},
-            {{ requests|selectattr('priority', 'equalto', 'medium')|list|length }},
-            {{ requests|selectattr('priority', 'equalto', 'high')|list|length }}
-          ],
-          backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
-          borderRadius: 8
-        }]
+  // Priority Chart
+  const prioCtx = document.getElementById('priorityChart').getContext('2d');
+  new Chart(prioCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Low', 'Medium', 'High'],
+      datasets: [{
+        label: 'Requests',
+        data: [
+          {{ requests|selectattr('priority', 'equalto', 'low')|list|length }},
+          {{ requests|selectattr('priority', 'equalto', 'medium')|list|length }},
+          {{ requests|selectattr('priority', 'equalto', 'high')|list|length }}
+        ],
+        backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+        borderRadius: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false }
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false }
-        },
-        scales: {
-          y: { beginAtZero: true, ticks: { stepSize: 1 } }
-        }
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1 } }
       }
-    });
-  </script>
-</body>
-</html>
+    }
+  });
+</script>
+{% endblock %}
