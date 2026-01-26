@@ -2197,10 +2197,10 @@ body.dark .admin-note-text {
 
 .admin-sidebar .logout-btn {
   width: 100%;
-  padding: 10px;
-  background: #1f2937;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #e5e7eb;
+  padding: 10px 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
   border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
@@ -2209,8 +2209,10 @@ body.dark .admin-note-text {
 }
 
 .admin-sidebar .logout-btn:hover {
-  background: #374151;
-  border-color: rgba(255, 255, 255, 0.25);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #f1f5f9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .admin-sidebar form {
@@ -2224,7 +2226,7 @@ body.dark .admin-note-text {
 }
 
 .admin-sidebar {
-  width: 240px;
+  width: 220px;  /* Changed from 240px */
   background: linear-gradient(180deg, #0f172a, #1e293b);
   color: #e5e7eb;
   padding: 20px 16px;
@@ -2241,13 +2243,72 @@ body.dark .admin-note-text {
 /* Push content to the right of sidebar */
 .admin-shell > main,
 .admin-shell > .admin-content {
-  margin-left: 240px;
+  margin-left: 220px;
   flex: 1;
   width: 100%;
-  max-width: calc(100vw - 240px);
+  max-width: calc(100vw - 220px);
 }
 
 /* Admin Requests expandable detail rows */
 .detail-row {
   display: none;
+}
+
+/* SLA Status Styles */
+.sla-breached {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.sla-ok {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.sla-na {
+  color: #6c757d;
+}
+
+/* Combined SLA Card styling */
+.kpi-card.sla-combined .sla-metrics {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.kpi-card.sla-combined .sla-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.kpi-card.sla-combined .sla-count {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.kpi-card.sla-combined .sla-count.overdue {
+  color: #dc2626;
+}
+
+.kpi-card.sla-combined .sla-count.atrisk {
+  color: #f59e0b;
+}
+
+.kpi-card.sla-combined .sla-sublabel {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: #64748b;
+}
+
+.kpi-card.sla-combined .sla-divider {
+  font-size: 28px;
+  color: #64748b;  /* Changed from #cbd5e1 - much darker slate gray */
+  font-weight: 400;  /* Slightly bolder from 300 */
 }

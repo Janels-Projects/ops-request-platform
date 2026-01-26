@@ -80,6 +80,20 @@
       font-size: 12px;
       color: #64748b;
     }
+    /* SLA row styling */
+
+    .list-item.sla-overdue-row strong {
+    color: #dc2626;
+    }
+    
+    .list-item.sla-atrisk-row strong {
+    color: #f59e0b;
+    }
+
+    .list-item.sla-compliance-row strong {
+    color: #16a34a;
+}
+
 {% endblock %}
 
 {% block content %}
@@ -99,8 +113,31 @@
 
         <div class="item-list">
           <div class="list-item"><span>Total Requests</span><strong>{{ metrics.total_requests }}</strong></div>
-          <div class="list-item"><span>Pending</span><strong>{{ metrics.pending }}</strong></div>
-          <div class="list-item"><span>Completed</span><strong>{{ metrics.completed }}</strong></div>
+          <div class="list-item"><span>Pending</span><strong>{{ metrics.pending_requests }}</strong></div>
+          <div class="list-item"><span>Completed</span><strong>{{ metrics.completed_requests }}</strong></div>
+        </div>
+      </div>
+
+      <!-- NEW: SLA Performance Card -->
+      <div class="settings-card">
+        <div class="card-header">
+          <div class="card-icon">⚠️</div>
+          <h2 class="card-title">SLA Performance</h2>
+        </div>
+
+        <div class="item-list">
+          <div class="list-item sla-overdue-row">
+            <span>🔴 SLA Overdue</span>
+            <strong>{{ sla_overdue_count }}</strong>
+          </div>
+          <div class="list-item sla-atrisk-row">
+            <span>⚠️ At Risk (<24h)</span>
+            <strong>{{ sla_at_risk_count }}</strong>
+          </div>
+          <div class="list-item sla-compliance-row">
+            <span>✅ Compliance Rate</span>
+            <strong>{{ "%.1f"|format(sla_compliance_rate) }}%</strong>
+          </div>
         </div>
       </div>
 
@@ -121,7 +158,7 @@
           <tbody>
             {% for row in category_stats %}
             <tr>
-              <td>{{ row.category }}</td>
+              <td>{{ row.category|capitalize }}</td>
               <td>{{ row.total }}</td>
               <td>{{ row.completed }}</td>
             </tr>
@@ -133,4 +170,4 @@
       </div>
 
     </div>
- {% endblock %}
+{% endblock %}

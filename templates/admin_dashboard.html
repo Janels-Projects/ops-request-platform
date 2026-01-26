@@ -7,11 +7,12 @@
 {% endblock %}
 
 {% block page_styles %}
+
 /* KPI Cards - Light Blue */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(4, 1fr);  /* 4 equal columns */
+  gap: 16px;  /* Slightly tighter spacing */
   margin-bottom: 28px;
 }
 
@@ -43,6 +44,15 @@
   font-weight: 800;
   color: #1e3a8a;
   line-height: 1;
+}
+
+/* SLA-specific styling */
+.kpi-card.sla-overdue .kpi-value {
+  color: #dc2626;
+}
+
+.kpi-card.sla-atrisk .kpi-value {
+  color: #f59e0b;
 }
 
 /* Insight Box */
@@ -337,7 +347,23 @@ tr:hover {
     <div class="kpi-label">{{ labels.new_today }}</div>
     <div class="kpi-value">{{ new_today }}</div>
   </div>
+    <!-- NEW: Combined SLA Card -->
+  <div class="kpi-card sla-combined">
+    <div class="kpi-label">⚠️ SLA STATUS</div>
+    <div class="sla-metrics">
+      <div class="sla-metric">
+        <span class="sla-count overdue">{{ sla_overdue_count }}</span>
+        <span class="sla-sublabel">Overdue</span>
+      </div>
+      <div class="sla-divider">|</div>
+      <div class="sla-metric">
+        <span class="sla-count atrisk">{{ sla_at_risk_count }}</span>
+        <span class="sla-sublabel">At Risk</span>
+  </div>
 </div>
+</div>
+</div>
+
 
 <!-- Insight Box -->
 <div class="insight-box">

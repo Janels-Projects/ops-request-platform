@@ -461,6 +461,7 @@ tbody td:first-child {
           <th>Priority</th>
           <th>Department</th>
           <th>Status</th>
+          <th>SLA</th>
           <th>Submitted</th>
           <th>Age</th>
         </tr>
@@ -468,7 +469,7 @@ tbody td:first-child {
       <tbody id="requestTableBody">
         {% if requests|length == 0 %}
           <tr>
-            <td colspan="8">
+            <td colspan="9">
               <div class="empty-state">
                 <div class="empty-state-icon">📋</div>
                 <h3>No requests found</h3>
@@ -504,13 +505,26 @@ tbody td:first-child {
                 {{ r["status"]|capitalize }}
               </span>
             </td>
+            <!-- SLA Column -->
+             <td>
+                {% if r.sla %}
+                  {% if r.sla.breached %}
+                    <span class="sla-breached">🔴 Overdue</span>
+                  {% else %}
+                    <span class="sla-ok">🟢 {{ r.sla.remaining_hours }}h left</span>
+                  {% endif %}
+                {% else %}
+                  <span class="sla-na">—</span>
+                {% endif %}
+              </td>
+
             <td>{{ r["created_at"][:10] }}</td>
             <td>{{ r["age_days"] }}d</td>
           </tr>
 
           <!-- Expandable Detail Row -->
           <tr class="detail-row" id="details-{{ r['id'] }}" style="display:none;">
-            <td colspan="8" class="detail-cell">
+            <td colspan="9" class="detail-cell">
               <div class="detail-content">
                 
                 <!-- Request Details -->
@@ -570,6 +584,8 @@ tbody td:first-child {
                     <span class="badge {{ r['status'] }}">{{ r["status"]|capitalize }}</span>
                   </div>
                 </div>
+
+                
 
                 <!-- Review Information -->
                 <div class="detail-section">

@@ -6,6 +6,8 @@ from routes.auth import admin_required
 from models.db import get_db_connection
 from rules.request_rules import VALID_CATEGORIES
 from routes.dashboard.user import _get_user_and_role
+from models.db import get_db_connection
+from rules.sla_rules import compute_sla_status
 
 
 
@@ -24,7 +26,7 @@ def _admin_metrics():
     cur.execute("SELECT COUNT(*) AS c FROM requests WHERE DATE(created_at) = DATE('now')")
     new_today = cur.fetchone()["c"]
 
-    # Avg approval time (approved only)
+    # Avg completion time (completed requests only)
     cur.execute("""
         SELECT AVG((julianday(reviewed_at) - julianday(created_at)) * 24.0) AS avg_hours
         FROM requests
@@ -59,6 +61,20 @@ def _admin_metrics():
     """)
     requests = cur.fetchall()
 
+    sla_overdue_count = 0
+    sla_at_risk_count = 0
+
+    for r in requests:
+        sla = compute_sla_status(r)
+        if not sla:
+            continue
+        
+        if sla["breached"]:
+            sla_overdue_count += 1
+        elif sla["remaining_hours"] <= 24:
+            sla_at_risk_count += 1
+
+
     # --- Insight (based on pending + in_progress) ---
     cur.execute("""
         SELECT category,
@@ -79,11 +95,13 @@ def _admin_metrics():
         insight = "Queue looks healthy. No category is significantly delayed."
 
     return {
-        "action_required_count": action_required_count,  # RENAMED
+        "action_required_count": action_required_count,
         "new_today": new_today,
         "avg_hours": avg_hours,
         "requests": requests,
-        "insight": insight
+        "insight": insight,
+        "sla_overdue_count": sla_overdue_count,
+        "sla_at_risk_count": sla_at_risk_count,
     }
 
 
@@ -121,7 +139,7 @@ def admin_dashboard():
 
 
 # - - - - - - - - - - - - - - 
-#Admin Setting's GET Route 
+#Admin Setting's Route 
 @dashboard_bp.get("/admin/settings")
 @jwt_required()
 @admin_required
@@ -135,7 +153,7 @@ def admin_settings_page():
     )
 
 # - - - - - - - - - - - - - - 
-# Admin analytics GET route 
+# Admin analytics route 
 @dashboard_bp.get("/admin/analytics")
 @jwt_required()
 @admin_required
@@ -143,17 +161,67 @@ def admin_analytics():
     user_id = get_jwt_identity()
     user = _get_user_and_role(int(user_id))
 
-    # Stub metrics so the page loads
-    metrics = {
-        "total_requests": 0,
-        "pending_requests": 0,
-        "completed_requests": 0,
-    }
+    conn = get_db_connection()
+
+    metrics = conn.execute("""
+        SELECT
+            COUNT(*) AS total_requests,
+            SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending_requests,
+            SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS completed_requests
+        FROM requests
+    """).fetchone()
+
+    # Category stats
+    category_stats = conn.execute("""
+        SELECT
+            category,
+            COUNT(*) AS total,
+            SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS completed
+        FROM requests
+        GROUP BY category
+        ORDER BY total DESC
+    """).fetchall()
+
+    # Active requests for SLA calculation
+    active_requests = conn.execute("""
+        SELECT
+            id,
+            priority,
+            status,
+            created_at
+        FROM requests
+        WHERE status IN ('pending', 'in_progress')
+    """).fetchall()
+
+    conn.close()
+
+    # --- SLA analytics ---
+    sla_overdue_count = 0
+    sla_at_risk_count = 0
+    total_active = len(active_requests)
+
+    for r in active_requests:
+        sla = compute_sla_status(r)
+        if not sla:
+            continue
+
+        if sla["breached"]:
+            sla_overdue_count += 1
+        elif sla["remaining_hours"] <= 24:
+            sla_at_risk_count += 1
+
+    # Calculate SLA compliance rate
+    sla_on_track = total_active - sla_overdue_count - sla_at_risk_count
+    sla_compliance_rate = (sla_on_track / total_active * 100) if total_active > 0 else 0
 
     return render_template(
         "admin_analytics.html",
         user=user,
-        metrics=metrics
+        metrics=metrics,
+        category_stats=category_stats,
+        sla_overdue_count=sla_overdue_count,
+        sla_at_risk_count=sla_at_risk_count,
+        sla_compliance_rate=sla_compliance_rate
     )
 
 
@@ -163,8 +231,11 @@ def admin_analytics():
 @jwt_required()
 @admin_required
 def admin_analytics_post():
-    # Later: read form data (date range, category, department)
-    # For now, just reload page
+    """
+    Placeholder POST route.
+    Analytics is currently read-only.
+    Future use: filters (date range, department, category).
+    """
     return redirect(url_for("dashboard.admin_analytics"))
 
 
@@ -252,12 +323,21 @@ def admin_requests():
     requests = conn.execute(sql, params).fetchall()
     conn.close()
 
+    requests_with_sla = []
+
+    for r in requests:
+        sla = compute_sla_status(r)
+        r_dict = dict(r)
+        r_dict["sla"] = sla
+        requests_with_sla.append(r_dict)
+
+
     categories = sorted(VALID_CATEGORIES)
 
     return render_template(
         "admin_requests.html",
         user=admin,
-        requests=requests,
+        requests=requests_with_sla, 
         categories=categories,
         selected_status=selected_status
     )
