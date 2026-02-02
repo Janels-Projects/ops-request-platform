@@ -69,12 +69,12 @@ def _admin_metrics():
         if not sla:
             continue
         
-        if sla["breached"]:
+        if sla == "overdue":
             sla_overdue_count += 1
-        elif sla["remaining_hours"] <= 24:
+        elif sla == "at_risk":
             sla_at_risk_count += 1
 
-
+    
     # --- Insight (based on pending + in_progress) ---
     cur.execute("""
         SELECT category,
@@ -205,9 +205,9 @@ def admin_analytics():
         if not sla:
             continue
 
-        if sla["breached"]:
+        if sla == "overdue":
             sla_overdue_count += 1
-        elif sla["remaining_hours"] <= 24:
+        elif sla == "at risk":
             sla_at_risk_count += 1
 
     # Calculate SLA compliance rate
