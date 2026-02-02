@@ -226,7 +226,7 @@ def admin_analytics():
 
 
 # - - - - - - - - - - - - - - 
-# Admin anlalytics POST route
+# Admin anlalytics route
 @dashboard_bp.post("/dashboard/admin/analytics")
 @jwt_required()
 @admin_required
@@ -241,7 +241,7 @@ def admin_analytics_post():
 
 
 # - - - - - - - - - - - - - -
-# Admin Integrations GET route
+# Admin Integrations route
 @dashboard_bp.get("/admin/integrations")
 @jwt_required()
 @admin_required
@@ -281,7 +281,7 @@ def admin_integrations():
 
 
 #- - - - - - - - - - - - - - - - -
-# Admin Requests GET route
+# Admin Requests route
 @dashboard_bp.get("/admin/requests")
 @jwt_required()
 @admin_required
@@ -344,7 +344,7 @@ def admin_requests():
 
 
 # - - - - - - - - - - - - - - 
-# Admin Requests POST route:
+# Admin Requests route:
 @dashboard_bp.post("/dashboard/admin/requests/go-to-dashboard")
 @jwt_required()
 @admin_required
@@ -358,7 +358,7 @@ def go_to_dashboard_from_requests():
     return redirect(url_for("dashboard.admin_dashboard"))
 
 
-# Admin Get Route Users
+# Admin Route Users
 @dashboard_bp.get("/admin/users")
 @jwt_required()
 @admin_required

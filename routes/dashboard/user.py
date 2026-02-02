@@ -6,6 +6,9 @@ from models.db import get_db_connection
 from rules.request_rules import VALID_CATEGORIES
 from flask import render_template, abort
 import markdown
+from rules.sla_rules import compute_sla_status
+
+
 
 
 
@@ -184,7 +187,7 @@ def user_preferences():
 
 
 
-# User Settings (preference) POST Route:
+# User Settings (preference) Route:
 @dashboard_bp.post("/user/settings")
 @jwt_required()
 def update_user_preferences():
@@ -304,7 +307,7 @@ def kb_article_detail(slug):
     )
 
 
-# User Integrations GET Route
+# User Integrations Route
 @dashboard_bp.get("/user/integrations")
 @jwt_required()
 def user_integrations():
@@ -321,7 +324,7 @@ def user_integrations():
 
 
 # - - - - - - - - - - - - - -
-# API Route 
+# API Route 'My Requests'
 # - - - - - - - - - - - - - -
 @dashboard_bp.get("/api/user/requests")
 @jwt_required()
@@ -350,8 +353,12 @@ def user_requests_api():
     rows = cur.fetchall()
     conn.close()
 
-    return jsonify([
-        {
+    results = []
+
+    for row in rows:
+        sla = compute_sla_status(row)
+
+        results.append({
             "id": row["id"],
             "request_type": row["request_type"],
             "category": row["category"],
@@ -361,6 +368,16 @@ def user_requests_api():
             "created_at": row["created_at"],
             "reviewed_at": row["reviewed_at"],
             "admin_review_notes": row["admin_review_notes"],
-        }
-        for row in rows
-    ])
+            "sla": sla   
+        })
+
+    return jsonify(results)
+
+
+@dashboard_bp.get("/requests")
+@jwt_required()
+def user_requests():
+    return render_template(
+        "user_requests.html",
+        active_page="my_requests"
+    )

@@ -19,7 +19,7 @@ SLA_RULES = {
 def compute_sla_status(request):
     """
     Compute SLA status for a request row.
-    Returns None if SLA does not apply.
+    Returns string status: 'on_time', 'at_risk', or 'overdue'
     """
 
     status = request["status"]
@@ -40,8 +40,10 @@ def compute_sla_status(request):
     target_hours = rule["resolution_hours"]
     remaining_hours = target_hours - age_hours
 
-    return {
-        "breached": remaining_hours < 0,
-        "remaining_hours": max(0, int(remaining_hours)),
-        "target_hours": target_hours,
-    }
+    # Return simple string status
+    if remaining_hours < 0:
+        return "overdue"
+    elif remaining_hours < target_hours * 0.25:  # Less than 25% time remaining
+        return "at_risk"
+    else:
+        return "on_time"

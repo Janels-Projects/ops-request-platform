@@ -7,6 +7,12 @@
       Dashboard
     </a>
 
+    <a class="{{ 'active' if active_page == 'my_requests' else '' }}"
+    href="{{ url_for('dashboard.user_requests') }}">
+    My Requests
+  </a>
+
+
     <a class="{{ 'active' if active_page == 'integrations' else '' }}"
      href="{{ url_for('dashboard.user_integrations') }}">
      Integrations

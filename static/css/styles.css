@@ -957,7 +957,1239 @@ User Settings Page
   border-top: 1px solid #e0e0e0;
 }
 
+/* =========================
+   MY REQUESTS PAGE -    All styles are under .my-requests-page to avoid conflicts
+   ========================= */
 
+/* =========================
+   My Requests - Page Header
+   ========================= */
+
+.my-requests-page .requests-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  animation: fadeInDown 0.5s ease-out;
+}
+
+.my-requests-page .requests-page-header h1 {
+  font-size: 2rem;
+  margin: 0;
+  color: #1a1a1a;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.my-requests-page .requests-page-header .subtitle {
+  margin: 0.5rem 0 0 0;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.my-requests-page .new-request-btn-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.my-requests-page .new-request-btn-header:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+}
+
+.my-requests-page .new-request-btn-header:active {
+  transform: translateY(0);
+}
+
+
+/* =========================
+   My Requests - Search & Filters
+   ========================= */
+
+.my-requests-page .requests-controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  animation: fadeInUp 0.5s ease-out 0.1s both;
+}
+
+.my-requests-page .search-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 300px;
+}
+
+.my-requests-page .search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.my-requests-page .search-input {
+  width: 100%;
+  padding: 0.875rem 1rem 0.875rem 2.75rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.my-requests-page .search-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.my-requests-page .filter-group {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.my-requests-page .filter-select {
+  padding: 0.875rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  background: white;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 150px;
+}
+
+.my-requests-page .filter-select:hover {
+  border-color: #cbd5e1;
+}
+
+.my-requests-page .filter-select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+
+/* =========================
+   My Requests - Card Grid Layout
+   ========================= */
+
+.my-requests-page .requests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 1.5rem;
+  animation: fadeInUp 0.5s ease-out 0.2s both;
+}
+
+.my-requests-page .request-card {
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.my-requests-page .request-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.my-requests-page .request-card:hover {
+  border-color: #2563eb;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
+  transform: translateY(-4px);
+}
+
+.my-requests-page .request-card:hover::before {
+  transform: scaleX(1);
+}
+
+.my-requests-page .request-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.my-requests-page .request-title-section {
+  flex: 1;
+}
+
+.my-requests-page .request-type {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.3;
+}
+
+.my-requests-page .request-id {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+  font-family: 'Courier New', monospace;
+}
+
+.my-requests-page .request-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+
+/* =========================
+   My Requests - Card Meta Info
+   ========================= */
+
+.my-requests-page .request-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.my-requests-page .meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.my-requests-page .meta-icon {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.my-requests-page .request-department {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  background: #f1f5f9;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: #475569;
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+.my-requests-page .dept-icon {
+  color: #64748b;
+}
+
+
+/* =========================
+   My Requests - SLA Badge Styles
+   (Namespaced to avoid conflicts with admin SLA styles)
+   ========================= */
+
+.my-requests-page .status-progress {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.my-requests-page .sla-badge {
+  padding: 0.3rem 0.65rem;
+  border-radius: 5px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.my-requests-page .sla-badge.sla-good {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.my-requests-page .sla-badge.sla-warning {
+  background: #fed7aa;
+  color: #92400e;
+}
+
+.my-requests-page .sla-badge.sla-danger {
+  background: #fecaca;
+  color: #991b1b;
+}
+
+
+/* =========================
+   My Requests - Loading States
+   ========================= */
+
+.my-requests-page .loading-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  color: #64748b;
+}
+
+.my-requests-page .spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #e2e8f0;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+
+/* =========================
+   My Requests - Empty State
+   ========================= */
+
+.my-requests-page .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  background: white;
+  border: 2px dashed #e2e8f0;
+  border-radius: 14px;
+  margin-top: 2rem;
+}
+
+.my-requests-page .empty-icon {
+  margin-bottom: 1.5rem;
+  opacity: 0.6;
+}
+
+.my-requests-page .empty-state h2 {
+  font-size: 1.5rem;
+  color: #1e293b;
+  margin: 0 0 0.5rem 0;
+}
+
+.my-requests-page .empty-state p {
+  color: #64748b;
+  margin: 0 0 1.5rem 0;
+  font-size: 0.95rem;
+}
+
+.my-requests-page .new-request-btn-empty {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.my-requests-page .new-request-btn-empty:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+}
+
+
+/* =========================
+   My Requests - Error State
+   ========================= */
+
+.my-requests-page .error-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.my-requests-page .error-icon {
+  margin-bottom: 1.5rem;
+  opacity: 0.7;
+}
+
+.my-requests-page .error-state h2 {
+  font-size: 1.5rem;
+  color: #1e293b;
+  margin: 0 0 0.5rem 0;
+}
+
+.my-requests-page .error-state p {
+  color: #64748b;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+
+/* =========================
+   My Requests - Detail Modal Extensions
+   (Extends your existing modal styles)
+   ========================= */
+
+.my-requests-page .modal-detail {
+  max-width: 700px;
+}
+
+.my-requests-page .request-id-label {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0.25rem 0 0 0;
+  font-family: 'Courier New', monospace;
+}
+
+.my-requests-page .modal-body {
+  padding: 1.5rem;
+}
+
+.my-requests-page .detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.my-requests-page .detail-section {
+  background: #f8fafc;
+  padding: 1.25rem;
+  border-radius: 10px;
+}
+
+.my-requests-page .detail-section h3 {
+  margin: 0 0 1rem 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.my-requests-page .detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.my-requests-page .detail-row:last-child {
+  border-bottom: none;
+}
+
+.my-requests-page .detail-label {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.my-requests-page .detail-value {
+  font-size: 0.9rem;
+  color: #1e293b;
+  font-weight: 600;
+  text-align: right;
+}
+
+.my-requests-page .full-width {
+  grid-column: 1 / -1;
+}
+
+.my-requests-page .review-notes-box {
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 0.5rem;
+}
+
+.my-requests-page .review-notes-box p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.6;
+  font-size: 0.9rem;
+}
+
+
+/* =========================
+   My Requests - New Animations
+   ========================= */
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* =========================
+   My Requests - Responsive Overrides
+   ========================= */
+
+@media (max-width: 768px) {
+  .my-requests-page .requests-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .my-requests-page .new-request-btn-header {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .my-requests-page .requests-controls {
+    flex-direction: column;
+  }
+
+  .my-requests-page .search-wrapper {
+    min-width: 100%;
+  }
+
+  .my-requests-page .filter-group {
+    flex-direction: column;
+  }
+
+  .my-requests-page .filter-select {
+    width: 100%;
+  }
+
+  .my-requests-page .requests-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .my-requests-page .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .my-requests-page .request-card {
+    padding: 1rem;
+  }
+
+  .my-requests-page .request-badges {
+    align-items: flex-start;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .my-requests-page .request-card-header {
+    flex-direction: column;
+  }
+}
+
+/* =========================
+   MY REQUESTS PAGE - LIGHT MODE MODAL STYLES
+   ========================= */
+
+#requestDetailModal .modal-content {
+  max-height: 85vh;
+  max-width: 650px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+}
+
+#requestDetailModal .modal-header {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 2px solid #e2e8f0;
+  padding: 1rem 1.5rem;
+}
+
+#requestDetailModal .modal-header h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  line-height: 1.3;
+}
+
+#requestDetailModal .request-id-label {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0.25rem 0 0 0;
+  line-height: 1;
+}
+
+#requestDetailModal .modal-close {
+  background-color: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  font-size: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+#requestDetailModal .modal-close:hover {
+  background-color: #e2e8f0;
+  color: #475569;
+  border-color: #cbd5e1;
+}
+
+#requestDetailModal .modal-body {
+  padding: 1.25rem 1.5rem;
+  background-color: #ffffff;
+}
+
+#requestDetailModal .detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.875rem;
+  margin-bottom: 0.875rem;
+}
+
+#requestDetailModal .detail-section {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+}
+
+#requestDetailModal .detail-section h3 {
+  color: #3b82f6;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.65rem 0;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid #dbeafe;
+  line-height: 1;
+}
+
+#requestDetailModal .detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #f1f5f9;
+  line-height: 1.3;
+  gap: 0.75rem;
+}
+
+#requestDetailModal .detail-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+#requestDetailModal .detail-label {
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+#requestDetailModal .detail-value {
+  color: #1e293b;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-align: right;
+  word-break: break-word;
+}
+
+#requestDetailModal .full-width {
+  grid-column: 1 / -1;
+}
+
+#requestDetailModal .full-width h3 {
+  color: #f59e0b;
+  border-bottom-color: #fed7aa;
+}
+
+#requestDetailModal .review-notes-box {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1px solid #fbbf24;
+  border-left: 3px solid #f59e0b;
+  padding: 0.875rem;
+  border-radius: 6px;
+  margin-top: 0.5rem;
+}
+
+#requestDetailModal .review-notes-box p {
+  color: #78350f;
+  line-height: 1.5;
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #requestDetailModal .modal-content {
+    max-height: 90vh;
+  }
+  
+  #requestDetailModal .detail-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  #requestDetailModal .modal-header {
+    padding: 0.875rem 1.25rem;
+  }
+  
+  #requestDetailModal .modal-body {
+    padding: 1rem 1.25rem;
+  }
+}
+
+
+/* =========================
+   MY REQUESTS PAGE - DARK MODE
+   
+ 
+   Dark Mode - Page Header
+   ========================= */
+
+body.dark .my-requests-page .requests-page-header h1 {
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+body.dark .my-requests-page .requests-page-header .subtitle {
+  color: #94a3b8;
+}
+
+body.dark .my-requests-page .new-request-btn-header {
+  background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.4);
+}
+
+body.dark .my-requests-page .new-request-btn-header:hover {
+  box-shadow: 0 6px 20px rgba(30, 64, 175, 0.5);
+}
+
+
+/* =========================
+   Dark Mode - Search & Filters
+   ========================= */
+
+body.dark .my-requests-page .search-input {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+body.dark .my-requests-page .search-input::placeholder {
+  color: #64748b;
+}
+
+body.dark .my-requests-page .search-input:focus {
+  border-color: #3b82f6;
+  background-color: #1e293b;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+body.dark .my-requests-page .search-icon {
+  color: #64748b;
+}
+
+body.dark .my-requests-page .filter-select {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+body.dark .my-requests-page .filter-select:hover {
+  border-color: #475569;
+}
+
+body.dark .my-requests-page .filter-select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+
+/* =========================
+   Dark Mode - Request Cards (WHITE CARDS)
+   ========================= */
+
+body.dark .my-requests-page .request-card {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  color: #1e293b;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+}
+
+body.dark .my-requests-page .request-card::before {
+  background: linear-gradient(90deg, #1e40af, #3b82f6);
+}
+
+body.dark .my-requests-page .request-card:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
+  background-color: #f8fafc;
+}
+
+body.dark .my-requests-page .request-type {
+  color: #1e293b;
+}
+
+body.dark .my-requests-page .request-id {
+  color: #64748b;
+}
+
+
+/* =========================
+   Dark Mode - Card Meta Info
+   ========================= */
+
+body.dark .my-requests-page .request-meta {
+  border-top-color: #e2e8f0;
+}
+
+body.dark .my-requests-page .meta-item {
+  color: #64748b;
+}
+
+body.dark .my-requests-page .meta-icon {
+  color: #94a3b8;
+}
+
+body.dark .my-requests-page .request-department {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+body.dark .my-requests-page .dept-icon {
+  color: #64748b;
+}
+
+
+/* =========================
+   Dark Mode - Status & Priority Badges
+   ========================= */
+
+body.dark .my-requests-page .status-badge.status-pending {
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+  color: #dbeafe;
+  border: 1px solid #3b82f6;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+
+body.dark .my-requests-page .status-badge.status-progress {
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+  color: #dbeafe;
+  border: 1px solid #3b82f6;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+
+body.dark .my-requests-page .status-badge.status-approved,
+body.dark .my-requests-page .status-badge.status-completed {
+  background: linear-gradient(135deg, #065f46 0%, #059669 100%);
+  color: #d1fae5;
+  border: 1px solid #10b981;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+body.dark .my-requests-page .status-badge.status-denied {
+  background: linear-gradient(135deg, #991b1b 0%, #dc2626 100%);
+  color: #fecaca;
+  border: 1px solid #ef4444;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+}
+
+
+/* =========================
+   Dark Mode - SLA Badges
+   ========================= */
+
+body.dark .my-requests-page .sla-badge.sla-good {
+  background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+  color: #d1fae5;
+  border: 1px solid #059669;
+  box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
+}
+
+body.dark .my-requests-page .sla-badge.sla-warning {
+  background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
+  color: #fed7aa;
+  border: 1px solid #f59e0b;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+}
+
+body.dark .my-requests-page .sla-badge.sla-danger {
+  background: linear-gradient(135deg, #991b1b 0%, #dc2626 100%);
+  color: #fecaca;
+  border: 1px solid #dc2626;
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+}
+
+
+/* =========================
+   Dark Mode - Priority Text Colors
+   ========================= */
+
+body.dark .my-requests-page .priority-low {
+  color: #6ee7b7;
+}
+
+body.dark .my-requests-page .priority-medium {
+  color: #fbbf24;
+}
+
+body.dark .my-requests-page .priority-high {
+  color: #f87171;
+}
+
+
+/* =========================
+   Dark Mode - Loading & Empty States
+   ========================= */
+
+body.dark .my-requests-page .loading-state {
+  color: #94a3b8;
+}
+
+body.dark .my-requests-page .spinner {
+  border-color: #1e293b;
+  border-top-color: #3b82f6;
+}
+
+body.dark .my-requests-page .empty-state {
+  background-color: #151b2e;
+  border-color: #1e293b;
+  color: #f1f5f9;
+}
+
+body.dark .my-requests-page .empty-state h2 {
+  color: #ffffff;
+}
+
+body.dark .my-requests-page .empty-state p {
+  color: #94a3b8;
+}
+
+body.dark .my-requests-page .new-request-btn-empty {
+  background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.4);
+}
+
+body.dark .my-requests-page .new-request-btn-empty:hover {
+  box-shadow: 0 6px 20px rgba(30, 64, 175, 0.5);
+}
+
+body.dark .my-requests-page .error-state {
+  color: #f1f5f9;
+}
+
+body.dark .my-requests-page .error-state h2 {
+  color: #ffffff;
+}
+
+body.dark .my-requests-page .error-state p {
+  color: #94a3b8;
+}
+
+
+
+/* =========================
+   DARK MODE - DETAIL MODAL (ULTIMATE NUCLEAR FIX)
+
+   ========================= */
+
+body.dark .modal-overlay#requestDetailModal {
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+}
+
+/* Target modal content with maximum specificity */
+body.dark #requestDetailModal .modal-content,
+body.dark #requestDetailModal.modal-overlay .modal-content,
+body.dark #requestDetailModal.modal-overlay.active .modal-content {
+  background: linear-gradient(180deg, #1a2332 0%, #151b2e 100%) !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #334155 !important;
+  max-height: 85vh !important;
+  max-width: 650px !important;
+  padding: 0 !important;
+}
+
+/* Nuclear option for modal header - target ALL divs */
+body.dark #requestDetailModal .modal-header,
+body.dark #requestDetailModal .modal-header *,
+body.dark #requestDetailModal .modal-header > *,
+body.dark #requestDetailModal .modal-header div,
+body.dark #requestDetailModal .modal-header > div,
+body.dark #requestDetailModal .modal-header > div:first-child {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+body.dark #requestDetailModal .modal-header {
+  background-color: #1e293b !important;
+  border-bottom: 1px solid #334155 !important;
+  padding: 1rem 1.5rem !important;
+  margin-bottom: 0 !important;
+}
+
+body.dark #requestDetailModal .modal-header h2 {
+  color: #ffffff !important;
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  margin: 0 !important;
+  line-height: 1.3 !important;
+  background: none !important;
+  background-color: transparent !important;
+}
+
+body.dark #requestDetailModal .request-id-label,
+body.dark #requestDetailModal .request-id-label * {
+  color: #94a3b8 !important;
+  font-size: 0.75rem !important;
+  margin: 0.25rem 0 0 0 !important;
+  line-height: 1 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+body.dark #requestDetailModal .modal-close {
+  color: #94a3b8 !important;
+  background-color: #0f172a !important;
+  border: 1px solid #334155 !important;
+  border-radius: 6px !important;
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 1.5rem !important;
+  transition: all 0.2s ease !important;
+}
+
+body.dark #requestDetailModal .modal-close:hover {
+  background-color: #334155 !important;
+  color: #ffffff !important;
+  border-color: #475569 !important;
+}
+
+body.dark #requestDetailModal .modal-body {
+  background-color: transparent !important;
+  padding: 1.25rem 1.5rem !important;
+}
+
+body.dark #requestDetailModal .detail-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 0.875rem !important;
+  margin-bottom: 0.875rem !important;
+}
+
+body.dark #requestDetailModal .detail-section {
+  background: linear-gradient(135deg, #1e293b 0%, #1a2332 100%) !important;
+  border: 1px solid #334155 !important;
+  padding: 0.875rem 1rem !important;
+  border-radius: 8px !important;
+}
+
+body.dark #requestDetailModal .detail-section h3 {
+  color: #3b82f6 !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  margin: 0 0 0.65rem 0 !important;
+  padding-bottom: 0.4rem !important;
+  border-bottom: 2px solid #334155 !important;
+  line-height: 1 !important;
+  background: none !important;
+  background-color: transparent !important;
+}
+
+body.dark #requestDetailModal .detail-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 0.4rem 0 !important;
+  border-bottom: 1px solid #1e293b !important;
+  line-height: 1.3 !important;
+  gap: 0.75rem !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+body.dark #requestDetailModal .detail-row:last-child {
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+}
+
+body.dark #requestDetailModal .detail-label {
+  color: #94a3b8 !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+  flex-shrink: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+body.dark #requestDetailModal .detail-value {
+  color: #f1f5f9 !important;
+  font-weight: 600 !important;
+  font-size: 0.85rem !important;
+  text-align: right !important;
+  word-break: break-word !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+body.dark #requestDetailModal .full-width {
+  grid-column: 1 / -1 !important;
+}
+
+body.dark #requestDetailModal .full-width h3 {
+  color: #f59e0b !important;
+}
+
+body.dark #requestDetailModal .review-notes-box {
+  background: linear-gradient(135deg, #0f172a 0%, #1a2332 100%) !important;
+  border: 1px solid #334155 !important;
+  border-left: 3px solid #f59e0b !important;
+  padding: 0.875rem !important;
+  border-radius: 6px !important;
+  margin-top: 0.5rem !important;
+}
+
+body.dark #requestDetailModal .review-notes-box p {
+  color: #e2e8f0 !important;
+  line-height: 1.5 !important;
+  margin: 0 !important;
+  font-size: 0.85rem !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  body.dark #requestDetailModal .modal-content {
+    max-height: 90vh !important;
+  }
+  
+  body.dark #requestDetailModal .detail-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  body.dark #requestDetailModal .modal-header {
+    padding: 0.875rem 1.25rem !important;
+  }
+  
+  body.dark #requestDetailModal .modal-body {
+    padding: 1rem 1.25rem !important;
+  }
+}
+
+
+/* =========================
+   DARK MODE - NEW REQUEST MODAL (WHITE)
+   ========================= */
+
+body.dark #newRequestModal .modal-content {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+}
+
+body.dark #newRequestModal .modal-header {
+  border-bottom-color: #e2e8f0 !important;
+  background-color: #ffffff !important;
+}
+
+body.dark #newRequestModal .modal-header h2 {
+  color: #1e293b !important;
+}
+
+body.dark #newRequestModal .modal-close {
+  color: #64748b !important;
+}
+
+body.dark #newRequestModal .modal-close:hover {
+  background-color: #f1f5f9 !important;
+  color: #1e293b !important;
+}
+
+body.dark #newRequestModal .modal-form .field label {
+  color: #475569 !important;
+}
+
+body.dark #newRequestModal .input {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+body.dark #newRequestModal .input:focus {
+  border-color: #3b82f6 !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+body.dark #newRequestModal .btn-group {
+  border-top-color: #e2e8f0 !important;
+}
+
+body.dark #newRequestModal .btn-secondary {
+  background-color: #f1f5f9 !important;
+  color: #475569 !important;
+}
+
+body.dark #newRequestModal .btn-secondary:hover {
+  background-color: #e2e8f0 !important;
+}
+
+body.dark #newRequestModal .btn-primary {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25) !important;
+}
+
+body.dark #newRequestModal .btn-primary:hover {
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35) !important;
+}
 
 
 
@@ -1163,6 +2395,8 @@ html, body {
 
 .kb-article-link:visited {
   color: inherit;
+
+
 }
 
 /* =========================
@@ -2250,7 +3484,7 @@ body.dark .admin-note-text {
 }
 
 /* Admin Requests expandable detail rows */
-.detail-row {
+.admin-page .detail-row {
   display: none;
 }
 
