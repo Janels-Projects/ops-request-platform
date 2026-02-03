@@ -318,8 +318,23 @@ def user_integrations():
         "integrations.html",
         user=user,
         is_admin=False,
-        active_page="integrations"
+        active_page="tools"
     )
+
+# Users Slack Redirect Route
+@dashboard_bp.get("/tools/slack")
+@jwt_required()
+def open_slack():
+    return redirect("https://slack.com")
+
+
+# Users Slack redirect Route
+@dashboard_bp.get("/tools/teams")
+@jwt_required()
+def open_teams():
+    return redirect("https://teams.microsoft.com")
+
+
 
 
 

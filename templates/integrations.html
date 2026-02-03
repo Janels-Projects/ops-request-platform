@@ -1,636 +1,345 @@
 {% extends "base.html" %}
 {% block title %}Integrations{% endblock %}
 
+{% block extra_css %}
+<style>
+  :root {
+    --card-bg: #ffffff;
+    --card-border: #e5e7eb;
+    --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --card-shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.15);
+    --text-primary: #111827;
+    --text-secondary: #6b7280;
+    --text-muted: #9ca3af;
+    --badge-bg: #f3f4f6;
+    --badge-text: #6b7280;
+    --teams-color: #5558AF;
+    --slack-color: #611f69;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    --card-bg: #1f2937;
+    --card-border: #374151;
+    --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --card-shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.5);
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --text-muted: #9ca3af;
+    --badge-bg: #374151;
+    --badge-text: #d1d5db;
+  }
+
+  .tools-integrations-page .integrations-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .tools-integrations-page .page-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .tools-integrations-page .header-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+    opacity: 0;
+    animation: fadeInDown 0.5s ease-out forwards;
+  }
+
+  .tools-integrations-page .page-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    animation: fadeInDown 0.5s ease-out 0.1s forwards;
+  }
+
+  .tools-integrations-page .page-description {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    opacity: 0;
+    animation: fadeInDown 0.5s ease-out 0.2s forwards;
+  }
+
+  .tools-integrations-page .integrations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .tools-integrations-page .integration-card {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--card-border) !important;
+    border-radius: 12px !important;
+    padding: 1.75rem !important;
+    position: relative !important;
+    transition: var(--transition) !important;
+    box-shadow: var(--card-shadow) !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 420px !important;
+    max-height: none !important;
+    height: auto !important;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  .tools-integrations-page .integration-card:nth-child(1) {
+    animation-delay: 0.3s;
+  }
+
+  .tools-integrations-page .integration-card:nth-child(2) {
+    animation-delay: 0.4s;
+  }
+
+  .tools-integrations-page .integration-card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: var(--card-shadow-hover) !important;
+    border-color: var(--card-border) !important;
+  }
+
+  .tools-integrations-page .integration-card:active {
+    transform: translateY(-2px) !important;
+  }
+
+  .tools-integrations-page .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    flex-shrink: 0 !important;
+  }
+
+  .tools-integrations-page .integration-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    flex-shrink: 0;
+  }
+
+  .tools-integrations-page .integration-icon.teams {
+    background: linear-gradient(135deg, #5558AF 0%, #7B83EB 100%);
+  }
+
+  .tools-integrations-page .integration-icon.slack {
+    background: linear-gradient(135deg, #611f69 0%, #8B2F97 100%);
+  }
+
+  .tools-integrations-page .status-badge {
+    background: var(--badge-bg);
+    color: var(--badge-text);
+    padding: 0.375rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .tools-integrations-page .status-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .tools-integrations-page .card-content {
+    margin-bottom: 1.5rem !important;
+    flex-grow: 1 !important;
+    flex-shrink: 0 !important;
+  }
+
+  .tools-integrations-page .integration-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .tools-integrations-page .integration-description {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.6 !important;
+    margin-bottom: 1rem !important;
+    min-height: 3em !important;
+  }
+
+  .tools-integrations-page .feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .tools-integrations-page .feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .tools-integrations-page .feature-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .tools-integrations-page .feature-item::before {
+    content: '○';
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  .tools-integrations-page .card-footer {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding-top: 1rem !important;
+    border-top: 1px solid var(--card-border) !important;
+    margin-top: auto !important;
+    flex-shrink: 0 !important;
+  }
+
+  .tools-integrations-page .launch-text {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .tools-integrations-page .arrow-icon {
+    font-size: 1.125rem;
+    color: var(--text-muted);
+    transition: var(--transition);
+  }
+
+  .tools-integrations-page .integration-card:hover .arrow-icon {
+    transform: translateX(4px);
+    color: var(--text-secondary);
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .tools-integrations-page .integrations-container {
+      padding: 1.5rem;
+    }
+
+    .tools-integrations-page .integrations-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .tools-integrations-page .page-title {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="user-shell">
-
-  <!-- Sidebar -->
+  <!-- User Sidebar -->
   {% include 'partials/user_sidebar.html' %}
 
   <!-- Main Content -->
-  <main class="user-content">
+  <main class="user-content tools-integrations-page">
     <div class="integrations-container">
+      <div class="page-header">
+        <span class="header-icon">🚀</span>
+        <h1 class="page-title">Workspace Tools</h1>
+        <p class="page-description">Stay connected with real-time updates and collaboration tools</p>
+      </div>
 
-      <!-- Header -->
-      <header class="integrations-header">
-        <h1>🔌 Integrations</h1>
-        <p class="subtitle">
-          View external systems and services connected to this platform.
-          <br>Integrations are managed by administrators.
-        </p>
-      </header>
-
-      <!-- Cloud Services -->
-      <section class="integration-category">
-        <div class="category-header">
-          <h2>☁️ Cloud Services</h2>
-          <p class="category-description">Enterprise-grade Azure infrastructure powering your operations</p>
-        </div>
-
-        <div class="integration-grid">
-
-          <!-- Azure Blob Storage -->
-          <div class="integration-card">
-            <div class="card-header">
-              <div class="integration-icon azure-blob">
-                <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
-                  <rect width="56" height="56" rx="12" fill="#0078D4"/>
-                  <path d="M28 16L38 23V37L28 44L18 37V23L28 16Z" fill="white" opacity="0.9"/>
-                  <circle cx="28" cy="28" r="4" fill="white"/>
-                </svg>
-              </div>
-              <span class="badge admin-badge">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right: 4px; vertical-align: middle;">
-                  <path d="M6 0L7.5 4.5L12 6L7.5 7.5L6 12L4.5 7.5L0 6L4.5 4.5L6 0Z" fill="currentColor"/>
-                </svg>
-                Admin Managed
-              </span>
-            </div>
-
-            <div class="integration-info">
-              <h3>Azure Blob Storage</h3>
-              <p class="integration-description">
-                Secure cloud storage for operational data exports, file attachments, and long-term retention with enterprise-grade encryption.
-              </p>
-              
-              <div class="feature-list">
-                <div class="feature-item">
-                  <span class="check-icon">✓</span>
-                  <span>Encrypted at rest</span>
-                </div>
-                <div class="feature-item">
-                  <span class="check-icon">✓</span>
-                  <span>99.9% uptime SLA</span>
-                </div>
-                <div class="feature-item">
-                  <span class="check-icon">✓</span>
-                  <span>Geo-redundant storage</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="integration-footer">
-              <button class="btn-info" disabled>
-                <span>🛡️ Managed by IT Admin</span>
-              </button>
-            </div>
+      <div class="integrations-grid">
+        <!-- Microsoft Teams Card -->
+        <a href="{{ url_for('dashboard.open_teams') }}" 
+           class="integration-card"
+           target="_blank"
+           rel="noopener noreferrer">
+          <div class="card-header">
+            <div class="integration-icon teams">T</div>
+            <span class="status-badge">Launch Tool</span>
           </div>
-
-          <!-- Azure Active Directory -->
-          <div class="integration-card active">
-            <div class="card-header">
-              <div class="integration-icon azure-ad">
-                <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
-                  <rect width="56" height="56" rx="12" fill="#00A4EF"/>
-                  <circle cx="28" cy="28" r="12" stroke="white" stroke-width="2" fill="none"/>
-                  <circle cx="28" cy="28" r="4" fill="white"/>
-                  <path d="M28 16V24M28 32V40M16 28H24M32 28H40" stroke="white" stroke-width="2"/>
-                </svg>
-              </div>
-              <span class="badge system-badge">
-                <span class="status-pulse"></span>
-                Active & System-Wide
-              </span>
-            </div>
-
-            <div class="integration-info">
-              <h3>Azure AD / Entra ID</h3>
-              <p class="integration-description">
-                Enterprise authentication provider enabling secure single sign-on (SSO) across all platform services with multi-factor authentication.
-              </p>
-              
-              <div class="feature-list">
-                <div class="feature-item">
-                  <span class="check-icon">✓</span>
-                  <span>Single sign-on (SSO)</span>
-                </div>
-                <div class="feature-item">
-                  <span class="check-icon">✓</span>
-                  <span>Multi-factor authentication</span>
-                </div>
-                <div class="feature-item">
-                  <span class="check-icon">✓</span>
-                  <span>Role-based access control</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="integration-footer">
-              <button class="btn-success" disabled>
-                <span>✓ Authentication Provider</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Azure Key Vault -->
-          <div class="integration-card">
-            <div class="card-header">
-              <div class="integration-icon azure-keyvault">
-                <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
-                  <rect width="56" height="56" rx="12" fill="#FFB900"/>
-                  <rect x="20" y="26" width="16" height="18" rx="2" fill="white" opacity="0.9"/>
-                  <path d="M23 26V20C23 17.2386 25.2386 15 28 15C30.7614 15 33 17.2386 33 20V26" stroke="white" stroke-width="2.5"/>
-                  <circle cx="28" cy="35" r="2" fill="#FFB900"/>
-                </svg>
-              </div>
-              <span class="badge admin-badge">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right: 4px; vertical-align: middle;">
-                  <path d="M6 0L7.5 4.5L12 6L7.5 7.5L6 12L4.5 7.5L0 6L4.5 4.5L6 0Z" fill="currentColor"/>
-                </svg>
-                Admin Only
-              </span>
-            </div>
-
-            <div class="integration-info">
-              <h3>Azure Key Vault</h3>
-              <p class="integration-description">
-                Centralized secrets management for API keys, connection strings, and certificates with hardware security module (HSM) protection.
-              </p>
-              
-              <div class="feature-list">
-                <div class="feature-item">
-                  <span class="check-icon">✓</span>
-                  <span>Encrypted secrets storage</span>
-                </div>
-                <div class="feature-item">
-                  <span class="check-icon">✓</span>
-                  <span>Access policy controls</span>
-                </div>
-                <div class="feature-item">
-                  <span class="check-icon">✓</span>
-                  <span>Audit logging</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="integration-footer">
-              <button class="btn-info" disabled>
-                <span>🔒 Admin Access Required</span>
-              </button>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- Productivity Tools -->
-      <section class="integration-category">
-        <div class="category-header">
-          <h2>🔔 Notifications & Productivity</h2>
-          <p class="category-description">Stay connected with real-time updates and collaboration tools</p>
-        </div>
-
-        <div class="integration-grid">
-
-          <!-- Microsoft Teams -->
-          <div class="integration-card coming-soon">
-            <div class="card-header">
-              <div class="integration-icon teams">
-                <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
-                  <rect width="56" height="56" rx="12" fill="#6264A7"/>
-                  <text x="28" y="36" text-anchor="middle" fill="white" font-size="28" font-weight="bold" font-family="Arial">T</text>
-                </svg>
-              </div>
-              <span class="badge coming-soon-badge">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right: 4px; vertical-align: middle;">
-                  <circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                  <path d="M6 3V6L8 8" stroke="currentColor" stroke-width="1.5"/>
-                </svg>
-                Coming Soon
-              </span>
-            </div>
-
-            <div class="integration-info">
-              <h3>Microsoft Teams</h3>
-              <p class="integration-description">
-                Receive request notifications, status updates, and system alerts directly in your Teams channels for seamless collaboration.
-              </p>
-              
-              <div class="feature-list upcoming">
-                <div class="feature-item">
-                  <span class="check-icon pending">○</span>
-                  <span>Request notifications</span>
-                </div>
-                <div class="feature-item">
-                  <span class="check-icon pending">○</span>
-                  <span>Status change alerts</span>
-                </div>
-                <div class="feature-item">
-                  <span class="check-icon pending">○</span>
-                  <span>Approval workflows</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="integration-footer">
-              <button class="btn-upcoming" disabled>
-                <span>🚀 Planned for Q2 2026</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Slack -->
-          <div class="integration-card coming-soon">
-            <div class="card-header">
-              <div class="integration-icon slack">
-                <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
-                  <rect width="56" height="56" rx="12" fill="#4A154B"/>
-                  <text x="28" y="36" text-anchor="middle" fill="white" font-size="28" font-weight="bold" font-family="Arial">#</text>
-                </svg>
-              </div>
-              <span class="badge coming-soon-badge">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right: 4px; vertical-align: middle;">
-                  <circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.5" fill="none"/>
-                  <path d="M6 3V6L8 8" stroke="currentColor" stroke-width="1.5"/>
-                </svg>
-                Coming Soon
-              </span>
-            </div>
-
-            <div class="integration-info">
-              <h3>Slack</h3>
-              <p class="integration-description">
-                Get real-time request updates and workflow notifications delivered to your Slack workspace channels and DMs.
-              </p>
-              
-              <div class="feature-list upcoming">
-                <div class="feature-item">
-                  <span class="check-icon pending">○</span>
-                  <span>Channel notifications</span>
-                </div>
-                <div class="feature-item">
-                  <span class="check-icon pending">○</span>
-                  <span>Direct message alerts</span>
-                </div>
-                <div class="feature-item">
-                  <span class="check-icon pending">○</span>
-                  <span>Slash commands</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="integration-footer">
-              <button class="btn-upcoming" disabled>
-                <span>🚀 Planned for Q3 2026</span>
-              </button>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- Help / Info -->
-      <section class="integration-help">
-        <div class="help-card">
-          <div class="help-icon">ℹ️</div>
-          <div class="help-content">
-            <h3>About Integrations</h3>
-            <p>
-              Integrations connect this platform to enterprise systems for data storage,
-              notifications, and reporting. Configuration is handled by system administrators.
+          
+          <div class="card-content">
+            <h3 class="integration-name">Microsoft Teams</h3>
+            <p class="integration-description">
+              Receive request notifications, status updates, and system alerts directly in your Teams channels for seamless collaboration.
             </p>
-            <p>
-              If you need access to exports, have questions about integrations, or want to suggest
-              a new integration, please <a href="/user/knowledge-base">contact IT support</a>.
-            </p>
+            
+            <ul class="feature-list">
+              <li class="feature-item">Request notifications</li>
+              <li class="feature-item">Status change alerts</li>
+              <li class="feature-item">Approval workflows</li>
+            </ul>
           </div>
-        </div>
-      </section>
 
+          <div class="card-footer">
+            <span class="launch-text">External Workspace</span>
+            <span class="arrow-icon">→</span>
+          </div>
+        </a>
+
+        <!-- Slack Card -->
+        <a href="{{ url_for('dashboard.open_slack') }}" 
+           class="integration-card"
+           target="_blank"
+           rel="noopener noreferrer">
+          <div class="card-header">
+            <div class="integration-icon slack">#</div>
+            <span class="status-badge">Launch Tool</span>
+          </div>
+          
+          <div class="card-content">
+            <h3 class="integration-name">Slack</h3>
+            <p class="integration-description">
+              Get real-time request updates and workflow notifications delivered to your Slack workspace channels and DMs.
+            </p>
+            
+            <ul class="feature-list">
+              <li class="feature-item">Channel notifications</li>
+              <li class="feature-item">Direct message alerts</li>
+              <li class="feature-item">Slash commands</li>
+            </ul>
+          </div>
+
+          <div class="card-footer">
+            <span class="launch-text">External Workspace</span>
+            <span class="arrow-icon">→</span>
+          </div>
+        </a>
+      </div>
     </div>
   </main>
 </div>
-
-<style>
-.integrations-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-.integrations-header {
-  margin-bottom: 3rem;
-  text-align: center;
-}
-
-.integrations-header h1 {
-  font-size: 2.5rem;
-  margin-bottom: 0.75rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.subtitle {
-  color: #666;
-  font-size: 1rem;
-  line-height: 1.6;
-}
-
-.integration-category {
-  margin-bottom: 4rem;
-}
-
-.category-header {
-  margin-bottom: 2rem;
-}
-
-.category-header h2 {
-  font-size: 1.75rem;
-  margin-bottom: 0.5rem;
-  color: #333;
-}
-
-.category-description {
-  color: #666;
-  font-size: 0.95rem;
-}
-
-.integration-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 2rem;
-}
-
-.integration-card {
-  background: #ffffff;
-  border: 2px solid #e8e8e8;
-  border-radius: 16px;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-.integration-card:hover {
-  border-color: #4A90E2;
-  box-shadow: 0 8px 24px rgba(74, 144, 226, 0.12);
-  transform: translateY(-4px);
-}
-
-.integration-card.active {
-  border-color: #4CAF50;
-  background: linear-gradient(to bottom, #f1f8f4 0%, #ffffff 100%);
-}
-
-.integration-card.active:hover {
-  border-color: #4CAF50;
-  box-shadow: 0 8px 24px rgba(76, 175, 80, 0.15);
-}
-
-.integration-card.coming-soon {
-  opacity: 0.75;
-}
-
-.integration-card.coming-soon:hover {
-  opacity: 0.85;
-  border-color: #999;
-}
-
-.card-header {
-  padding: 1.75rem 1.75rem 1rem;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-.integration-icon {
-  flex-shrink: 0;
-}
-
-.integration-info {
-  padding: 0 1.75rem 1.5rem;
-}
-
-.integration-info h3 {
-  font-size: 1.3rem;
-  margin-bottom: 0.75rem;
-  color: #222;
-}
-
-.integration-description {
-  font-size: 0.9rem;
-  color: #555;
-  line-height: 1.6;
-  margin-bottom: 1.25rem;
-}
-
-.feature-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
-
-.feature-item {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-size: 0.85rem;
-  color: #666;
-}
-
-.check-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  background: #4CAF50;
-  color: white;
-  border-radius: 50%;
-  font-size: 0.7rem;
-  font-weight: bold;
-  flex-shrink: 0;
-}
-
-.feature-list.upcoming .check-icon.pending {
-  background: #e0e0e0;
-  color: #999;
-  font-size: 0.9rem;
-}
-
-.integration-footer {
-  padding: 0 1.75rem 1.75rem;
-  margin-top: auto;
-}
-
-.btn-info,
-.btn-success,
-.btn-upcoming {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  border: none;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: not-allowed;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.btn-info {
-  background: #f5f5f5;
-  color: #666;
-}
-
-.btn-success {
-  background: #e8f5e9;
-  color: #2e7d32;
-  border: 1px solid #4CAF50;
-}
-
-.btn-upcoming {
-  background: #fff3e0;
-  color: #e65100;
-  border: 1px solid #ffb74d;
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.4rem 0.85rem;
-  font-size: 0.75rem;
-  border-radius: 20px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.admin-badge {
-  background: linear-gradient(135deg, #FFB900 0%, #FF8C00 100%);
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(255, 185, 0, 0.3);
-}
-
-.system-badge {
-  background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
-  position: relative;
-}
-
-.status-pulse {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  background: #fff;
-  border-radius: 50%;
-  margin-right: 6px;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-.coming-soon-badge {
-  background: #e0e0e0;
-  color: #666;
-}
-
-.integration-help {
-  margin-top: 3rem;
-}
-
-.help-card {
-  background: linear-gradient(135deg, #EBF4FF 0%, #E3F2FD 100%);
-  border: 2px solid #90CAF9;
-  border-radius: 12px;
-  padding: 2rem;
-  display: flex;
-  gap: 1.5rem;
-  align-items: flex-start;
-}
-
-.help-icon {
-  font-size: 2.5rem;
-  flex-shrink: 0;
-}
-
-.help-content h3 {
-  margin-bottom: 0.75rem;
-  color: #1565C0;
-  font-size: 1.2rem;
-}
-
-.help-content p {
-  color: #555;
-  line-height: 1.7;
-  margin: 0.5rem 0;
-}
-
-.help-content a {
-  color: #1976D2;
-  text-decoration: none;
-  font-weight: 600;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.2s;
-}
-
-.help-content a:hover {
-  border-bottom-color: #1976D2;
-}
-
-.muted {
-  color: #888;
-  font-size: 0.9rem;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .integrations-header h1 {
-    font-size: 2rem;
-  }
-  
-  .integration-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .help-card {
-    flex-direction: column;
-    text-align: center;
-  }
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .integration-card {
-    background: #2a2a2a;
-    border-color: #444;
-  }
-  
-  .integration-card.active {
-    background: linear-gradient(to bottom, #1a2e1a 0%, #2a2a2a 100%);
-  }
-  
-  .integration-info h3,
-  .category-header h2 {
-    color: #e0e0e0;
-  }
-  
-  .integration-description,
-  .feature-item,
-  .category-description,
-  .subtitle {
-    color: #aaa;
-  }
-  
-  .help-card {
-    background: linear-gradient(135deg, #1a2a3a 0%, #1e3a4e 100%);
-    border-color: #4A90E2;
-  }
-  
-  .help-content h3 {
-    color: #90CAF9;
-  }
-  
-  .help-content p {
-    color: #ccc;
-  }
-}
-</style>
-
 {% endblock %}
