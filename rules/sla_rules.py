@@ -47,3 +47,27 @@ def compute_sla_status(request):
         return "at_risk"
     else:
         return "on_time"
+
+
+def did_meet_sla(request):
+    """
+    Returns True if a completed request met SLA deadline.
+    """
+    from datetime import datetime
+
+    if request["status"] != "completed":
+        return None
+
+    priority = request["priority"]
+    rule = SLA_RULES.get(priority)
+    if not rule:
+        return None
+
+    created_at = datetime.fromisoformat(request["created_at"])
+    reviewed_at = datetime.fromisoformat(request["reviewed_at"])
+
+    elapsed_hours = (reviewed_at - created_at).total_seconds() / 3600
+    target_hours = rule["resolution_hours"]
+
+    return elapsed_hours <= target_hours
+

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="user-shell">
+  {% include 'partials/user_sidebar.html' %}
+
+  <main class="user-content">
+    <div class="card" style="max-width:600px; margin:40px auto;">
+      <h2>Edit Profile</h2>
+
+      <form method="POST" action="{{ url_for('dashboard.update_profile') }}">
+
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text"
+                 name="full_name"
+                 value="{{ user.full_name or '' }}"
+                 class="input-field">
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="action-button action-button-primary">
+            Save Changes
+          </button>
+
+          <a href="{{ url_for('dashboard.user_profile') }}"
+             class="action-button action-button-secondary">
+            Cancel
+          </a>
+        </div>
+
+      </form>
+    </div>
+  </main>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.form-group {
+  margin-bottom: 20px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 15px;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+/* Light Mode */
+body.light .input-field {
+  background: #ffffff;
+  color: #111827;
+}
+
+/* Dark Mode */
+body.dark .input-field {
+  background: #141422;
+  color: #f3f4f6;
+  border: 1px solid #2a2a3a;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* Button spacing */
+.form-actions {
+  margin-top: 24px;
+  display: flex;
+  gap: 12px;
+}
+
+
+</style>
+{% endblock %}

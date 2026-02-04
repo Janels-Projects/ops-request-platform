@@ -6,7 +6,7 @@ from models.db import get_db_connection
 from rules.request_rules import VALID_CATEGORIES
 from flask import render_template, abort
 import markdown
-from rules.sla_rules import compute_sla_status
+from rules.sla_rules import compute_sla_status, did_meet_sla
 
 
 
@@ -18,7 +18,19 @@ def _get_user_and_role(user_id: int):
     conn = get_db_connection()
     cur = conn.cursor()
     
-    cur.execute("SELECT id, email, role FROM users WHERE id = ?", (user_id,))
+    cur.execute("""
+        SELECT
+        id,
+        email,
+        role,
+        full_name,
+        department,
+        avatar_url,
+        created_at
+    FROM users
+    WHERE id = ?
+""", (user_id,))
+
     user = cur.fetchone()
     conn.close()
     return user
@@ -97,14 +109,16 @@ def user_profile():
     user_id = int(get_jwt_identity())
 
     # Fetch user basic info
-    user = _get_user_and_role(user_id)
-    if not user:
+    user_row = _get_user_and_role(user_id)
+    if not user_row:
         return jsonify({"error": "user not found"}), 404
+
+    user = dict(user_row)
 
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # Personal request stats (derived, not stored)
+    # --- Personal request stats ---
     cur.execute("""
         SELECT
             COUNT(*) AS total_requests,
@@ -118,9 +132,9 @@ def user_profile():
         FROM requests
         WHERE user_id = ?
     """, (user_id,))
-    stats = cur.fetchone()
+    stats_row = cur.fetchone()
 
-    # Most common category
+    # --- Most common category ---
     cur.execute("""
         SELECT category
         FROM requests
@@ -131,18 +145,70 @@ def user_profile():
     """, (user_id,))
     most_common = cur.fetchone()
 
+    # --- SLA MET % (completed requests only) ---
+    cur.execute("""
+        SELECT *
+        FROM requests
+        WHERE user_id = ?
+          AND status = 'completed'
+    """, (user_id,))
+    completed_rows = cur.fetchall()
+
+    sla_met_count = 0
+    total_completed = len(completed_rows)
+
+    for row in completed_rows:
+        if did_meet_sla(row):
+            sla_met_count += 1
+
+    sla_percent = round((sla_met_count / total_completed) * 100, 1) if total_completed else 0
+
     conn.close()
 
     return render_template(
         "user_profile.html",
         user=user,
         stats={
-            "total_requests": stats["total_requests"],
-            "avg_completion_days": stats["avg_completion_days"],
+            "total_requests": stats_row["total_requests"],
+            "avg_completion_days": round(stats_row["avg_completion_days"], 1)
+                if stats_row["avg_completion_days"] else None,
             "most_common_category": most_common["category"] if most_common else None,
+            "sla_met_percent": sla_percent
         },
         active_page="profile"
     )
+
+#User Profile Route (edit profile)
+@dashboard_bp.post("/user/profile/edit")
+@jwt_required()
+def update_profile():
+    user_id = int(get_jwt_identity())
+
+    full_name = request.form.get("full_name") or None
+    department = request.form.get("department") or None
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        UPDATE users
+        SET full_name = ?, department = ?
+        WHERE id = ?
+    """, (full_name, department, user_id))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("dashboard.user_profile"))
+
+# User Route (Edit Page)
+@dashboard_bp.get("/user/profile/edit")
+@jwt_required()
+def edit_profile():
+    user_id = int(get_jwt_identity())
+    user = dict(_get_user_and_role(user_id))
+
+    return render_template("user_edit_profile.html", user=user)
 
 
 

@@ -74,7 +74,7 @@ def init_db():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    # users table (KEEP THIS)
+    # users table 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -85,7 +85,24 @@ def init_db():
     )
     """)
 
-    # requests table (KEEP THIS)
+    # --- USERS SCHEMA UPGRADES (SAFE) ---
+    # This checks existing columns so ALTER TABLE doesn't error.
+    cursor.execute("PRAGMA table_info(users)")
+    existing_columns = [col[1] for col in cursor.fetchall()]
+
+    if "full_name" not in existing_columns:
+        cursor.execute("ALTER TABLE users ADD COLUMN full_name TEXT")
+
+    if "department" not in existing_columns:
+        cursor.execute("ALTER TABLE users ADD COLUMN department TEXT")
+
+    if "avatar_url" not in existing_columns:
+        cursor.execute("ALTER TABLE users ADD COLUMN avatar_url TEXT")
+
+    # (rest of your tables continue below...)
+
+
+    # requests table
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS requests (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
